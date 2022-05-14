@@ -5,6 +5,8 @@
 #include <iostream>
 #include <string>
 #include <unordered_map>
+#include <cmath>
+using namespace std;
 
 extern sf::RenderWindow* window;
 extern int worldLeft;

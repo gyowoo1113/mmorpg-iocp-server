@@ -1,4 +1,5 @@
 ﻿#include "stdafx.h"
+#include "Player.h"
 
 using namespace sf;
 using namespace std;
@@ -12,8 +13,11 @@ void KeyInput(sf::Event& e);
 
 sf::RenderWindow _window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "2D CLIENT");
 RenderWindow* window = &_window;
-sf::Text text;
+sf::Text playerText;
 sf::Font font;
+
+string s = "me";
+CPlayer player(s, 3, 80, 20);
 
 int main() {
 
@@ -35,14 +39,14 @@ void CreateWindows()
 		cout << "fail!!" << endl;
 	}
 
-	text.setFont(font);            //폰트
-	text.setCharacterSize(24);    //크기
-	text.setString("hello world"); //출력할 문자열
+	playerText.setFont(font);
+	playerText.setCharacterSize(24);
 }
 
 void DrawWindows()
 {
-	window->draw(text);
+	player.setParameter(playerText);
+	window->draw(playerText);
 	window->display();
 	window->clear(Color::Black);
 }
