@@ -15,3 +15,4 @@ extern constexpr auto SCREEN_HEIGHT = 10;
 extern constexpr auto TILE_WIDTH = 65;
 extern constexpr auto WINDOW_WIDTH = TILE_WIDTH * SCREEN_WIDTH + 10;
 extern constexpr auto WINDOW_HEIGHT = TILE_WIDTH * SCREEN_WIDTH + 10;
+

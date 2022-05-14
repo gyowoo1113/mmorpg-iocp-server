@@ -1,4 +1,4 @@
-#include "stdafx.h"
+﻿#include "stdafx.h"
 
 using namespace sf;
 using namespace std;
@@ -12,11 +12,14 @@ void KeyInput(sf::Event& e);
 
 sf::RenderWindow _window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "2D CLIENT");
 RenderWindow* window = &_window;
+sf::Text text;
+sf::Font font;
 
 int main() {
 
-	Event event;
 	CreateWindows();
+
+	Event event;
 	while (window->isOpen()) {
 		InputWindows(event);
 		DrawWindows();
@@ -27,13 +30,21 @@ int main() {
 
 void CreateWindows()
 {
+	if (!font.loadFromFile("../Resource/Font/Goyang.ttf"))
+	{
+		cout << "fail!!" << endl;
+	}
 
+	text.setFont(font);            //폰트
+	text.setCharacterSize(24);    //크기
+	text.setString("hello world"); //출력할 문자열
 }
 
 void DrawWindows()
 {
+	window->draw(text);
 	window->display();
-	window->clear(Color::White);
+	window->clear(Color::Black);
 }
 
 void InputWindows(Event& e)
