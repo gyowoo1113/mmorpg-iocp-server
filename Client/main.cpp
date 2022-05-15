@@ -25,6 +25,7 @@ string s = "me";
 CPlayer player(s, 3, 80, 20);
 string userChatting;
 deque<Text> chat;
+bool isChatting = false;
 
 int main() {
 
@@ -106,33 +107,43 @@ void KeyInput(sf::Event& e)
 {
 	int direction = -1;
 	switch (e.key.code) {
-	case sf::Keyboard::Left:
-		direction = 2;
-		break;
-	case sf::Keyboard::Right:
-		direction = 3;
-		break;
-	case sf::Keyboard::Up:
-		direction = 0;
-		break;
-	case sf::Keyboard::Down:
-		direction = 1;
-		break;
-	case sf::Keyboard::Escape:
-		window->close();
-		break;
+		case sf::Keyboard::Left:
+			direction = 2;
+			break;
+		case sf::Keyboard::Right:
+			direction = 3;
+			break;
+		case sf::Keyboard::Up:
+			direction = 0;
+			break;
+		case sf::Keyboard::Down:
+			direction = 1;
+			break;
+		case sf::Keyboard::Escape:
+			window->close();
+			break;
+
+
 		case sf::Keyboard::Space:
+			if (!isChatting) return;
 
 			userChatting += ' ';
 			break;
 
 		case sf::Keyboard::BackSpace:
+			if (!isChatting) return;
 
 			if (userChatting.size() > 0)
 				userChatting.pop_back();
 			break;
+
 		case Keyboard::Return:
+			if (userChatting.size() > 0 && isChatting)
 				setMessage();
+			else if (userChatting.size() == 0)
+			{
+				isChatting = !isChatting;
+			}
 			break;
 
 	}
