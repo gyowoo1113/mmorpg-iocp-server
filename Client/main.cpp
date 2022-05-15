@@ -14,10 +14,12 @@ void KeyInput(sf::Event& e);
 sf::RenderWindow _window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "2D CLIENT");
 RenderWindow* window = &_window;
 sf::Text playerText;
+sf::Text chattingText;
 sf::Font font;
 
 string s = "me";
 CPlayer player(s, 3, 80, 20);
+string userChatting;
 
 int main() {
 
@@ -42,12 +44,19 @@ void CreateWindows()
 
 	playerText.setFont(font);
 	playerText.setCharacterSize(24);
+	playerText.setPosition(Vector2f(0, 0));
+	chattingText.setFont(font);
+	chattingText.setCharacterSize(CHAT_SIZE);
+	chattingText.setPosition(Vector2f(0, WINDOW_HEIGHT - CHAT_SIZE));
 }
 
 void DrawWindows()
 {
 	player.getExp(1);
 	player.setParameter(playerText);
+	chattingText.setString(userChatting);
+
+	window->draw(chattingText);
 	window->draw(playerText);
 	window->display();
 	window->clear(Color::Black);
@@ -59,12 +68,19 @@ void InputWindows(Event& e)
 
 		switch (e.type)
 		{
-		case Event::Closed:
-			window->close();
-			break;
+			case Event::Closed:
+				window->close();
+				break;
 
-		case Event::KeyPressed:
-			KeyInput(e);
+			case Event::KeyPressed:
+				KeyInput(e);
+				break;
+
+			case Event::TextEntered:
+				if (!isChatting) return;
+
+				if (32 < e.text.unicode && e.text.unicode < 128)
+					userChatting += (char)e.text.unicode;
 		}
 	}
 }
@@ -88,6 +104,16 @@ void KeyInput(sf::Event& e)
 	case sf::Keyboard::Escape:
 		window->close();
 		break;
+		case sf::Keyboard::Space:
+
+			userChatting += ' ';
+			break;
+
+		case sf::Keyboard::BackSpace:
+
+			if (userChatting.size() > 0)
+				userChatting.pop_back();
+			break;
 	}
 	if (-1 != direction) {
 

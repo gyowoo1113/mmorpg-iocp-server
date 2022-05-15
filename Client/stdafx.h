@@ -11,6 +11,7 @@ using namespace std;
 extern sf::RenderWindow* window;
 extern int worldLeft;
 extern int worldTop;
+extern constexpr int CHAT_SIZE = 20;
 
 extern constexpr auto SCREEN_WIDTH = 10;
 extern constexpr auto SCREEN_HEIGHT = 10;

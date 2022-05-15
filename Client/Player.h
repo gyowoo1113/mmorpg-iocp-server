@@ -16,6 +16,7 @@ public:
 	void setLevelUp(int RemainExp);
 	void getExp(int exp);
 	void calculateMaxExp();
+	string getId() { return m_id; }
 
 private:
 	std::string m_id;
