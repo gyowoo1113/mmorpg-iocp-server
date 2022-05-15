@@ -1,5 +1,6 @@
 ﻿#include "stdafx.h"
 #include "Player.h"
+#include <deque>
 
 using namespace sf;
 using namespace std;
@@ -10,6 +11,9 @@ void DrawWindows();
 void InputWindows(Event& e);
 
 void KeyInput(sf::Event& e);
+Text setTextMessage(string str);
+void setMessage();
+
 
 sf::RenderWindow _window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "2D CLIENT");
 RenderWindow* window = &_window;
@@ -20,6 +24,7 @@ sf::Font font;
 string s = "me";
 CPlayer player(s, 3, 80, 20);
 string userChatting;
+deque<Text> chat;
 
 int main() {
 
@@ -54,6 +59,18 @@ void DrawWindows()
 {
 	player.getExp(1);
 	player.setParameter(playerText);
+
+	deque<Text>::reverse_iterator itor;
+	int cnt = 0;
+	int chat_start_h = WINDOW_HEIGHT - CHAT_SIZE*2;
+	for (itor = chat.rbegin(); itor != chat.rend(); ++itor)
+	{
+		itor->setPosition(Vector2f(0, chat_start_h - cnt* CHAT_SIZE));
+		window->draw(*itor);
+		++cnt;
+	}
+
+
 	chattingText.setString(userChatting);
 
 	window->draw(chattingText);
@@ -114,8 +131,36 @@ void KeyInput(sf::Event& e)
 			if (userChatting.size() > 0)
 				userChatting.pop_back();
 			break;
+		case Keyboard::Return:
+				setMessage();
+			break;
+
 	}
+
+
 	if (-1 != direction) {
 
 	}
 }
+
+Text setTextMessage(string str)
+{
+	sf::Text text;
+	text.setFont(font);
+	text.setCharacterSize(CHAT_SIZE);
+	text.setString(str);
+
+	return text;
+}
+
+void setMessage()
+{
+	string chatting = player.getId() + ":" + userChatting;
+	if (chat.size() > 4)
+		chat.pop_front();
+
+	chat.push_back(setTextMessage(chatting));
+
+	userChatting.clear();
+}
+
