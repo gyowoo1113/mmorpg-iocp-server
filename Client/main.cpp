@@ -22,6 +22,7 @@ CPlayer player(s, 3, 80, 20);
 int main() {
 
 	CreateWindows();
+	window->setFramerateLimit(60);
 
 	Event event;
 	while (window->isOpen()) {
@@ -45,6 +46,7 @@ void CreateWindows()
 
 void DrawWindows()
 {
+	player.getExp(1);
 	player.setParameter(playerText);
 	window->draw(playerText);
 	window->display();
