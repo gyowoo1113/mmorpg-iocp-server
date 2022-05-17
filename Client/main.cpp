@@ -28,6 +28,7 @@ string userChatting;
 deque<Text> chat;
 bool isChatting = false;
 
+
 int backgrounds[W_WIDTH][W_HEIGHT] = {};
 
 void makeMap()
@@ -43,6 +44,8 @@ void makeMap()
 
 sf::Texture* maptiles;
 vector<CGameObject> maptile;
+sf::RectangleShape shape;
+sf::RectangleShape shape2;
 
 void client_initialize()
 {
@@ -55,6 +58,14 @@ void client_initialize()
 		maketile.setSpriteScale(4.0f, 4.0f);
 		maptile.emplace_back(maketile);
 	}
+
+	shape.setSize(Vector2f(WINDOW_WIDTH, CHAT_SIZE * 5));
+	shape.setPosition(Vector2f(0, WINDOW_HEIGHT - CHAT_SIZE * 6));
+	shape.setFillColor(Color(0, 0, 0, 125));
+
+	shape2.setSize(Vector2f(WINDOW_WIDTH, CHAT_SIZE));
+	shape2.setPosition(Vector2f(0, WINDOW_HEIGHT - CHAT_SIZE));
+	shape2.setFillColor(Color(0, 0, 0, 200));
 }
 
 
@@ -87,7 +98,7 @@ void CreateWindows()
 	playerText.setPosition(Vector2f(0, 0));
 	chattingText.setFont(font);
 	chattingText.setCharacterSize(CHAT_SIZE);
-	chattingText.setPosition(Vector2f(0, WINDOW_HEIGHT - CHAT_SIZE));
+	chattingText.setPosition(Vector2f(0, WINDOW_HEIGHT - CHAT_SIZE - 5));
 }
 
 void DrawWindows()
@@ -105,21 +116,26 @@ void DrawWindows()
 		}
 	}
 
-
-	deque<Text>::reverse_iterator itor;
-	int cnt = 0;
-	int chat_start_h = WINDOW_HEIGHT - CHAT_SIZE*2;
-	for (itor = chat.rbegin(); itor != chat.rend(); ++itor)
+	if (isChatting)
 	{
-		itor->setPosition(Vector2f(0, chat_start_h - cnt* CHAT_SIZE));
-		window->draw(*itor);
-		++cnt;
+		window->draw(shape);
+		window->draw(shape2);
+
+		deque<Text>::reverse_iterator itor;
+		int cnt = 0;
+		int chat_start_h = WINDOW_HEIGHT - CHAT_SIZE * 2 - 5;
+		for (itor = chat.rbegin(); itor != chat.rend(); ++itor)
+		{
+			itor->setPosition(Vector2f(0, chat_start_h - cnt * CHAT_SIZE));
+			window->draw(*itor);
+			++cnt;
+		}
+
+
+		chattingText.setString(userChatting);
+		window->draw(chattingText);
 	}
 
-
-	chattingText.setString(userChatting);
-
-	window->draw(chattingText);
 	window->draw(playerText);
 	window->display();
 	window->clear(Color::Black);
