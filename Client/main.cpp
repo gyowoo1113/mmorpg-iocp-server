@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "Player.h"
 #include <deque>
+#include <random>
 
 using namespace sf;
 using namespace std;
@@ -27,7 +28,40 @@ string userChatting;
 deque<Text> chat;
 bool isChatting = false;
 
+int backgrounds[W_WIDTH][W_HEIGHT] = {};
+
+void makeMap()
+{
+	for (int i = 0; i < W_WIDTH; ++i)
+	{
+		for (int j = 0; j < W_HEIGHT; ++j)
+		{
+			backgrounds[i][j] = rand() % 4;
+		}
+	}
+}
+
+sf::Texture* maptiles;
+vector<CGameObject> maptile;
+
+void client_initialize()
+{
+	maptiles = new sf::Texture;
+	maptiles->loadFromFile("../Resource/back2.png");
+
+	for (int i = 0; i < 4; ++i)
+	{
+		CGameObject maketile = CGameObject{ *maptiles, 16*i, 0, 16, 16 };
+		maketile.setSpriteScale(4.0f, 4.0f);
+		maptile.emplace_back(maketile);
+	}
+}
+
+
 int main() {
+
+	makeMap();
+	client_initialize();
 
 	CreateWindows();
 	window->setFramerateLimit(60);
@@ -60,6 +94,17 @@ void DrawWindows()
 {
 	player.getExp(1);
 	player.setParameter(playerText);
+
+	for (int i = 0; i < W_WIDTH; ++i)
+	{
+		for (int j = 0; j < W_HEIGHT; ++j)
+		{
+			int index = backgrounds[i][j];
+			maptile[index].spriteMove(64*i,64*j);
+			maptile[index].spriteDraw();
+		}
+	}
+
 
 	deque<Text>::reverse_iterator itor;
 	int cnt = 0;

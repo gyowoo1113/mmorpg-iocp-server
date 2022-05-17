@@ -43,6 +43,10 @@ public:
 		m_y = y;
 	}
 
+	void setSpriteScale(float x, float y) {
+		m_sprite.setScale(sf::Vector2f(x, y));
+	}
+
 	void draw() {
 		if (false == m_active) return;
 
