@@ -2,6 +2,7 @@
 #include "Player.h"
 #include <deque>
 #include <random>
+#include "protocol.h"
 
 using namespace sf;
 using namespace std;
@@ -24,11 +25,108 @@ sf::Font font;
 
 int g_left_x = 0;
 int g_top_y = 0;
+int g_myid;
+
 string s = "me";
 CPlayer player(s, 3, 80, 20);
+CPlayer players[MAX_USER];
+sf::TcpSocket socket;
+
 string userChatting;
 deque<Text> chat;
 bool isChatting = false;
+
+void ProcessPacket(char* ptr)
+{
+	static bool first_time = true;
+	switch (ptr[1])
+	{
+	case SC_LOGIN_INFO:
+	{
+		SC_LOGIN_INFO_PACKET* packet = reinterpret_cast<SC_LOGIN_INFO_PACKET*>(ptr);
+		g_myid = packet->id;
+		player.move(packet->x, packet->y);
+		g_left_x = packet->x - 8;
+		g_top_y = packet->y - 8;
+		player.setActive(true);
+		break;
+	}
+
+	case SC_ADD_PLAYER:
+	{
+		SC_ADD_PLAYER_PACKET* my_packet = reinterpret_cast<SC_ADD_PLAYER_PACKET*>(ptr);
+		int id = my_packet->id;
+
+		if (id < MAX_USER) {
+			players[id].move(my_packet->x, my_packet->y);
+			players[id].setActive(true);
+		}
+		break;
+	}
+
+	case SC_MOVE_PLAYER:
+	{
+		SC_MOVE_PLAYER_PACKET* my_packet = reinterpret_cast<SC_MOVE_PLAYER_PACKET*>(ptr);
+		int other_id = my_packet->id;
+		if (other_id == g_myid) {
+			g_left_x = my_packet->x - 8;
+			g_top_y = my_packet->y - 8;
+			player.move(my_packet->x, my_packet->y);
+		}
+		else if (other_id < MAX_USER) {
+			players[other_id].move(my_packet->x, my_packet->y);
+		}
+		break;
+	}
+
+	case SC_REMOVE_PLAYER:
+	{
+		SC_REMOVE_PLAYER_PACKET* my_packet = reinterpret_cast<SC_REMOVE_PLAYER_PACKET*>(ptr);
+		int other_id = my_packet->id;
+		if (other_id == g_myid) {
+			player.setActive(false);
+		}
+		else if (other_id < MAX_USER) {
+			players[other_id].setActive(false);
+		}
+		break;
+	}
+	default:
+		printf("Unknown PACKET type [%d]\n", ptr[1]);
+	}
+}
+
+void send_packet(void* packet)
+{
+	unsigned char* p = reinterpret_cast<unsigned char*>(packet);
+	size_t sent = 0;
+	socket.send(packet, p[0], sent);
+}
+
+void process_data(char* net_buf, size_t io_byte)
+{
+	char* ptr = net_buf;
+	static size_t in_packet_size = 0;
+	static size_t saved_packet_size = 0;
+	static char packet_buffer[BUF_SIZE];
+
+	while (0 != io_byte) {
+		if (0 == in_packet_size) in_packet_size = ptr[0];
+		if (io_byte + saved_packet_size >= in_packet_size) {
+			memcpy(packet_buffer + saved_packet_size, ptr, in_packet_size - saved_packet_size);
+			ProcessPacket(packet_buffer);
+			ptr += in_packet_size - saved_packet_size;
+			io_byte -= in_packet_size - saved_packet_size;
+			in_packet_size = 0;
+			saved_packet_size = 0;
+		}
+		else {
+			memcpy(packet_buffer + saved_packet_size, ptr, io_byte);
+			saved_packet_size += io_byte;
+			io_byte = 0;
+		}
+	}
+}
 
 
 int backgrounds[W_WIDTH][W_HEIGHT] = {};
@@ -119,7 +217,18 @@ void CreateWindows()
 
 void DrawWindows()
 {
-	player.getExp(1);
+	char net_buf[BUF_SIZE];
+	size_t	received;
+
+	auto recv_result = socket.receive(net_buf, BUF_SIZE, received);
+	if (recv_result == sf::Socket::Error)
+	{
+		wcout << L"Recv 에러!";
+		while (true);
+	}
+	if (recv_result != sf::Socket::NotReady)
+		if (received > 0) process_data(net_buf, received);
+
 	player.setParameter(playerText);
 
 	for (int i = 0; i < SCREEN_WIDTH; ++i)
@@ -228,9 +337,12 @@ void KeyInput(sf::Event& e)
 
 	}
 
-
 	if (-1 != direction) {
-
+		CS_MOVE_PACKET p;
+		p.size = sizeof(p);
+		p.type = CS_MOVE;
+		p.direction = direction;
+		send_packet(&p);
 	}
 }
 

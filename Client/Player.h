@@ -10,6 +10,13 @@ public:
 	{
 		calculateMaxExp(); 
 	};
+	CPlayer()
+	{
+		m_level = 1;
+		m_id = "";
+		m_hp = 100;
+		calculateMaxExp();
+	}
 	~CPlayer() {};
 
 	void setParameter(sf::Text& text);

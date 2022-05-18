@@ -20,14 +20,9 @@ public:
 		m_active = false;
 	}
 
-	void show()
+	void setActive(bool isActive)
 	{
-		m_active = true;
-	}
-
-	void hide()
-	{
-		m_active = false;
+		m_active = isActive;
 	}
 
 	void spriteMove(int x, int y) {
