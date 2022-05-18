@@ -366,4 +366,3 @@ void setMessage()
 
 	userChatting.clear();
 }
-
