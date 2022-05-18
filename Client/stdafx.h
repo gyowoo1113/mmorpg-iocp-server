@@ -19,6 +19,4 @@ extern constexpr auto TILE_WIDTH = 64;
 extern constexpr auto WINDOW_WIDTH = TILE_WIDTH * SCREEN_WIDTH;
 extern constexpr auto WINDOW_HEIGHT = TILE_WIDTH * SCREEN_WIDTH + CHAT_SIZE;
 
-constexpr int W_WIDTH = 20;
-constexpr int W_HEIGHT = 20;
 constexpr int CHAT_LINE = 4;
