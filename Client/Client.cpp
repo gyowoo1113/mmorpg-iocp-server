@@ -9,13 +9,20 @@ using namespace std;
 #pragma comment (lib, "WS2_32.LIB") 
 
 void CreateWindows();
+void setConnectServer();
 void DrawWindows();
+void receiveData();
+void drawMaps();
+void drawChatting();
 void InputWindows(Event& e);
 
 void KeyInput(sf::Event& e);
 Text setTextMessage(string str);
 void setMessage();
 
+void process_data(char* net_buf, size_t io_byte);
+void send_packet(void* packet);
+void ProcessPacket(char* ptr);
 
 sf::RenderWindow _window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "2D CLIENT");
 RenderWindow* window = &_window;
@@ -35,99 +42,6 @@ sf::TcpSocket socket;
 string userChatting;
 deque<Text> chat;
 bool isChatting = false;
-
-void ProcessPacket(char* ptr)
-{
-	static bool first_time = true;
-	switch (ptr[1])
-	{
-	case SC_LOGIN_INFO:
-	{
-		SC_LOGIN_INFO_PACKET* packet = reinterpret_cast<SC_LOGIN_INFO_PACKET*>(ptr);
-		g_myid = packet->id;
-		player.move(packet->x, packet->y);
-		g_left_x = packet->x - 8;
-		g_top_y = packet->y - 8;
-		player.setActive(true);
-		break;
-	}
-
-	case SC_ADD_PLAYER:
-	{
-		SC_ADD_PLAYER_PACKET* my_packet = reinterpret_cast<SC_ADD_PLAYER_PACKET*>(ptr);
-		int id = my_packet->id;
-
-		if (id < MAX_USER) {
-			players[id].move(my_packet->x, my_packet->y);
-			players[id].setActive(true);
-		}
-		break;
-	}
-
-	case SC_MOVE_PLAYER:
-	{
-		SC_MOVE_PLAYER_PACKET* my_packet = reinterpret_cast<SC_MOVE_PLAYER_PACKET*>(ptr);
-		int other_id = my_packet->id;
-		if (other_id == g_myid) {
-			g_left_x = my_packet->x - 8;
-			g_top_y = my_packet->y - 8;
-			player.move(my_packet->x, my_packet->y);
-		}
-		else if (other_id < MAX_USER) {
-			players[other_id].move(my_packet->x, my_packet->y);
-		}
-		break;
-	}
-
-	case SC_REMOVE_PLAYER:
-	{
-		SC_REMOVE_PLAYER_PACKET* my_packet = reinterpret_cast<SC_REMOVE_PLAYER_PACKET*>(ptr);
-		int other_id = my_packet->id;
-		if (other_id == g_myid) {
-			player.setActive(false);
-		}
-		else if (other_id < MAX_USER) {
-			players[other_id].setActive(false);
-		}
-		break;
-	}
-	default:
-		printf("Unknown PACKET type [%d]\n", ptr[1]);
-	}
-}
-
-void send_packet(void* packet)
-{
-	unsigned char* p = reinterpret_cast<unsigned char*>(packet);
-	size_t sent = 0;
-	socket.send(packet, p[0], sent);
-}
-
-void process_data(char* net_buf, size_t io_byte)
-{
-	char* ptr = net_buf;
-	static size_t in_packet_size = 0;
-	static size_t saved_packet_size = 0;
-	static char packet_buffer[BUF_SIZE];
-
-	while (0 != io_byte) {
-		if (0 == in_packet_size) in_packet_size = ptr[0];
-		if (io_byte + saved_packet_size >= in_packet_size) {
-			memcpy(packet_buffer + saved_packet_size, ptr, in_packet_size - saved_packet_size);
-			ProcessPacket(packet_buffer);
-			ptr += in_packet_size - saved_packet_size;
-			io_byte -= in_packet_size - saved_packet_size;
-			in_packet_size = 0;
-			saved_packet_size = 0;
-		}
-		else {
-			memcpy(packet_buffer + saved_packet_size, ptr, io_byte);
-			saved_packet_size += io_byte;
-			io_byte = 0;
-		}
-	}
-}
-
 
 int backgrounds[W_WIDTH][W_HEIGHT] = {};
 
@@ -171,24 +85,11 @@ void client_initialize()
 
 
 int main() {
-	sf::Socket::Status status = socket.connect("127.0.0.1", PORT_NUM);
-	socket.setBlocking(false);
-
-	CS_LOGIN_PACKET p;
-	p.size = sizeof(CS_LOGIN_PACKET);
-	p.type = CS_LOGIN;
-	strcpy_s(p.name, "TEMP");
-	send_packet(&p);
-
-	if (status != sf::Socket::Done) {
-		wcout << L"서버와 연결할 수 없습니다.\n";
-		while (true);
-	}
-
+	setConnectServer();
 	makeMap();
 	client_initialize();
-
 	CreateWindows();
+
 	window->setFramerateLimit(60);
 
 	Event event;
@@ -217,56 +118,55 @@ void CreateWindows()
 
 void DrawWindows()
 {
-	char net_buf[BUF_SIZE];
-	size_t	received;
-
-	auto recv_result = socket.receive(net_buf, BUF_SIZE, received);
-	if (recv_result == sf::Socket::Error)
-	{
-		wcout << L"Recv 에러!";
-		while (true);
-	}
-	if (recv_result != sf::Socket::NotReady)
-		if (received > 0) process_data(net_buf, received);
+	receiveData();
 
 	player.setParameter(playerText);
 
+	drawMaps();
+	drawChatting();
+
+	window->draw(playerText);
+	window->display();
+	window->clear(Color::Black);
+}
+
+void drawMaps()
+{
 	for (int i = 0; i < SCREEN_WIDTH; ++i)
 	{
 		for (int j = 0; j < SCREEN_HEIGHT; ++j)
 		{
 			int tile_x = i + g_left_x;
 			int tile_y = j + g_top_y;
+			int tile_x = i + ::g_left_x;
+			int tile_y = j + ::g_top_y;
 			if ((tile_x < 0) || (tile_y < 0)) continue;
+			if ((tile_x >= W_WIDTH) || (tile_y >= W_HEIGHT)) continue;
 			int index = backgrounds[tile_x][tile_y];
 			maptile[index].spriteMove(64 * i, 64 * j);
 			maptile[index].spriteDraw();
 		}
 	}
+}
 
-	if (isChatting)
+void drawChatting()
+{
+	if (isChatting == false) return;
+
+	window->draw(shape);
+
+	deque<Text>::reverse_iterator itor;
+	int cnt = 0;
+	int chat_start_h = WINDOW_HEIGHT - CHAT_SIZE * 2 - 5;
+	for (itor = chat.rbegin(); itor != chat.rend(); ++itor)
 	{
-		window->draw(shape);
-		//window->draw(shape2);
-
-		deque<Text>::reverse_iterator itor;
-		int cnt = 0;
-		int chat_start_h = WINDOW_HEIGHT - CHAT_SIZE * 2 - 5;
-		for (itor = chat.rbegin(); itor != chat.rend(); ++itor)
-		{
-			itor->setPosition(Vector2f(0, chat_start_h - cnt * CHAT_SIZE));
-			window->draw(*itor);
-			++cnt;
-		}
-
-
-		chattingText.setString(userChatting);
-		window->draw(chattingText);
+		itor->setPosition(Vector2f(0, chat_start_h - cnt * CHAT_SIZE));
+		window->draw(*itor);
+		++cnt;
 	}
 
-	window->draw(playerText);
-	window->display();
-	window->clear(Color::Black);
+	chattingText.setString(userChatting);
+	window->draw(chattingText);
 }
 
 void InputWindows(Event& e)
@@ -366,3 +266,134 @@ void setMessage()
 
 	userChatting.clear();
 }
+
+
+//*** Server *** //
+////////////////////////////////////////////
+
+void setConnectServer()
+{
+	sf::Socket::Status status = socket.connect("127.0.0.1", PORT_NUM);
+	socket.setBlocking(false);
+
+	CS_LOGIN_PACKET p;
+	p.size = sizeof(CS_LOGIN_PACKET);
+	p.type = CS_LOGIN;
+	strcpy_s(p.name, "TEMP");
+	send_packet(&p);
+
+	if (status != sf::Socket::Done) {
+		wcout << L"서버와 연결할 수 없습니다.\n";
+		while (true);
+	}
+}
+
+void ProcessPacket(char* ptr)
+{
+	static bool first_time = true;
+	switch (ptr[1])
+	{
+	case SC_LOGIN_INFO:
+	{
+		SC_LOGIN_INFO_PACKET* packet = reinterpret_cast<SC_LOGIN_INFO_PACKET*>(ptr);
+		g_myid = packet->id;
+		player.move(packet->x, packet->y);
+		::g_left_x = packet->x - SCREEN_WIDTH/2;
+		::g_top_y = packet->y - SCREEN_HEIGHT/2;
+		player.setActive(true);
+		break;
+	}
+
+	case SC_ADD_PLAYER:
+	{
+		SC_ADD_PLAYER_PACKET* my_packet = reinterpret_cast<SC_ADD_PLAYER_PACKET*>(ptr);
+		int id = my_packet->id;
+
+		if (id < MAX_USER) {
+			players[id].move(my_packet->x, my_packet->y);
+			players[id].setActive(true);
+		}
+		break;
+	}
+
+	case SC_MOVE_PLAYER:
+	{
+		SC_MOVE_PLAYER_PACKET* my_packet = reinterpret_cast<SC_MOVE_PLAYER_PACKET*>(ptr);
+		int other_id = my_packet->id;
+		if (other_id == g_myid) {
+			::g_left_x = my_packet->x - SCREEN_WIDTH / 2;
+			::g_top_y = my_packet->y - SCREEN_HEIGHT / 2;
+			player.move(my_packet->x, my_packet->y);
+		}
+		else if (other_id < MAX_USER) {
+			players[other_id].move(my_packet->x, my_packet->y);
+		}
+		break;
+	}
+
+	case SC_REMOVE_PLAYER:
+	{
+		SC_REMOVE_PLAYER_PACKET* my_packet = reinterpret_cast<SC_REMOVE_PLAYER_PACKET*>(ptr);
+		int other_id = my_packet->id;
+		if (other_id == g_myid) {
+			player.setActive(false);
+		}
+		else if (other_id < MAX_USER) {
+			players[other_id].setActive(false);
+		}
+		break;
+	}
+	default:
+		printf("Unknown PACKET type [%d]\n", ptr[1]);
+	}
+}
+
+void send_packet(void* packet)
+{
+	unsigned char* p = reinterpret_cast<unsigned char*>(packet);
+	size_t sent = 0;
+	socket.send(packet, p[0], sent);
+}
+
+void process_data(char* net_buf, size_t io_byte)
+{
+	char* ptr = net_buf;
+	static size_t in_packet_size = 0;
+	static size_t saved_packet_size = 0;
+	static char packet_buffer[BUF_SIZE];
+
+	while (0 != io_byte) {
+		if (0 == in_packet_size) in_packet_size = ptr[0];
+		if (io_byte + saved_packet_size >= in_packet_size) {
+			memcpy(packet_buffer + saved_packet_size, ptr, in_packet_size - saved_packet_size);
+			ProcessPacket(packet_buffer);
+			ptr += in_packet_size - saved_packet_size;
+			io_byte -= in_packet_size - saved_packet_size;
+			in_packet_size = 0;
+			saved_packet_size = 0;
+		}
+		else {
+			memcpy(packet_buffer + saved_packet_size, ptr, io_byte);
+			saved_packet_size += io_byte;
+			io_byte = 0;
+		}
+	}
+}
+
+void receiveData()
+{
+	char net_buf[BUF_SIZE];
+	size_t	received;
+
+	auto recv_result = socket.receive(net_buf, BUF_SIZE, received);
+	if (recv_result == sf::Socket::Error)
+	{
+		wcout << L"Recv 에러!";
+		while (true);
+	}
+	if (recv_result != sf::Socket::NotReady)
+		if (received > 0) process_data(net_buf, received);
+}
+
+
+////////////////////////////////////////////////
