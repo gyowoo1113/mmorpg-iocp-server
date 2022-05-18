@@ -5,8 +5,8 @@
 class CPlayer : public CGameObject
 {
 public:
-	CPlayer(std::string id, int level, int hp, int exp)
-		: m_id{ id }, m_level{ level }, m_hp{ hp }, m_exp{ exp } 
+	CPlayer(sf::Texture& t, int x, int y, int x2, int y2, std::string id, int level, int hp, int exp)
+		: m_id{ id }, m_level{ level }, m_hp{ hp }, m_exp{ exp }, CGameObject(t, x, y, x2, y2)
 	{
 		calculateMaxExp(); 
 	};

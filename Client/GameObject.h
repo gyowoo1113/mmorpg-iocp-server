@@ -42,11 +42,15 @@ public:
 		m_sprite.setScale(sf::Vector2f(x, y));
 	}
 
+	void setSpriteRect(int x, int y, int x2, int y2){
+		m_sprite.setTextureRect(sf::IntRect(x, y, x2, y2));
+	}
+
 	void draw() {
 		if (false == m_active) return;
 
-		float rx = (m_x - ::worldLeft) * (float)TILE_WIDTH + SCREEN_WIDTH;
-		float ry = (m_y - ::worldTop) * (float)TILE_WIDTH + SCREEN_WIDTH;
+		float rx = (m_x - ::g_left_x) * (float)TILE_WIDTH + SCREEN_WIDTH;
+		float ry = (m_y - ::g_top_y) * (float)TILE_WIDTH + SCREEN_WIDTH;
 		m_sprite.setPosition(rx, ry);
 		window->draw(m_sprite);
 	}

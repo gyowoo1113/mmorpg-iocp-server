@@ -33,9 +33,10 @@ sf::Font font;
 int g_left_x = 0;
 int g_top_y = 0;
 int g_myid;
+int direction = -1;
 
 string s = "me";
-CPlayer player(s, 3, 80, 20);
+CPlayer player;
 CPlayer players[MAX_USER];
 sf::TcpSocket socket;
 
@@ -57,6 +58,7 @@ void makeMap()
 }
 
 sf::Texture* maptiles;
+sf::Texture* playertiles;
 vector<CGameObject> maptile;
 sf::RectangleShape shape;
 sf::RectangleShape shape2;
@@ -64,8 +66,10 @@ sf::RectangleShape shape2;
 void client_initialize()
 {
 	maptiles = new sf::Texture;
+	playertiles = new Texture;
 	// 총 14개 타일종류
 	maptiles->loadFromFile("../Resource/background.png");
+	playertiles->loadFromFile("../Resource/Idle.png");
 
 	for (int i = 0; i < 4; ++i)
 	{
@@ -73,6 +77,9 @@ void client_initialize()
 		maketile.setSpriteScale(4.0f, 4.0f);
 		maptile.emplace_back(maketile);
 	}
+
+	player = CPlayer(*playertiles, 0, 0, 16, 16, s, 3, 80, 20);
+	player.setSpriteScale(4.0f, 4.0f);
 
 	shape.setSize(Vector2f(WINDOW_WIDTH, CHAT_SIZE * 5));
 	shape.setPosition(Vector2f(0, WINDOW_HEIGHT - CHAT_SIZE * 6));
@@ -125,6 +132,10 @@ void DrawWindows()
 	drawMaps();
 	drawChatting();
 
+	if (direction != -1)
+		player.setSpriteRect(16 * direction, 0, 16, 16);
+	player.draw();
+
 	window->draw(playerText);
 	window->display();
 	window->clear(Color::Black);
@@ -136,8 +147,6 @@ void drawMaps()
 	{
 		for (int j = 0; j < SCREEN_HEIGHT; ++j)
 		{
-			int tile_x = i + g_left_x;
-			int tile_y = j + g_top_y;
 			int tile_x = i + ::g_left_x;
 			int tile_y = j + ::g_top_y;
 			if ((tile_x < 0) || (tile_y < 0)) continue;
@@ -194,7 +203,7 @@ void InputWindows(Event& e)
 
 void KeyInput(sf::Event& e)
 {
-	int direction = -1;
+	direction = -1;
 	switch (e.key.code) {
 		case sf::Keyboard::Left:
 			direction = 2;

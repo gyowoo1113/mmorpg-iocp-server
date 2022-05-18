@@ -3,12 +3,13 @@
 
 void CPlayer::setParameter(sf::Text& text)
 {
+	string pos = "(" + to_string(m_x) + "," + to_string(m_y) + ")    ";
 	string id = "ID:" + m_id + " ";
 	string level = "LV:" + to_string(m_level) + " ";
 	string hp = "HP:" + to_string(m_hp) + "/" + to_string(m_maxHp) + " ";
 	string exp = "EXP: " + to_string(m_exp) + "/" + to_string(m_maxExp);
 
-	string val = id + level + hp + exp;
+	string val = pos + id + level + hp + exp;
 	text.setString(val);
 }
 
