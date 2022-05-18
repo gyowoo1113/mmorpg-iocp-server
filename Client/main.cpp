@@ -22,6 +22,8 @@ sf::Text playerText;
 sf::Text chattingText;
 sf::Font font;
 
+int g_left_x = 0;
+int g_top_y = 0;
 string s = "me";
 CPlayer player(s, 3, 80, 20);
 string userChatting;
@@ -50,7 +52,8 @@ sf::RectangleShape shape2;
 void client_initialize()
 {
 	maptiles = new sf::Texture;
-	maptiles->loadFromFile("../Resource/back2.png");
+	// 총 14개 타일종류
+	maptiles->loadFromFile("../Resource/background.png");
 
 	for (int i = 0; i < 4; ++i)
 	{
@@ -70,6 +73,19 @@ void client_initialize()
 
 
 int main() {
+	sf::Socket::Status status = socket.connect("127.0.0.1", PORT_NUM);
+	socket.setBlocking(false);
+
+	CS_LOGIN_PACKET p;
+	p.size = sizeof(CS_LOGIN_PACKET);
+	p.type = CS_LOGIN;
+	strcpy_s(p.name, "TEMP");
+	send_packet(&p);
+
+	if (status != sf::Socket::Done) {
+		wcout << L"서버와 연결할 수 없습니다.\n";
+		while (true);
+	}
 
 	makeMap();
 	client_initialize();
@@ -106,12 +122,15 @@ void DrawWindows()
 	player.getExp(1);
 	player.setParameter(playerText);
 
-	for (int i = 0; i < W_WIDTH; ++i)
+	for (int i = 0; i < SCREEN_WIDTH; ++i)
 	{
-		for (int j = 0; j < W_HEIGHT; ++j)
+		for (int j = 0; j < SCREEN_HEIGHT; ++j)
 		{
-			int index = backgrounds[i][j];
-			maptile[index].spriteMove(64*i,64*j);
+			int tile_x = i + g_left_x;
+			int tile_y = j + g_top_y;
+			if ((tile_x < 0) || (tile_y < 0)) continue;
+			int index = backgrounds[tile_x][tile_y];
+			maptile[index].spriteMove(64 * i, 64 * j);
 			maptile[index].spriteDraw();
 		}
 	}
@@ -119,7 +138,7 @@ void DrawWindows()
 	if (isChatting)
 	{
 		window->draw(shape);
-		window->draw(shape2);
+		//window->draw(shape2);
 
 		deque<Text>::reverse_iterator itor;
 		int cnt = 0;
