@@ -45,6 +45,7 @@ deque<Text> chat;
 bool isChatting = false;
 
 int backgrounds[W_WIDTH][W_HEIGHT] = {};
+int objects[W_WIDTH][W_HEIGHT] = {};
 
 void makeMap()
 {
@@ -57,9 +58,30 @@ void makeMap()
 	}
 }
 
+void makeObjects()
+{
+	for (int i = 0; i < W_WIDTH-2; i+=2)
+	{
+		for (int j = 0; j < W_HEIGHT-2; j+=2)
+		{
+			switch (rand() % 5)
+			{
+				case 0:
+					objects[i][j] = 1;
+					objects[i + 1][j] = 2;
+					objects[i][j + 1] = 3;
+					objects[i + 1][j + 1] = 4;
+					break;
+			}
+		}
+	}
+}
+
 sf::Texture* maptiles;
 sf::Texture* playertiles;
+sf::Texture* objecttiles;
 vector<CGameObject> maptile;
+vector<CGameObject> objecttile;
 sf::RectangleShape shape;
 sf::RectangleShape shape2;
 
@@ -67,15 +89,24 @@ void client_initialize()
 {
 	maptiles = new sf::Texture;
 	playertiles = new Texture;
+	objecttiles = new Texture;
 	// 총 14개 타일종류
 	maptiles->loadFromFile("../Resource/background.png");
 	playertiles->loadFromFile("../Resource/Idle.png");
+	objecttiles->loadFromFile("../Resource/tree.png");
 
-	for (int i = 0; i < 4; ++i)
+	for (int i = 0; i < 14; ++i)
 	{
 		CGameObject maketile = CGameObject{ *maptiles, 16*i, 0, 16, 16 };
 		maketile.setSpriteScale(4.0f, 4.0f);
 		maptile.emplace_back(maketile);
+	}
+
+	for (int i = 0; i < 4; ++i)
+	{
+		CGameObject mtile = CGameObject{ *objecttiles, 16 * i, 0, 16, 16 };
+		mtile.setSpriteScale(4.0f, 4.0f);
+		objecttile.emplace_back(mtile);
 	}
 
 	player = CPlayer(*playertiles, 0, 0, 16, 16, s, 3, 80, 20);
@@ -94,6 +125,7 @@ void client_initialize()
 int main() {
 	setConnectServer();
 	makeMap();
+	makeObjects();
 	client_initialize();
 	CreateWindows();
 
@@ -154,6 +186,23 @@ void drawMaps()
 			int index = backgrounds[tile_x][tile_y];
 			maptile[index].spriteMove(64 * i, 64 * j);
 			maptile[index].spriteDraw();
+		}
+	}
+
+	for (int i = 0; i < SCREEN_WIDTH; ++i)
+	{
+		for (int j = 0; j < SCREEN_HEIGHT; ++j)
+		{
+			int tile_x = i + ::g_left_x;
+			int tile_y = j + ::g_top_y;
+			if ((tile_x < 0) || (tile_y < 0)) continue;
+			if ((tile_x >= W_WIDTH) || (tile_y >= W_HEIGHT)) continue;
+
+			int index = objects[tile_x][tile_y] - 1;
+			if (index == -1) continue;
+
+			objecttile[index].spriteMove(64 * i, 64 * j);
+			objecttile[index].spriteDraw();
 		}
 	}
 }
