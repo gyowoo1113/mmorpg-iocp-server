@@ -20,7 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GameObject.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Client.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="protocol.h" />
     <ClCompile Include="stdafx.cpp">
