@@ -6,7 +6,7 @@ using namespace std;
 int W_WIDTH = 2000;
 int W_HEIGHT = 2000;
 
-int objects[2000][2000] = {};
+char objects[2000][2000] = {};
 
 int main()
 {
@@ -17,22 +17,26 @@ int main()
 			switch (rand() % 20)
 			{
 			case 1:
-				objects[i][j] = 5;
+				objects[i][j] = 'f';
 				break;
 			case 2:
-				objects[i][j] = 6;
+				objects[i][j] = 'g';
 				break;
 			case 5:
-				objects[i][j] = 7;
+				objects[i][j] = 'h';
 				break;
 			case 6:
-				objects[i][j] = 8;
+				objects[i][j] = 'i';
 				break;
 			case 7:
-				objects[i][j] = 9;
+				objects[i][j] = 'j';
 				break;
 			case 8:
-				objects[i][j] = 10;
+				objects[i][j] = 'k';
+				break;
+
+			default:
+				objects[i][j] = 'a';
 				break;
 			}
 		}
@@ -45,10 +49,10 @@ int main()
 			switch (rand() % 10)
 			{
 			case 0:
-				objects[i][j] = 1;
-				objects[i + 1][j] = 2;
-				objects[i][j + 1] = 3;
-				objects[i + 1][j + 1] = 4;
+				objects[i][j] = 'b';
+				objects[i + 1][j] = 'c';
+				objects[i][j + 1] = 'd';
+				objects[i + 1][j + 1] = 'e';
 				break;
 			}
 		}

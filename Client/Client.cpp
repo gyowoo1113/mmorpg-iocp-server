@@ -71,7 +71,7 @@ void makeObjects()
 		{
 			char num;
 			in >> num;
-			objects[i][j] = num - '0';
+			objects[i][j] = num - 'a';
 		}
 	}
 }
