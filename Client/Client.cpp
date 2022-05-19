@@ -60,11 +60,39 @@ void makeMap()
 
 void makeObjects()
 {
+	for (int i = 0; i < W_WIDTH; ++i)
+	{
+		for (int j = 0; j < W_HEIGHT; ++j)
+		{
+			switch (rand() % 20)
+			{
+			case 1:
+				objects[i][j] = 5;
+				break;
+			case 2:
+				objects[i][j] = 6;
+				break;
+			case 5:
+				objects[i][j] = 7;
+				break;
+			case 6:
+				objects[i][j] = 8;
+				break;
+			case 7:
+				objects[i][j] = 9;
+				break;
+			case 8:
+				objects[i][j] = 10;
+				break;
+			}
+		}
+	}
+
 	for (int i = 0; i < W_WIDTH-2; i+=2)
 	{
 		for (int j = 0; j < W_HEIGHT-2; j+=2)
 		{
-			switch (rand() % 5)
+			switch (rand() % 10)
 			{
 				case 0:
 					objects[i][j] = 1;
@@ -95,7 +123,7 @@ void client_initialize()
 	// 총 14개 타일종류
 	maptiles->loadFromFile("../Resource/background.png");
 	playertiles->loadFromFile("../Resource/Idle.png");
-	objecttiles->loadFromFile("../Resource/tree.png");
+	objecttiles->loadFromFile("../Resource/objects.png");	
 
 	for (int i = 0; i < 14; ++i)
 	{
@@ -104,7 +132,7 @@ void client_initialize()
 		maptile.emplace_back(maketile);
 	}
 
-	for (int i = 0; i < 4; ++i)
+	for (int i = 0; i < 10; ++i)
 	{
 		CGameObject mtile = CGameObject{ *objecttiles, 16 * i, 0, 16, 16 };
 		mtile.setSpriteScale(fscale, fscale);
