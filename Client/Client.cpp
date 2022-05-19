@@ -2,6 +2,7 @@
 #include "Player.h"
 #include <deque>
 #include <random>
+#include <fstream>
 #include "protocol.h"
 
 using namespace sf;
@@ -49,12 +50,30 @@ int objects[W_WIDTH][W_HEIGHT] = {};
 
 void makeMap()
 {
-
+	ifstream in("../Resource/tilemap.txt");
+	for (int i = 0; i < W_WIDTH; ++i)
+	{
+		for (int j = 0; j < W_HEIGHT; ++j)
+		{
+			char num;
+			in >> num;
+			backgrounds[i][j] = num -'0';
+		}
+	}
 }
 
 void makeObjects()
 {
-
+	ifstream in("../Resource/objects.txt");
+	for (int i = 0; i < W_WIDTH; ++i)
+	{
+		for (int j = 0; j < W_HEIGHT; ++j)
+		{
+			char num;
+			in >> num;
+			objects[i][j] = num - '0';
+		}
+	}
 }
 
 sf::Texture* maptiles;
