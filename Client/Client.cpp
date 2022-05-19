@@ -124,9 +124,9 @@ void client_initialize()
 
 
 int main() {
-	setConnectServer();
 	makeMap();
 	makeObjects();
+	setConnectServer();
 	client_initialize();
 	CreateWindows();
 

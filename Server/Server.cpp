@@ -10,6 +10,7 @@
 #include <mutex>
 #include <string>
 #include <unordered_set>
+#include <fstream>
 #include "../Client/protocol.h"
 using namespace std;
 using namespace sf;
@@ -31,6 +32,7 @@ SOCKET server_socket;
 HANDLE handle_iocp;
 
 unordered_set<int> sector[W_WIDTH / 10][W_HEIGHT / 10];
+int tiles[W_WIDTH][W_HEIGHT] = {};
 mutex secl;
 
 enum COMP_TYPE { OP_ACCEPT, OP_RECV, OP_SEND };
@@ -409,10 +411,38 @@ void update_move_clients(int c_id, CS_MOVE_PACKET* p)
 	short x = clients[c_id].x;
 	short y = clients[c_id].y;
 	switch (p->direction) {
-	case 0: if (y > 0) y--; break;
-	case 1: if (y < W_HEIGHT - 1) y++; break;
-	case 2: if (x > 0) x--; break;
-	case 3: if (x < W_WIDTH - 1) x++; break;
+		case 0: 
+			if (y > 0)
+			{
+				if (tiles[x][y-1] == 0)
+					y--;
+			}
+			break;
+		
+		case 1: 
+			if (y < W_HEIGHT - 1)
+			{
+				if (tiles[x][y + 1] == 0)
+					y++;
+				
+			}
+			break;
+		
+		case 2:
+			if (x > 0) 
+			{
+				if (tiles[x-1][y] == 0)
+					x--;
+			}
+			break;
+		
+		case 3: 
+			if (x < W_WIDTH - 1)
+			{
+				if (tiles[x + 1][y] == 0)
+					x++;
+			}
+			break;
 	}
 	clients[c_id].x = x;
 	clients[c_id].y = y;
@@ -519,6 +549,18 @@ void do_worker()
 
 int main()
 {
+	ifstream in("../Resource/objects.txt");
+	for (int i = 0; i < W_WIDTH; ++i)
+	{
+		for (int j = 0; j < W_HEIGHT; ++j)
+		{
+			char num;
+			in >> num;
+			int val = num - 'a';
+			tiles[i][j] = (val == 0 || val > 6) ? 0 : 1;
+		}
+	}
+
 	WSADATA WSAData;
 	WSAStartup(MAKEWORD(2, 2), &WSAData);
 	server_socket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
