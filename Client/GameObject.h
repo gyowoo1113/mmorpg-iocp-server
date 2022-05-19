@@ -49,8 +49,8 @@ public:
 	void draw() {
 		if (false == m_active) return;
 
-		float rx = (m_x - ::g_left_x) * (float)TILE_WIDTH + SCREEN_WIDTH;
-		float ry = (m_y - ::g_top_y) * (float)TILE_WIDTH + SCREEN_WIDTH;
+		float rx = (m_x - ::g_left_x) * (float)TILE_WIDTH;
+		float ry = (m_y - ::g_top_y) * (float)TILE_WIDTH;
 		m_sprite.setPosition(rx, ry);
 		window->draw(m_sprite);
 	}
