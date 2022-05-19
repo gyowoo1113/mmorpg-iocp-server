@@ -85,6 +85,8 @@ vector<CGameObject> objecttile;
 sf::RectangleShape shape;
 sf::RectangleShape shape2;
 
+float fscale = TILE_WIDTH / 16.0f;
+
 void client_initialize()
 {
 	maptiles = new sf::Texture;
@@ -98,19 +100,19 @@ void client_initialize()
 	for (int i = 0; i < 14; ++i)
 	{
 		CGameObject maketile = CGameObject{ *maptiles, 16*i, 0, 16, 16 };
-		maketile.setSpriteScale(4.0f, 4.0f);
+		maketile.setSpriteScale(fscale, fscale);
 		maptile.emplace_back(maketile);
 	}
 
 	for (int i = 0; i < 4; ++i)
 	{
 		CGameObject mtile = CGameObject{ *objecttiles, 16 * i, 0, 16, 16 };
-		mtile.setSpriteScale(4.0f, 4.0f);
+		mtile.setSpriteScale(fscale, fscale);
 		objecttile.emplace_back(mtile);
 	}
 
 	player = CPlayer(*playertiles, 0, 0, 16, 16, s, 3, 80, 20);
-	player.setSpriteScale(4.0f, 4.0f);
+	player.setSpriteScale(fscale, fscale);
 
 	shape.setSize(Vector2f(WINDOW_WIDTH, CHAT_SIZE * 5));
 	shape.setPosition(Vector2f(0, WINDOW_HEIGHT - CHAT_SIZE * 6));
@@ -184,7 +186,7 @@ void drawMaps()
 			if ((tile_x < 0) || (tile_y < 0)) continue;
 			if ((tile_x >= W_WIDTH) || (tile_y >= W_HEIGHT)) continue;
 			int index = backgrounds[tile_x][tile_y];
-			maptile[index].spriteMove(64 * i, 64 * j);
+			maptile[index].spriteMove(16.0f* fscale* i, 16.0f * fscale * j);
 			maptile[index].spriteDraw();
 		}
 	}
@@ -201,7 +203,7 @@ void drawMaps()
 			int index = objects[tile_x][tile_y] - 1;
 			if (index == -1) continue;
 
-			objecttile[index].spriteMove(64 * i, 64 * j);
+			objecttile[index].spriteMove(16.0f * fscale * i, 16.0f * fscale * j);
 			objecttile[index].spriteDraw();
 		}
 	}
