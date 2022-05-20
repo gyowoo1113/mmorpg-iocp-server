@@ -12,12 +12,13 @@ extern sf::RenderWindow* window;
 extern int worldLeft;
 extern int worldTop;
 extern constexpr int CHAT_SIZE = 25;
+extern constexpr auto EXP_HEIGHT = 10;
 
 extern constexpr auto SCREEN_WIDTH = 20;
 extern constexpr auto SCREEN_HEIGHT = 20;
 extern constexpr auto TILE_WIDTH = 32;
 extern constexpr auto WINDOW_WIDTH = TILE_WIDTH * SCREEN_WIDTH;
-extern constexpr auto WINDOW_HEIGHT = TILE_WIDTH * SCREEN_WIDTH + CHAT_SIZE;
+extern constexpr auto WINDOW_HEIGHT = TILE_WIDTH * SCREEN_WIDTH + CHAT_SIZE + EXP_HEIGHT;
 
 constexpr int CHAT_LINE = 4;
 

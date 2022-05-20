@@ -119,9 +119,9 @@ void client_initialize()
 	shape.setPosition(Vector2f(0, WINDOW_HEIGHT - CHAT_SIZE * 6));
 	shape.setFillColor(Color(0, 0, 0, 125));
 
-	shape2.setSize(Vector2f(WINDOW_WIDTH, CHAT_SIZE));
-	shape2.setPosition(Vector2f(0, WINDOW_HEIGHT - CHAT_SIZE));
-	shape2.setFillColor(Color(0, 0, 0, 200));
+	shape2.setSize(Vector2f(WINDOW_WIDTH, EXP_HEIGHT));
+	shape2.setPosition(Vector2f(0, WINDOW_HEIGHT - EXP_HEIGHT));
+	shape2.setFillColor(Color(0, 200, 0));
 }
 
 
@@ -161,13 +161,14 @@ void CreateWindows()
 	playerText.setPosition(Vector2f(0, 0));
 	chattingText.setFont(font);
 	chattingText.setCharacterSize(CHAT_SIZE);
-	chattingText.setPosition(Vector2f(0, WINDOW_HEIGHT - CHAT_SIZE - 5));
+	chattingText.setPosition(Vector2f(0, WINDOW_HEIGHT - CHAT_SIZE - 5 - EXP_HEIGHT));
 }
 
 void DrawWindows()
 {
 	receiveData();
 
+	player.getExp(1);
 	player.setParameter(playerText);
 
 	drawMaps();
@@ -186,6 +187,9 @@ void DrawWindows()
 	}
 
 	player.drawAttack();
+
+	shape2.setSize(Vector2f(player.getExpRatio()* WINDOW_WIDTH, EXP_HEIGHT));
+	window->draw(shape2);
 
 	window->draw(playerText);
 	window->display();

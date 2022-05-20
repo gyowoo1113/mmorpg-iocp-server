@@ -74,6 +74,10 @@ public:
 		isAttack = true;
 	}
 
+	float getExpRatio() {
+		return (float) m_exp / (float) m_maxExp;
+	}
+
 private:
 	std::string m_id;
 	int m_level;
