@@ -185,6 +185,8 @@ void DrawWindows()
 		player.draw();
 	}
 
+	player.drawAttack();
+
 	window->draw(playerText);
 	window->display();
 	window->clear(Color::Black);
@@ -298,9 +300,11 @@ void KeyInput(sf::Event& e)
 			break;
 		case sf::Keyboard::Escape:
 			window->close();
-
 			break;
 
+		case sf::Keyboard::R:
+			player.setAttack();
+			break;
 
 		case sf::Keyboard::Space:
 			if (!isChatting) return;
