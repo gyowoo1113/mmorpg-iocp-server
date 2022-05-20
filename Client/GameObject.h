@@ -6,6 +6,9 @@ class CGameObject
 private:
 	bool m_active;
 	sf::Sprite m_sprite;
+	int m_nIdleIndex = 0;
+	int m_nStateIndex = 0;
+	int m_frameCount = 0;
 
 public:
 	int m_x, m_y;
@@ -53,6 +56,23 @@ public:
 		float ry = (m_y - ::g_top_y) * (float)TILE_WIDTH;
 		m_sprite.setPosition(rx, ry);
 		window->draw(m_sprite);
+	}
+
+	void animDraw() {
+		if (false == m_active) return;
+
+		m_nIdleIndex = (m_nIdleIndex >= m_frameCount) ? 0 : ++m_nIdleIndex;
+		m_sprite.setTextureRect(sf::IntRect(m_nStateIndex*16, m_nIdleIndex*16, 16, 16));
+		
+		draw();
+	}
+
+	void setState(int index) {
+		m_nStateIndex = index;
+	}
+
+	void setFrameCount(int index) {
+		m_frameCount = index - 1;
 	}
 };
 

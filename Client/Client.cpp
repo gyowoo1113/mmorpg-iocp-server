@@ -111,6 +111,7 @@ void client_initialize()
 	}
 
 	player = CPlayer(*playertiles, 0, 0, 16, 16, s, 3, 80, 20);
+	player.setFrameCount(4);
 	player.setSpriteScale(fscale, fscale);
 
 	shape.setSize(Vector2f(WINDOW_WIDTH, CHAT_SIZE * 5));
@@ -166,8 +167,10 @@ void DrawWindows()
 	drawChatting();
 
 	if (direction != -1)
-		player.setSpriteRect(16 * direction, 0, 16, 16);
-	player.draw();
+	{
+		player.setState(direction);
+	}
+	player.animDraw();
 
 	window->draw(playerText);
 	window->display();
