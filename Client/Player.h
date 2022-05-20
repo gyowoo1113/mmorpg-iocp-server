@@ -25,6 +25,22 @@ public:
 	void calculateMaxExp();
 	string getId() { return m_id; }
 
+	virtual void draw() {
+		if (false == m_active) return;
+
+		m_sprite.setTextureRect(sf::IntRect(m_nStateIndex * 16, 0, 16, 16));
+	
+		CGameObject::draw();
+	}
+
+	virtual void animDraw() {
+		if (false == m_active) return;
+
+		m_nIdleIndex = (m_nIdleIndex >= m_frameCount) ? 0 : ++m_nIdleIndex;
+		m_sprite.setTextureRect(sf::IntRect(m_nStateIndex * 16, m_nIdleIndex * 16, 16, 16));
+
+		CGameObject::draw();
+	}
 private:
 	std::string m_id;
 	int m_level;
