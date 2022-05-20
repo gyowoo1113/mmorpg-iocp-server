@@ -133,8 +133,14 @@ int main() {
 
 	window->setFramerateLimit(60);
 
+	sf::Clock clock;
+
 	Event event;
 	while (window->isOpen()) {
+		sf::Time elapsed = clock.getElapsedTime();
+		if (elapsed.asSeconds() > 0.1f) clock.restart();
+		else continue;
+		
 		InputWindows(event);
 		DrawWindows();
 	}
