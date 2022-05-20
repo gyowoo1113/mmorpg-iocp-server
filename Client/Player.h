@@ -1,6 +1,7 @@
 #pragma once
 #include "stdafx.h"
 #include "GameObject.h"
+#include "Effect.h"
 
 class CPlayer : public CGameObject
 {
@@ -9,6 +10,12 @@ public:
 		: m_id{ id }, m_level{ level }, m_hp{ hp }, m_exp{ exp }, CGameObject(t, x, y, x2, y2)
 	{
 		calculateMaxExp(); 
+
+		sf::Texture* effectSlash = new sf::Texture;
+		effectSlash->loadFromFile("../Resource/slash.png");
+		m_effectObject = CEffect(*effectSlash, 0, 0, 16, 16,4);
+		m_effectObject.setSpriteScale(2.0f, 2.0f);
+		m_effectObject.setActive(true);
 	};
 	CPlayer()
 	{
@@ -41,6 +48,32 @@ public:
 
 		CGameObject::draw();
 	}
+
+	void drawAttack() {
+		if (isAttack == false) return;
+
+		m_effectObject.move(m_x - 1, m_y);
+		m_effectObject.draw();
+		m_effectObject.move(m_x + 1, m_y);
+		m_effectObject.draw();
+		m_effectObject.move(m_x, m_y-1);
+		m_effectObject.draw();
+		m_effectObject.move(m_x, m_y+1);
+		m_effectObject.draw();
+
+		m_effectObject.updateIndex();
+
+		if (m_effectObject.isEndFrame())
+		{
+			isAttack = false;
+			m_effectObject.initIndex();
+		}
+	}
+
+	void setAttack(){
+		isAttack = true;
+	}
+
 private:
 	std::string m_id;
 	int m_level;
@@ -48,5 +81,8 @@ private:
 	int m_exp;
 	int m_maxHp = 100;
 	int m_maxExp;
+	bool isAttack = false;
+
+	CEffect m_effectObject;
 };
 
