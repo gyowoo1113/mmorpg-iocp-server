@@ -44,6 +44,7 @@ sf::TcpSocket socket;
 string userChatting;
 deque<Text> chat;
 bool isChatting = false;
+bool isMoving = false;
 
 int backgrounds[W_WIDTH][W_HEIGHT] = {};
 int objects[W_WIDTH][W_HEIGHT] = {};
@@ -172,11 +173,17 @@ void DrawWindows()
 	drawMaps();
 	drawChatting();
 
-	if (direction != -1)
+	if (isMoving)
 	{
-		player.setState(direction);
+		if (direction != -1)
+			player.setState(direction);
+		player.animDraw();
 	}
-	player.animDraw();
+	else
+	{
+		player.initIndex();
+		player.draw();
+	}
 
 	window->draw(playerText);
 	window->display();
@@ -194,7 +201,7 @@ void drawMaps()
 			if ((tile_x < 0) || (tile_y < 0)) continue;
 			if ((tile_x >= W_WIDTH) || (tile_y >= W_HEIGHT)) continue;
 			int index = backgrounds[tile_x][tile_y];
-			maptile[index].spriteMove(16.0f* fscale* i, 16.0f * fscale * j);
+			maptile[index].spriteMove(16* fscale* i, 16 * fscale * j);
 			maptile[index].spriteDraw();
 		}
 	}
@@ -211,7 +218,7 @@ void drawMaps()
 			int index = objects[tile_x][tile_y] - 1;
 			if (index == -1) continue;
 
-			objecttile[index].spriteMove(16.0f * fscale * i, 16.0f * fscale * j);
+			objecttile[index].spriteMove(16 * fscale * i, 16 * fscale * j);
 			objecttile[index].spriteDraw();
 		}
 	}
@@ -228,7 +235,8 @@ void drawChatting()
 	int chat_start_h = WINDOW_HEIGHT - CHAT_SIZE * 2 - 5;
 	for (itor = chat.rbegin(); itor != chat.rend(); ++itor)
 	{
-		itor->setPosition(Vector2f(0, chat_start_h - cnt * CHAT_SIZE));
+		float pos = chat_start_h - cnt * CHAT_SIZE;
+		itor->setPosition(Vector2f(0,pos));
 		window->draw(*itor);
 		++cnt;
 	}
@@ -251,6 +259,11 @@ void InputWindows(Event& e)
 				KeyInput(e);
 				break;
 
+			case Event::KeyReleased:
+				isMoving = false;
+				player.initIndex();
+				break;
+
 			case Event::TextEntered:
 				if (!isChatting) return;
 
@@ -266,18 +279,26 @@ void KeyInput(sf::Event& e)
 	switch (e.key.code) {
 		case sf::Keyboard::Left:
 			direction = 2;
+			isMoving = true;
 			break;
 		case sf::Keyboard::Right:
 			direction = 3;
+			isMoving = true;
+
 			break;
 		case sf::Keyboard::Up:
 			direction = 1;
+			isMoving = true;
+
 			break;
 		case sf::Keyboard::Down:
 			direction = 0;
+			isMoving = true;
+
 			break;
 		case sf::Keyboard::Escape:
 			window->close();
+
 			break;
 
 

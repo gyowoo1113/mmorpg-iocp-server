@@ -52,6 +52,8 @@ public:
 	void draw() {
 		if (false == m_active) return;
 
+		m_sprite.setTextureRect(sf::IntRect(m_nStateIndex * 16,  0, 16, 16));
+
 		float rx = (m_x - ::g_left_x) * (float)TILE_WIDTH;
 		float ry = (m_y - ::g_top_y) * (float)TILE_WIDTH;
 		m_sprite.setPosition(rx, ry);
@@ -63,8 +65,11 @@ public:
 
 		m_nIdleIndex = (m_nIdleIndex >= m_frameCount) ? 0 : ++m_nIdleIndex;
 		m_sprite.setTextureRect(sf::IntRect(m_nStateIndex*16, m_nIdleIndex*16, 16, 16));
-		
-		draw();
+
+		float rx = (m_x - ::g_left_x) * (float)TILE_WIDTH;
+		float ry = (m_y - ::g_top_y) * (float)TILE_WIDTH;
+		m_sprite.setPosition(rx, ry);
+		window->draw(m_sprite);
 	}
 
 	void setState(int index) {
@@ -73,6 +78,10 @@ public:
 
 	void setFrameCount(int index) {
 		m_frameCount = index - 1;
+	}
+
+	void initIndex() {
+		m_nIdleIndex = 0;
 	}
 };
 
