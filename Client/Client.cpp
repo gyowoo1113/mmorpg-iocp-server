@@ -262,10 +262,10 @@ void KeyInput(sf::Event& e)
 			direction = 3;
 			break;
 		case sf::Keyboard::Up:
-			direction = 0;
+			direction = 1;
 			break;
 		case sf::Keyboard::Down:
-			direction = 1;
+			direction = 0;
 			break;
 		case sf::Keyboard::Escape:
 			window->close();

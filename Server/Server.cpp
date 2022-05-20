@@ -411,20 +411,20 @@ void update_move_clients(int c_id, CS_MOVE_PACKET* p)
 	short x = clients[c_id].x;
 	short y = clients[c_id].y;
 	switch (p->direction) {
-		case 0: 
-			if (y > 0)
-			{
-				if (tiles[x][y-1] == 0)
-					y--;
-			}
-			break;
-		
-		case 1: 
+		case 0:
 			if (y < W_HEIGHT - 1)
 			{
 				if (tiles[x][y + 1] == 0)
 					y++;
-				
+
+			}
+			break;
+		
+		case 1:
+			if (y > 0)
+			{
+				if (tiles[x][y - 1] == 0)
+					y--;
 			}
 			break;
 		
