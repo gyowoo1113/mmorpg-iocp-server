@@ -40,6 +40,7 @@ int direction = -1;
 string s = "me";
 CPlayer player;
 CPlayer players[MAX_USER];
+CMonster npcs[NUM_NPC];
 sf::TcpSocket socket;
 
 string userChatting;
@@ -113,6 +114,11 @@ void client_initialize()
 		CGameObject mtile = CGameObject{ *objecttiles, 16 * i, 0, 16, 16 };
 		mtile.setSpriteScale(fscale, fscale);
 		objecttile.emplace_back(mtile);
+	}
+
+	for (auto& pl : npcs) {
+		pl = CMonster( *monstertiles, 0, 0, 16, 16,"flam",1,50,10 );
+		pl.setSpriteScale(fscale, fscale);
 	}
 
 	player = CPlayer(*playertiles, 0, 0, 16, 16, s, 3, 80, 20);
@@ -192,6 +198,7 @@ void DrawWindows()
 	}
 
 	player.drawAttack();
+	for (auto& pl : npcs) pl.draw();
 
 	shape2.setSize(Vector2f(player.getExpRatio()* WINDOW_WIDTH, EXP_HEIGHT));
 	window->draw(shape2);
@@ -415,6 +422,10 @@ void ProcessPacket(char* ptr)
 			players[id].move(my_packet->x, my_packet->y);
 			players[id].setActive(true);
 		}
+		else {
+			npcs[id - MAX_USER].move(my_packet->x, my_packet->y);
+			npcs[id - MAX_USER].setActive(true);
+		}
 		break;
 	}
 
@@ -430,6 +441,9 @@ void ProcessPacket(char* ptr)
 		else if (other_id < MAX_USER) {
 			players[other_id].move(my_packet->x, my_packet->y);
 		}
+		else {
+			npcs[other_id - MAX_USER].move(my_packet->x, my_packet->y);
+		}
 		break;
 	}
 
@@ -442,6 +456,9 @@ void ProcessPacket(char* ptr)
 		}
 		else if (other_id < MAX_USER) {
 			players[other_id].setActive(false);
+		}
+		else {
+			npcs[other_id - MAX_USER].setActive(false);
 		}
 		break;
 	}
