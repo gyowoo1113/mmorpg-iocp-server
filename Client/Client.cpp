@@ -1,5 +1,6 @@
 ﻿#include "stdafx.h"
 #include "Player.h"
+#include "Monster.h"
 #include <deque>
 #include <random>
 #include <fstream>
@@ -79,6 +80,7 @@ void makeObjects()
 
 sf::Texture* maptiles;
 sf::Texture* playertiles;
+sf::Texture* monstertiles;
 sf::Texture* objecttiles;
 vector<CGameObject> maptile;
 vector<CGameObject> objecttile;
@@ -92,10 +94,12 @@ void client_initialize()
 	maptiles = new sf::Texture;
 	playertiles = new Texture;
 	objecttiles = new Texture;
+	monstertiles = new Texture;
 	// 총 14개 타일종류
 	maptiles->loadFromFile("../Resource/background.png");
 	playertiles->loadFromFile("../Resource/Idle.png");
 	objecttiles->loadFromFile("../Resource/objects.png");	
+	monstertiles->loadFromFile("../Resource/Flam.png");
 
 	for (int i = 0; i < 14; ++i)
 	{
@@ -159,6 +163,7 @@ void CreateWindows()
 	playerText.setFont(font);
 	playerText.setCharacterSize(24);
 	playerText.setPosition(Vector2f(0, 0));
+	playerText.setOutlineThickness(3.0f);
 	chattingText.setFont(font);
 	chattingText.setCharacterSize(CHAT_SIZE);
 	chattingText.setPosition(Vector2f(0, WINDOW_HEIGHT - CHAT_SIZE - 5 - EXP_HEIGHT));

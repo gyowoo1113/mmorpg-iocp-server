@@ -22,6 +22,7 @@
     <ClCompile Include="Effect.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="Client.cpp" />
+    <ClCompile Include="Monster.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="protocol.h" />
     <ClCompile Include="stdafx.cpp">
@@ -32,6 +33,7 @@
   <ItemGroup>
     <ClInclude Include="Effect.h" />
     <ClInclude Include="GameObject.h" />
+    <ClInclude Include="Monster.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
