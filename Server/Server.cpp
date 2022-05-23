@@ -79,8 +79,6 @@ public:
 	short _sector_x, _sector_y;
 	mutex _secl;
 
-	unordered_set<int> near_list;
-	mutex _nl;
 	chrono::system_clock::time_point next_move_time;
 public:
 	SESSION()
@@ -130,7 +128,7 @@ public:
 	void send_add_object(int c_id);
 	void send_remove_object(int c_id);
 
-	void MakeNearList();
+	unordered_set<int> MakeNearList();
 };
 
 array<SESSION, MAX_USER + NUM_NPC> clients;
@@ -138,14 +136,12 @@ array<SESSION, MAX_USER + NUM_NPC> clients;
 int nearDirectionX[9] = { -1,-1,-1,0,0,0,1,1,1 };
 int nearDirectionY[9] = { -1,0,1,-1,0,1,-1,0,1 };
 
-void SESSION::MakeNearList()
+unordered_set<int> SESSION::MakeNearList()
 {
 	int h = W_HEIGHT / 10;
 	int w = W_WIDTH / 10;
 
-	_nl.lock();
-	near_list.clear();
-	_nl.unlock();
+	unordered_set<int> new_near_list;
 
 	for (int i = 0; i < 9; ++i)
 	{
@@ -160,14 +156,14 @@ void SESSION::MakeNearList()
 			if (_id == id) continue;
 			if (RANGE >= distance(_id, id))
 			{
-				_nl.lock();
-				near_list.insert(id);
-				_nl.unlock();
+				new_near_list.insert(id);
 			}
 		}
 		secl.unlock();
 
 	}
+
+	return (new_near_list);
 }
 
 
@@ -296,12 +292,13 @@ void process_packet(int c_id, char* packet)
 
 		update_move_clients(c_id, p);
 		CheckMoveSector(c_id);
-		clients[c_id].MakeNearList();
+
+		unordered_set<int> new_nl;
+		new_nl = clients[c_id].MakeNearList();
 
 		clients[c_id].send_move_packet(c_id, p->client_time);
 
-		clients[c_id]._nl.lock();
-		for (auto n : clients[c_id].near_list)
+		for (auto n : new_nl)
 		{
 			if (clients[n]._id == c_id) continue;
 			lock_guard<mutex> aa{ clients[n]._sl };
@@ -327,8 +324,6 @@ void process_packet(int c_id, char* packet)
 				check_view_list(n, c_id, p);
 			}
 		}
-		clients[c_id]._nl.unlock();
-
 
 		//////////
 
@@ -336,15 +331,11 @@ void process_packet(int c_id, char* packet)
 		unordered_set<int> new_list = clients[c_id].view_list;
 		clients[c_id].vl.unlock();
 
-		clients[c_id]._nl.lock();
-		unordered_set<int> new_near_list = clients[c_id].near_list;
-		clients[c_id]._nl.unlock();
-
 		// view_list에 있는 모든 객체에 대해
 		for (auto view : new_list)
 		{
 			// near에 없으면
-			if (new_near_list.count(view) == 0)
+			if (new_nl.count(view) == 0)
 			{
 				clients[c_id].vl.lock();
 				clients[c_id].view_list.erase(view);
