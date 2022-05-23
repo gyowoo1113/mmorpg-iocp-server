@@ -116,6 +116,11 @@ void client_initialize()
 		objecttile.emplace_back(mtile);
 	}
 
+	for (auto& pl : players) {
+		pl = CPlayer(*playertiles, 0, 0, 16, 16, s, 3, 80, 20);
+		pl.setSpriteScale(fscale, fscale);
+	}
+
 	for (auto& pl : npcs) {
 		pl = CMonster( *monstertiles, 0, 0, 16, 16,"flam",1,50,10 );
 		pl.setSpriteScale(fscale, fscale);
@@ -198,6 +203,7 @@ void DrawWindows()
 	}
 
 	player.drawAttack();
+	for (auto& pl : players) pl.draw();
 	for (auto& pl : npcs) pl.draw();
 
 	shape2.setSize(Vector2f(player.getExpRatio()* WINDOW_WIDTH, EXP_HEIGHT));

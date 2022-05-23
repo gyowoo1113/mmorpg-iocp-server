@@ -668,8 +668,8 @@ int main()
 	vector <thread> worker_threads;
 	for (int i = 0; i < 6; ++i)
 		worker_threads.emplace_back(do_worker);
-	thread ai_thread{ do_ai_ver_heart_beat };
-	ai_thread.join();
+	//thread ai_thread{ do_ai_ver_heart_beat };
+	//ai_thread.join();
 	for (auto& th : worker_threads)
 		th.join();
 
