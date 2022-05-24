@@ -204,7 +204,7 @@ void DrawWindows()
 
 	player.drawAttack();
 	for (auto& pl : players) pl.draw();
-	for (auto& pl : npcs) pl.draw();
+	for (auto& pl : npcs) pl.animDraw();
 
 	shape2.setSize(Vector2f(player.getExpRatio()* WINDOW_WIDTH, EXP_HEIGHT));
 	window->draw(shape2);
