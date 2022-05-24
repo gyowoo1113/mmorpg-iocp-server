@@ -380,26 +380,21 @@ void remove_view_list(int c_id, int& view)
 void check_view_list(const int& n, int& c_id, CS_MOVE_PACKET* p)
 {
 	// 상대 view list에 있으면 / 없으면
+
+	clients[n].vl.lock();
 	if (clients[n].view_list.count(c_id))
 	{
 		clients[n].send_move_packet(c_id, p->client_time);
+		clients[n].vl.unlock();
 	}
 	else
 	{
 		// 상대 view_list에 추가
-		clients[n].vl.lock();
 		clients[n].view_list.insert(c_id);
 		clients[n].vl.unlock();
 
 		// 상대 => put_pl (나)
-		SC_ADD_PLAYER_PACKET add_packet;
-		add_packet.id = clients[c_id]._id;
-		strcpy_s(add_packet.name, clients[c_id]._name);
-		add_packet.size = sizeof(add_packet);
-		add_packet.type = SC_ADD_PLAYER;
-		add_packet.x = clients[c_id].x;
-		add_packet.y = clients[c_id].y;
-		clients[n].do_send(&add_packet);
+		clients[n].send_add_object(c_id);
 	}
 }
 
