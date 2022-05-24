@@ -35,14 +35,14 @@ struct CS_MOVE_PACKET {
 struct SC_LOGIN_INFO_PACKET {
 	unsigned char size;
 	char	type;
-	short	id;
+	int		id;
 	short	x, y;
 };
 
 struct SC_ADD_PLAYER_PACKET {
 	unsigned char size;
 	char	type;
-	short	id;
+	int		id;
 	short	x, y;
 	char	name[NAME_SIZE];
 };
@@ -50,13 +50,13 @@ struct SC_ADD_PLAYER_PACKET {
 struct SC_REMOVE_PLAYER_PACKET {
 	unsigned char size;
 	char	type;
-	short	id;
+	int		id;
 };
 
 struct SC_MOVE_PLAYER_PACKET {
 	unsigned char size;
 	char	type;
-	short	id;
+	int		id;
 	short	x, y;
 	unsigned int client_time;
 };

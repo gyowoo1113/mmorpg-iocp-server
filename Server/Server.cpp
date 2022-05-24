@@ -618,9 +618,15 @@ void do_ai_ver_heart_beat()
 
 void initialize_npc()
 {
+	for (int i = 0; i < NUM_NPC + MAX_USER; ++i)
+	{
+		clients[i]._id = i;
+	}
+
 	for (int i = 0; i < NUM_NPC; ++i)
 	{
 		int npc_id = i + MAX_USER;
+		clients[npc_id]._s_state = ST_INGAME;
 		sprintf_s(clients[npc_id]._name, "M-%d", npc_id);
 	}
 }
