@@ -92,8 +92,6 @@ public:
 		_prev_remain = 0;
 		_sector_x = x/10;
 		_sector_y = y/10;
-		x = rand() % W_WIDTH;
-		y = rand() % W_HEIGHT;
 		next_move_time = chrono::system_clock::now() + chrono::seconds(1);
 	}
 	~SESSION() {}
@@ -169,7 +167,7 @@ unordered_set<int> SESSION::MakeNearList()
 
 int distance(int a, int b)
 {
-	return abs((clients[a].x - clients[b].x) + (clients[a].y - clients[b].y));
+	return abs(clients[a].x - clients[b].x) + abs(clients[a].y - clients[b].y);
 }
 
 void SESSION::send_move_packet(int c_id, int client_time)
@@ -364,6 +362,7 @@ void process_packet(int c_id, char* packet)
 void remove_view_list(int c_id, int& view)
 {
 	if (c_id == view) return;
+	if (c_id >= MAX_USER) return; 
 	clients[c_id]._sl.lock();
 	if (clients[c_id]._s_state != ST_INGAME) {
 		clients[c_id]._sl.unlock();
@@ -568,6 +567,8 @@ void move_npc(int npc_id)
 	clients[npc_id].x = x;
 	clients[npc_id].y = y;
 
+	CheckMoveSector(npc_id);
+
 	unordered_set<int> new_vl;
 	for (int i = 0; i < MAX_USER; ++i)
 	{
@@ -627,6 +628,7 @@ void initialize_npc()
 	{
 		int npc_id = i + MAX_USER;
 		clients[npc_id]._s_state = ST_INGAME;
+		SetSector(i);
 		sprintf_s(clients[npc_id]._name, "M-%d", npc_id);
 	}
 }
@@ -674,8 +676,8 @@ int main()
 	vector <thread> worker_threads;
 	for (int i = 0; i < 6; ++i)
 		worker_threads.emplace_back(do_worker);
-	//thread ai_thread{ do_ai_ver_heart_beat };
-	//ai_thread.join();
+	thread ai_thread{ do_ai_ver_heart_beat };
+	ai_thread.join();
 	for (auto& th : worker_threads)
 		th.join();
 
