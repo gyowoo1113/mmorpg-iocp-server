@@ -204,7 +204,7 @@ void SESSION::send_remove_object(int c_id)
 }
 
 void disconnect(int c_id);
-void update_move_clients(int c_id, CS_MOVE_PACKET* p);
+void update_move_clients(int c_id, char& direction);
 void check_view_list(const int& n, int& c_id, CS_MOVE_PACKET* p);
 void remove_view_list(int c_id, int& view);
 int get_new_client_id()
@@ -288,7 +288,7 @@ void process_packet(int c_id, char* packet)
 	case CS_MOVE: {
 		CS_MOVE_PACKET* p = reinterpret_cast<CS_MOVE_PACKET*>(packet);
 
-		update_move_clients(c_id, p);
+		update_move_clients(c_id, p->direction);
 		CheckMoveSector(c_id);
 
 		unordered_set<int> new_nl;
@@ -398,11 +398,11 @@ void check_view_list(const int& n, int& c_id, CS_MOVE_PACKET* p)
 	}
 }
 
-void update_move_clients(int c_id, CS_MOVE_PACKET* p)
+void update_move_clients(int c_id, char& direction)
 {
 	short x = clients[c_id].x;
 	short y = clients[c_id].y;
-	switch (p->direction) {
+	switch (direction) {
 		case 0:
 			if (y < W_HEIGHT - 1)
 			{
@@ -542,8 +542,6 @@ void do_worker()
 
 void move_npc(int npc_id)
 {
-	short x = clients[npc_id].x;
-	short y = clients[npc_id].y;
 	unordered_set<int> old_vl;
 	for (int i = 0; i < MAX_USER; ++i)
 	{
@@ -551,16 +549,8 @@ void move_npc(int npc_id)
 		if (distance(npc_id, i) <= RANGE) old_vl.insert(i);
 	}
 
-
-	switch (rand() % 4) {
-	case 0: if (y > 0) y--; break;
-	case 1: if (y < W_HEIGHT - 1) y++; break;
-	case 2: if (x > 0) x--; break;
-	case 3: if (x < W_WIDTH - 1) x++; break;
-	}
-
-	clients[npc_id].x = x;
-	clients[npc_id].y = y;
+	char dir = static_cast<char>(rand() % 4);
+	update_move_clients(npc_id,dir);
 
 	CheckMoveSector(npc_id);
 
