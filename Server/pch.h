@@ -23,3 +23,5 @@ extern mutex secl;
 extern array<CSession, MAX_USER + NUM_NPC> clients;
 
 int distance(int a, int b);
+
+#include "Sector.h"

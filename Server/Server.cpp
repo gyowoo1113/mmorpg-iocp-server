@@ -1,5 +1,4 @@
-﻿
-#include "../Client/protocol.h"
+﻿#include "../Client/protocol.h"
 #include "pch.h"
 #include "Session.h"
 
@@ -11,49 +10,10 @@ using namespace sf;
 const short SERVER_PORT = 4000;
 const int BUFSIZE = 256;
 
-
-void SetSector(int id);
-void CheckMoveSector(int id);
-void ChangeSector(int id, bool update = true);
-unordered_set<int> MakeNearList(int c_id);
-
 SOCKET server_socket;
 HANDLE handle_iocp;
 
 int tiles[W_WIDTH][W_HEIGHT] = {};
-
-int nearDirectionX[9] = { -1,-1,-1,0,0,0,1,1,1 };
-int nearDirectionY[9] = { -1,0,1,-1,0,1,-1,0,1 };
-
-unordered_set<int> MakeNearList(int c_id)
-{
-	int h = W_HEIGHT / 10;
-	int w = W_WIDTH / 10;
-
-	unordered_set<int> new_near_list;
-
-	for (int i = 0; i < 9; ++i)
-	{
-		int dirX = clients[c_id]._sector_x + nearDirectionX[i];
-		int dirY = clients[c_id]._sector_y + nearDirectionY[i];
-
-		if (dirX < 0 || dirY < 0 || dirX > w - 1 || dirY > h - 1) continue;
-
-		secl.lock();
-		for (auto id : sector[dirX][dirY])
-		{
-			if (c_id == id) continue;
-			if (RANGE >= distance(c_id, id))
-			{
-				new_near_list.insert(id);
-			}
-		}
-		secl.unlock();
-
-	}
-
-	return (new_near_list);
-}
 
 void disconnect(int c_id);
 void update_move_clients(int c_id, char& direction);
@@ -520,39 +480,4 @@ int main()
 
 	closesocket(server_socket);
 	WSACleanup();
-}
-
-void SetSector(int id)
-{
-	int x = (clients[id].x) / 10;
-	int y = (clients[id].y) / 10;
-
-	secl.lock();
-	sector[x][y].insert(id);
-	secl.unlock();
-
-	clients[id]._sector_x = x; 
-	clients[id]._sector_y = y;
-}
-
-void CheckMoveSector(int id)
-{
-	int cl_x = clients[id].x;
-	int cl_y = clients[id].y;
-	int sec_x = clients[id]._sector_x;
-	int sec_y = clients[id]._sector_y;
-
-	if (cl_x != sec_x || cl_y != sec_y)
-		ChangeSector(id);
-}
-
-void ChangeSector(int id, bool update)
-{
-	int sec_x = clients[id]._sector_x;
-	int sec_y = clients[id]._sector_y;
-
-	secl.lock();
-	sector[sec_x][sec_y].erase(id);
-	secl.unlock();
-	if (update) SetSector(id);
 }

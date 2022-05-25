@@ -150,6 +150,7 @@
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Sector.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="Session.cpp" />
   </ItemGroup>
@@ -157,6 +158,7 @@
     <ClInclude Include="..\Client\protocol.h" />
     <ClInclude Include="over_exp.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Sector.h" />
     <ClInclude Include="Session.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
