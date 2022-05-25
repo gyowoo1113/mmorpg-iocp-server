@@ -1,17 +1,8 @@
-﻿#include <SFML/Graphics.hpp>
-
-#include <iostream>
-#include <WS2tcpip.h>
-#include <MSWSock.h>
-
-#include <thread>
-#include <array>
-#include <vector>
-#include <mutex>
-#include <string>
-#include <unordered_set>
-#include <fstream>
+﻿
 #include "../Client/protocol.h"
+#include "pch.h"
+#include "Session.h"
+
 using namespace std;
 using namespace sf;
 #pragma comment (lib, "WS2_32.LIB")
@@ -19,122 +10,22 @@ using namespace sf;
 
 const short SERVER_PORT = 4000;
 const int BUFSIZE = 256;
-constexpr int RANGE = 5;
+
 
 void SetSector(int id);
 void CheckMoveSector(int id);
 void ChangeSector(int id, bool update = true);
-int distance(int a, int b);
-
-class SESSION;
+unordered_set<int> MakeNearList(int c_id);
 
 SOCKET server_socket;
 HANDLE handle_iocp;
 
-unordered_set<int> sector[W_WIDTH / 10][W_HEIGHT / 10];
 int tiles[W_WIDTH][W_HEIGHT] = {};
-mutex secl;
-
-enum COMP_TYPE { OP_ACCEPT, OP_RECV, OP_SEND };
-class OVER_EXP {
-public:
-	WSAOVERLAPPED _over;
-	WSABUF _wsabuf;
-	char _send_buf[BUF_SIZE];
-	COMP_TYPE _comp_type;
-	OVER_EXP()
-	{
-		_wsabuf.len = BUF_SIZE;
-		_wsabuf.buf = _send_buf;
-		_comp_type = OP_RECV;
-		ZeroMemory(&_over, sizeof(_over));
-	}
-	OVER_EXP(char* packet)
-	{
-		_wsabuf.len = packet[0];
-		_wsabuf.buf = _send_buf;
-		ZeroMemory(&_over, sizeof(_over));
-		_comp_type = OP_SEND;
-		memcpy(_send_buf, packet, packet[0]);
-	}
-};
-
-enum SESSION_STATE { ST_FREE, ST_ACCEPTED, ST_INGAME };
-
-class SESSION {
-	OVER_EXP _recv_over;
-public:
-	mutex	_sl;
-	SESSION_STATE _s_state;
-
-	int _id;
-	SOCKET _socket;
-	short x, y;
-	char	_name[NAME_SIZE];
-	int		_prev_remain;
-
-	unordered_set<int> view_list;
-	mutex vl;
-
-	short _sector_x, _sector_y;
-	mutex _secl;
-
-	chrono::system_clock::time_point next_move_time;
-public:
-	SESSION()
-	{
-		_id = -1;
-		_socket = 0;
-		x = rand() % W_WIDTH;
-		y = rand() % W_HEIGHT;
-		_name[0] = 0;
-		_s_state = ST_FREE;
-		_prev_remain = 0;
-		_sector_x = x/10;
-		_sector_y = y/10;
-		next_move_time = chrono::system_clock::now() + chrono::seconds(1);
-	}
-	~SESSION() {}
-
-	void do_recv()
-	{
-		DWORD recv_flag = 0;
-		memset(&_recv_over._over, 0, sizeof(_recv_over._over));
-		_recv_over._wsabuf.len = BUF_SIZE - _prev_remain;
-		_recv_over._wsabuf.buf = _recv_over._send_buf + _prev_remain;
-		WSARecv(_socket, &_recv_over._wsabuf, 1, 0, &recv_flag, &_recv_over._over, 0);
-	}
-
-	void do_send(void* packet)
-	{
-		OVER_EXP* sdata = new OVER_EXP{ reinterpret_cast<char*>(packet) };
-		WSASend(_socket, &sdata->_wsabuf, 1, 0, 0, &sdata->_over, 0);
-	}
-
-	void send_login_info_packet()
-	{
-		SC_LOGIN_INFO_PACKET p;
-		p.id = _id;
-		p.size = sizeof(SC_LOGIN_INFO_PACKET);
-		p.type = SC_LOGIN_INFO;
-		p.x = x;
-		p.y = y;
-		do_send(&p);
-	}
-
-	void send_move_packet(int c_id, int client_time);
-	void send_add_object(int c_id);
-	void send_remove_object(int c_id);
-
-	unordered_set<int> MakeNearList();
-};
-
-array<SESSION, MAX_USER + NUM_NPC> clients;
 
 int nearDirectionX[9] = { -1,-1,-1,0,0,0,1,1,1 };
 int nearDirectionY[9] = { -1,0,1,-1,0,1,-1,0,1 };
 
-unordered_set<int> SESSION::MakeNearList()
+unordered_set<int> MakeNearList(int c_id)
 {
 	int h = W_HEIGHT / 10;
 	int w = W_WIDTH / 10;
@@ -143,16 +34,16 @@ unordered_set<int> SESSION::MakeNearList()
 
 	for (int i = 0; i < 9; ++i)
 	{
-		int dirX = _sector_x + nearDirectionX[i];
-		int dirY = _sector_y + nearDirectionY[i];
+		int dirX = clients[c_id]._sector_x + nearDirectionX[i];
+		int dirY = clients[c_id]._sector_y + nearDirectionY[i];
 
 		if (dirX < 0 || dirY < 0 || dirX > w - 1 || dirY > h - 1) continue;
 
 		secl.lock();
 		for (auto id : sector[dirX][dirY])
 		{
-			if (_id == id) continue;
-			if (RANGE >= distance(_id, id))
+			if (c_id == id) continue;
+			if (RANGE >= distance(c_id, id))
 			{
 				new_near_list.insert(id);
 			}
@@ -162,45 +53,6 @@ unordered_set<int> SESSION::MakeNearList()
 	}
 
 	return (new_near_list);
-}
-
-
-int distance(int a, int b)
-{
-	return abs(clients[a].x - clients[b].x) + abs(clients[a].y - clients[b].y);
-}
-
-void SESSION::send_move_packet(int c_id, int client_time)
-{
-	SC_MOVE_PLAYER_PACKET p;
-	p.id = c_id;
-	p.size = sizeof(SC_MOVE_PLAYER_PACKET);
-	p.type = SC_MOVE_PLAYER;
-	p.x = clients[c_id].x;
-	p.y = clients[c_id].y;
-	p.client_time = client_time;
-	do_send(&p);
-}
-
-void SESSION::send_add_object(int c_id)
-{
-	SC_ADD_PLAYER_PACKET p;
-	p.id = c_id;
-	p.size = sizeof(SC_ADD_PLAYER_PACKET);
-	p.type = SC_ADD_PLAYER;
-	p.x = clients[c_id].x;
-	p.y = clients[c_id].y;
-	strcpy_s(p.name, clients[c_id]._name);
-	do_send(&p);
-}
-
-void SESSION::send_remove_object(int c_id)
-{
-	SC_REMOVE_PLAYER_PACKET p;
-	p.id = c_id;
-	p.size = sizeof(SC_REMOVE_PLAYER_PACKET);
-	p.type = SC_REMOVE_PLAYER;
-	do_send(&p);
 }
 
 void disconnect(int c_id);
@@ -292,7 +144,7 @@ void process_packet(int c_id, char* packet)
 		CheckMoveSector(c_id);
 
 		unordered_set<int> new_nl;
-		new_nl = clients[c_id].MakeNearList();
+		new_nl = MakeNearList(c_id);
 
 		clients[c_id].send_move_packet(c_id, p->client_time);
 
