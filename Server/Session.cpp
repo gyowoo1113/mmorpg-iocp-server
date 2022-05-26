@@ -86,6 +86,27 @@ void CSession::process_attack()
 	}
 }
 
+void CSession::rebuild_packet(char* send_buffer, int& remain_data, const ULONG_PTR& key)
+{
+	char* p = send_buffer;
+	
+	while (remain_data > 0) 
+	{
+		REBUILD_PACKET* packet = reinterpret_cast<REBUILD_PACKET*>(p);
+		if (packet->size > remain_data) break;
+
+		process_packet(static_cast<int>(key), p);
+		p += packet->size;
+		remain_data -= packet->size;
+	}
+
+	_prev_remain = remain_data;
+
+	if (remain_data > 0) {
+		memcpy(send_buffer, p, remain_data);
+	}
+}
+
 // ** packet send ** //
 
 void CSession::send_login_info_packet()

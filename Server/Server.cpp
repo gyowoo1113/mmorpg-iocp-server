@@ -281,20 +281,8 @@ void do_worker()
 		case OP_RECV: {
 			if (0 == num_bytes) disconnect(key);
 			int remain_data = num_bytes + clients[key]._prev_remain;
-			char* p = ex_over->_send_buf;
-			while (remain_data > 0) {
-				int packet_size = p[0];
-				if (packet_size <= remain_data) {
-					process_packet(static_cast<int>(key), p);
-					p = p + packet_size;
-					remain_data = remain_data - packet_size;
-				}
-				else break;
-			}
-			clients[key]._prev_remain = remain_data;
-			if (remain_data > 0) {
-				memcpy(ex_over->_send_buf, p, remain_data);
-			}
+
+			clients[key].rebuild_packet(ex_over->_send_buf, remain_data, key);
 			clients[key].do_recv();
 			break;
 		}

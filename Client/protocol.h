@@ -21,6 +21,11 @@ constexpr char SC_MOVE_PLAYER = 5;
 constexpr char SC_CHAT = 6;
 
 #pragma pack (push, 1)
+
+struct REBUILD_PACKET {
+	unsigned char size;
+};
+
 struct CS_LOGIN_PACKET {
 	unsigned char size;
 	char	type;

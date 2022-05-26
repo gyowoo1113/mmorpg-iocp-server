@@ -55,6 +55,7 @@ public:
 		WSASend(_socket, &sdata->_wsabuf, 1, 0, 0, &sdata->_over, 0);
 	}
 
+	void rebuild_packet(char* send_buffer, int& remain_data, const ULONG_PTR& key);
 
 	void send_login_info_packet();
 	void send_move_packet(int c_id, int client_time);
