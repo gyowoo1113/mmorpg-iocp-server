@@ -10,6 +10,65 @@ void CSession::send_remove_object(int c_id)
 	do_send(&p);
 }
 
+void CSession::update_move_view_list(CS_MOVE_PACKET* p, std::unordered_set<int>& new_nl)
+{
+	send_move_packet(_id, p->client_time);
+
+	for (auto n : new_nl)
+	{
+		if (clients[n]._id == _id) continue;
+		lock_guard<mutex> aa{ clients[n]._sl };
+		if (ST_INGAME != clients[n]._s_state) continue;
+
+		vl.lock();
+		if (view_list.count(n) == 0)
+		{
+			view_list.insert(n);
+			vl.unlock();
+			
+			send_add_object(n);
+
+			check_view_list(n, _id, p);
+
+		}
+		else
+		{
+			vl.unlock();
+			check_view_list(n, _id, p);
+		}
+	}
+}
+
+void CSession::check_erase_view_list(std::unordered_set<int>& new_nl)
+{
+	vl.lock();
+	unordered_set<int> new_list = view_list;
+	vl.unlock();
+
+	for (auto view : new_list)
+	{
+		if (new_nl.count(view) == 0)
+		{
+			vl.lock();
+			view_list.erase(view);
+			vl.unlock();
+			remove_view_list(_id, view);
+
+			clients[view].vl.lock();
+			if (clients[view].view_list.count(_id))
+			{
+				clients[view].view_list.erase(_id);
+				clients[view].vl.unlock();
+				remove_view_list(view, _id);
+			}
+			else
+			{
+				clients[view].vl.unlock();
+			}
+		}
+	}
+}
+
 void CSession::send_move_packet(int c_id, int client_time)
 {
 	SC_MOVE_PLAYER_PACKET p;

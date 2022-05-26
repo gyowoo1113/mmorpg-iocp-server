@@ -109,8 +109,8 @@ void process_packet(int c_id, char* packet)
 			unordered_set<int> new_nl;
 			new_nl = MakeNearList(c_id);
 
-			update_move_view_list(c_id, p, new_nl);
-			check_erase_view_list(c_id, new_nl);
+			clients[c_id].update_move_view_list(p, new_nl);
+			clients[c_id].check_erase_view_list(new_nl);
 
 			break;
 		}
@@ -128,72 +128,6 @@ void process_packet(int c_id, char* packet)
 			}
 
 			break;
-		}
-	}
-}
-
-void update_move_view_list(int& c_id, CS_MOVE_PACKET* p, std::unordered_set<int>& new_nl)
-{
-
-	clients[c_id].send_move_packet(c_id, p->client_time);
-
-	for (auto n : new_nl)
-	{
-		if (clients[n]._id == c_id) continue;
-		lock_guard<mutex> aa{ clients[n]._sl };
-		if (ST_INGAME != clients[n]._s_state) continue;
-
-		// view list에 없으면
-		clients[c_id].vl.lock();
-		if (clients[c_id].view_list.count(n) == 0)
-		{
-			//viewlist에 추가
-			clients[c_id].view_list.insert(n);
-			clients[c_id].vl.unlock();
-
-			// 나 <= 상대 put
-			clients[c_id].send_add_object(n);
-
-			check_view_list(n, c_id, p);
-
-		}
-		else
-		{
-			clients[c_id].vl.unlock();
-			check_view_list(n, c_id, p);
-		}
-	}
-}
-
-void check_erase_view_list(int& c_id, std::unordered_set<int>& new_nl)
-{
-	clients[c_id].vl.lock();
-	unordered_set<int> new_list = clients[c_id].view_list;
-	clients[c_id].vl.unlock();
-
-	// view_list에 있는 모든 객체에 대해
-	for (auto view : new_list)
-	{
-		// near에 없으면
-		if (new_nl.count(view) == 0)
-		{
-			clients[c_id].vl.lock();
-			clients[c_id].view_list.erase(view);
-			clients[c_id].vl.unlock();
-			remove_view_list(c_id, view);
-
-			// 상대 view_list에 있으면
-			clients[view].vl.lock();
-			if (clients[view].view_list.count(c_id))
-			{
-				clients[view].view_list.erase(c_id);
-				clients[view].vl.unlock();
-				remove_view_list(view, c_id);
-			}
-			else
-			{
-				clients[view].vl.unlock();
-			}
 		}
 	}
 }
