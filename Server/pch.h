@@ -23,5 +23,9 @@ extern mutex secl;
 extern array<CSession, MAX_USER + NUM_NPC> clients;
 
 int distance(int a, int b);
+void disconnect(int c_id);
+void update_move_clients(int c_id, char& direction);
+void check_view_list(const int& n, int& c_id, CS_MOVE_PACKET* p);
+void remove_view_list(int c_id, int& view);
 
 #include "Sector.h"

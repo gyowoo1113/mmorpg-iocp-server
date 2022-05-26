@@ -15,10 +15,6 @@ HANDLE handle_iocp;
 
 int tiles[W_WIDTH][W_HEIGHT] = {};
 
-void disconnect(int c_id);
-void update_move_clients(int c_id, char& direction);
-void check_view_list(const int& n, int& c_id, CS_MOVE_PACKET* p);
-void remove_view_list(int c_id, int& view);
 int get_new_client_id()
 {
 	for (int i = 0; i < MAX_USER; ++i) {
