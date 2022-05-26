@@ -55,17 +55,8 @@ public:
 		WSASend(_socket, &sdata->_wsabuf, 1, 0, 0, &sdata->_over, 0);
 	}
 
-	void send_login_info_packet()
-	{
-		SC_LOGIN_INFO_PACKET p;
-		p.id = _id;
-		p.size = sizeof(SC_LOGIN_INFO_PACKET);
-		p.type = SC_LOGIN_INFO;
-		p.x = x;
-		p.y = y;
-		do_send(&p);
-	}
 
+	void send_login_info_packet();
 	void send_move_packet(int c_id, int client_time);
 	void send_add_object(int c_id);
 	void send_remove_object(int c_id);

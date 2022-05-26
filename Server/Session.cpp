@@ -1,15 +1,7 @@
 #include "pch.h"
 #include "Session.h"
 
-void CSession::send_remove_object(int c_id)
-{
-	SC_REMOVE_PLAYER_PACKET p;
-	p.id = c_id;
-	p.size = sizeof(SC_REMOVE_PLAYER_PACKET);
-	p.type = SC_REMOVE_PLAYER;
-	do_send(&p);
-}
-
+// ** view list ** //
 void CSession::update_move_view_list(CS_MOVE_PACKET* p, std::unordered_set<int>& new_nl)
 {
 	send_move_packet(_id, p->client_time);
@@ -69,6 +61,8 @@ void CSession::check_erase_view_list(std::unordered_set<int>& new_nl)
 	}
 }
 
+// ** packet process ** //
+
 void CSession::process_attack()
 {
 	vl.lock();
@@ -90,6 +84,19 @@ void CSession::process_attack()
 		}
 
 	}
+}
+
+// ** packet send ** //
+
+void CSession::send_login_info_packet()
+{
+	SC_LOGIN_INFO_PACKET p;
+	p.id = _id;
+	p.size = sizeof(SC_LOGIN_INFO_PACKET);
+	p.type = SC_LOGIN_INFO;
+	p.x = x;
+	p.y = y;
+	do_send(&p);
 }
 
 void CSession::send_move_packet(int c_id, int client_time)
@@ -123,5 +130,14 @@ void CSession::send_chat_packet(int c_id, const char* mess)
 	p.size = sizeof(SC_CHAT_PACKET) - sizeof(p.mess) + strlen(mess) + 1;
 	p.type = SC_CHAT;
 	strcpy_s(p.mess, mess);
+	do_send(&p);
+}
+
+void CSession::send_remove_object(int c_id)
+{
+	SC_REMOVE_PLAYER_PACKET p;
+	p.id = c_id;
+	p.size = sizeof(SC_REMOVE_PLAYER_PACKET);
+	p.type = SC_REMOVE_PLAYER;
 	do_send(&p);
 }
