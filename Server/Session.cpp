@@ -92,3 +92,13 @@ void CSession::send_add_object(int c_id)
 	strcpy_s(p.name, clients[c_id]._name);
 	do_send(&p);
 }
+
+void CSession::send_chat_packet(int c_id, const char* mess)
+{
+	SC_CHAT_PACKET p;
+	p.id = c_id;
+	p.size = sizeof(SC_CHAT_PACKET) - sizeof(p.mess) + strlen(mess) + 1;
+	p.type = SC_CHAT;
+	strcpy_s(p.mess, mess);
+	do_send(&p);
+}

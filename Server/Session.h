@@ -69,6 +69,7 @@ public:
 	void send_move_packet(int c_id, int client_time);
 	void send_add_object(int c_id);
 	void send_remove_object(int c_id);
+	void send_chat_packet(int c_id, const char* mess);
 
 	void update_move_view_list(CS_MOVE_PACKET* p, std::unordered_set<int>& new_nl);
 	void check_erase_view_list(std::unordered_set<int>& new_nl);

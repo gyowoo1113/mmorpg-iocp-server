@@ -468,6 +468,13 @@ void ProcessPacket(char* ptr)
 		}
 		break;
 	}
+	case SC_CHAT:
+	{
+		SC_CHAT_PACKET* my_packet = reinterpret_cast<SC_CHAT_PACKET*>(ptr);
+		int other_id = my_packet->id;
+		cout << my_packet->mess << endl;
+		break;
+	}
 	default:
 		printf("Unknown PACKET type [%d]\n", ptr[1]);
 	}
