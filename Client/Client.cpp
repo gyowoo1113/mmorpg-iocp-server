@@ -202,9 +202,10 @@ void DrawWindows()
 		player.draw();
 	}
 
-	player.drawAttack();
 	for (auto& pl : players) pl.draw();
 	for (auto& pl : npcs) pl.animDraw();
+
+	player.drawAttack();
 
 	shape2.setSize(Vector2f(player.getExpRatio()* WINDOW_WIDTH, EXP_HEIGHT));
 	window->draw(shape2);
@@ -326,6 +327,12 @@ void KeyInput(sf::Event& e)
 
 		case sf::Keyboard::R:
 			player.setAttack();
+
+			CS_ATTACK_PACKET p;
+			p.size = sizeof(p);
+			p.type = CS_ATTACK;
+			send_packet(&p);
+
 			break;
 
 		case sf::Keyboard::Space:
