@@ -19,7 +19,8 @@ void drawChatting();
 void InputWindows(Event& e);
 
 void KeyInput(sf::Event& e);
-Text setTextMessage(string str);
+Text setTextMessage(string str,bool isSystemMessage = false);
+void setSystemMessage(char* text);
 void setMessage();
 
 void process_data(char* net_buf, size_t io_byte);
@@ -368,12 +369,18 @@ void KeyInput(sf::Event& e)
 	}
 }
 
-Text setTextMessage(string str)
+Text setTextMessage(string str, bool isSystemMessage)
 {
 	sf::Text text;
 	text.setFont(font);
 	text.setCharacterSize(CHAT_SIZE);
 	text.setString(str);
+
+	if (isSystemMessage)
+	{
+		text.setOutlineThickness(0.4f);
+		text.setOutlineColor(Color::Blue);
+	}
 
 	return text;
 }
@@ -389,6 +396,15 @@ void setMessage()
 	userChatting.clear();
 }
 
+void setSystemMessage(char* text)
+{
+	if (chat.size() > 4)
+		chat.pop_front();
+
+	chat.push_back(setTextMessage(text,true));
+
+	userChatting.clear();
+}
 
 //*** Server *** //
 ////////////////////////////////////////////
@@ -479,7 +495,9 @@ void ProcessPacket(char* ptr)
 	{
 		SC_CHAT_PACKET* my_packet = reinterpret_cast<SC_CHAT_PACKET*>(ptr);
 		int other_id = my_packet->id;
-		cout << my_packet->mess << endl;
+
+		if (other_id == -1)
+			setSystemMessage(my_packet->mess);
 		break;
 	}
 	default:
