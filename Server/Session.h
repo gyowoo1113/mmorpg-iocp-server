@@ -65,6 +65,8 @@ public:
 
 	void update_move_view_list(CS_MOVE_PACKET* p, std::unordered_set<int>& new_nl);
 	void check_erase_view_list(std::unordered_set<int>& new_nl);
+	void check_view_list(int& c_id, CS_MOVE_PACKET* p);
+	void remove_view_list(int& view);
 
 	void process_attack();
 };

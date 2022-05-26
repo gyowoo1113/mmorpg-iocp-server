@@ -126,45 +126,6 @@ void process_packet(int c_id, char* packet)
 	}
 }
 
-void remove_view_list(int c_id, int& view)
-{
-	if (c_id == view) return;
-	if (c_id >= MAX_USER) return; 
-	clients[c_id]._sl.lock();
-	if (clients[c_id]._s_state != ST_INGAME) {
-		clients[c_id]._sl.unlock();
-		return;
-	}
-
-	SC_REMOVE_PLAYER_PACKET p;
-	p.id = view;
-	p.size = sizeof(p);
-	p.type = SC_REMOVE_PLAYER;
-	clients[c_id].do_send(&p);
-	clients[c_id]._sl.unlock();
-}
-
-void check_view_list(const int& n, int& c_id, CS_MOVE_PACKET* p)
-{
-	// 상대 view list에 있으면 / 없으면
-
-	clients[n].vl.lock();
-	if (clients[n].view_list.count(c_id))
-	{
-		clients[n].send_move_packet(c_id, p->client_time);
-		clients[n].vl.unlock();
-	}
-	else
-	{
-		// 상대 view_list에 추가
-		clients[n].view_list.insert(c_id);
-		clients[n].vl.unlock();
-
-		// 상대 => put_pl (나)
-		clients[n].send_add_object(c_id);
-	}
-}
-
 void update_move_clients(int c_id, char& direction)
 {
 	short x = clients[c_id].x;

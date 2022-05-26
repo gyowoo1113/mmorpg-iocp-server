@@ -20,13 +20,12 @@ void CSession::update_move_view_list(CS_MOVE_PACKET* p, std::unordered_set<int>&
 			
 			send_add_object(n);
 
-			check_view_list(n, _id, p);
-
+			clients[n].check_view_list(_id, p);
 		}
 		else
 		{
 			vl.unlock();
-			check_view_list(n, _id, p);
+			clients[n].check_view_list(_id, p);
 		}
 	}
 }
@@ -44,14 +43,14 @@ void CSession::check_erase_view_list(std::unordered_set<int>& new_nl)
 			vl.lock();
 			view_list.erase(view);
 			vl.unlock();
-			remove_view_list(_id, view);
+			remove_view_list(view);
 
 			clients[view].vl.lock();
 			if (clients[view].view_list.count(_id))
 			{
 				clients[view].view_list.erase(_id);
 				clients[view].vl.unlock();
-				remove_view_list(view, _id);
+				clients[view].remove_view_list(_id);
 			}
 			else
 			{
@@ -59,6 +58,37 @@ void CSession::check_erase_view_list(std::unordered_set<int>& new_nl)
 			}
 		}
 	}
+}
+
+void CSession::check_view_list(int& c_id, CS_MOVE_PACKET* p)
+{
+	vl.lock();
+	if (view_list.count(c_id))
+	{
+		send_move_packet(c_id, p->client_time);
+		vl.unlock();
+	}
+	else
+	{
+		view_list.insert(c_id);
+		vl.unlock();
+
+		send_add_object(c_id);
+	}
+}
+
+void CSession::remove_view_list(int& view)
+{
+	if (_id == view) return;
+	if (_id >= MAX_USER) return;
+	_sl.lock();
+	if (_s_state != ST_INGAME) {
+		_sl.unlock();
+		return;
+	}
+
+	send_remove_object(view);
+	_sl.unlock();
 }
 
 // ** packet process ** //
