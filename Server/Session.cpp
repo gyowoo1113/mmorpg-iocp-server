@@ -77,6 +77,18 @@ void CSession::process_attack()
 
 	for (int mon : search_vl)
 	{
+		if (isMonsterCollisionAttack(mon, _id) == false)
+			continue;
+
+		for (int i = 0; i < MAX_USER; ++i)
+		{
+			lock_guard<mutex> aa{ clients[i]._sl };
+			if (ST_INGAME != clients[i]._s_state) continue;
+			
+			string mess = "User:" + to_string(_id) + " attack to " + clients[mon]._name;
+			clients[i].send_chat_packet(-1, mess.c_str());
+		}
+
 	}
 }
 
