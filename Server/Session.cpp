@@ -69,6 +69,17 @@ void CSession::check_erase_view_list(std::unordered_set<int>& new_nl)
 	}
 }
 
+void CSession::process_attack()
+{
+	vl.lock();
+	unordered_set<int> search_vl =view_list;
+	vl.unlock();
+
+	for (int mon : search_vl)
+	{
+	}
+}
+
 void CSession::send_move_packet(int c_id, int client_time)
 {
 	SC_MOVE_PLAYER_PACKET p;

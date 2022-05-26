@@ -118,14 +118,8 @@ void process_packet(int c_id, char* packet)
 		case CS_ATTACK: {
 			CS_ATTACK_PACKET* p = reinterpret_cast<CS_ATTACK_PACKET*>(packet);
 
-			clients[c_id].vl.lock();
-			unordered_set<int> search_vl = clients[c_id].view_list;
-			clients[c_id].vl.unlock();
+			clients[c_id].process_attack();
 
-			for (int monsters : search_vl)
-			{
-
-			}
 
 			break;
 		}
