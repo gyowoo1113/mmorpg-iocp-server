@@ -12,6 +12,7 @@ constexpr int NUM_NPC = 200000;
 // Packet ID
 constexpr char CS_LOGIN = 0;
 constexpr char CS_MOVE = 1;
+constexpr char CS_ATTACK = 2;
 
 constexpr char SC_LOGIN_INFO = 2;
 constexpr char SC_ADD_PLAYER = 3;
@@ -31,6 +32,11 @@ struct CS_MOVE_PACKET {
 	char	type;
 	char	direction;  // 0 : UP, 1 : DOWN, 2 : LEFT, 3 : RIGHT
 	unsigned client_time;
+};
+
+struct CS_ATTACK_PACKET {
+	unsigned char size;
+	char	type;
 };
 
 struct SC_LOGIN_INFO_PACKET {
