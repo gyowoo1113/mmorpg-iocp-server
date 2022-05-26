@@ -35,135 +35,166 @@ void process_packet(int c_id, char* packet)
 
 
 	switch (packet[1]) {
-	case CS_LOGIN: {
-		CS_LOGIN_PACKET* p = reinterpret_cast<CS_LOGIN_PACKET*>(packet);
-		clients[c_id]._sl.lock();
-		if (clients[c_id]._s_state == ST_FREE) {
+		case CS_LOGIN: {
+			CS_LOGIN_PACKET* p = reinterpret_cast<CS_LOGIN_PACKET*>(packet);
+			clients[c_id]._sl.lock();
+			if (clients[c_id]._s_state == ST_FREE) {
+				clients[c_id]._sl.unlock();
+				break;
+			}
+			if (clients[c_id]._s_state == ST_INGAME) {
+				clients[c_id]._sl.unlock();
+				disconnect(c_id);
+				break;
+			}
+
+			strcpy_s(clients[c_id]._name, p->name);
+			clients[c_id].send_login_info_packet();
+			clients[c_id]._s_state = ST_INGAME;
 			clients[c_id]._sl.unlock();
-			break;
-		}
-		if (clients[c_id]._s_state == ST_INGAME) {
-			clients[c_id]._sl.unlock();
-			disconnect(c_id);
-			break;
-		}
 
-		strcpy_s(clients[c_id]._name, p->name);
-		clients[c_id].send_login_info_packet();
-		clients[c_id]._s_state = ST_INGAME;
-		clients[c_id]._sl.unlock();
+			int x, y;
+			do {
+				x = rand() % W_WIDTH;
+				y = rand() % W_HEIGHT;
+			} while (tiles[x][y]);
 
-		clients[c_id].x = rand() % W_WIDTH;
-		clients[c_id].y = rand() % W_HEIGHT;
-		
-		clients[c_id]._secl.lock();
-		SetSector(c_id);
-		clients[c_id]._secl.unlock();
+			clients[c_id].x = x;
+			clients[c_id].y = y;
 
-		for (int i = 0; i < MAX_USER; ++i) {
-			auto& pl = clients[i];
-			if (pl._id == c_id) continue;
-			pl._sl.lock();
-			if (ST_INGAME != pl._s_state) {
+			clients[c_id]._secl.lock();
+			SetSector(c_id);
+			clients[c_id]._secl.unlock();
+
+			for (int i = 0; i < MAX_USER; ++i) {
+				auto& pl = clients[i];
+				if (pl._id == c_id) continue;
+				pl._sl.lock();
+				if (ST_INGAME != pl._s_state) {
+					pl._sl.unlock();
+					continue;
+				}
+				if (RANGE >= distance(c_id, pl._id)) {
+					pl.vl.lock();
+					pl.view_list.insert(c_id);
+					pl.vl.unlock();
+					pl.send_add_object(c_id);
+				}
 				pl._sl.unlock();
-				continue;
 			}
-			if (RANGE >= distance(c_id, pl._id)) {
-				pl.vl.lock();
-				pl.view_list.insert(c_id);
-				pl.vl.unlock();
-				pl.send_add_object(c_id);
-			}
-			pl._sl.unlock();
-		}
-		
-		for (auto& pl : clients) {
-			if (pl._id == c_id) continue;
-			lock_guard<mutex> aa{ pl._sl };
-			if (ST_INGAME != pl._s_state) continue;
 
-			if (RANGE >= distance(pl._id, c_id)) {
-				clients[c_id].vl.lock();
-				clients[c_id].view_list.insert(pl._id);
-				clients[c_id].vl.unlock();
-				clients[c_id].send_add_object(pl._id);
+			for (auto& pl : clients) {
+				if (pl._id == c_id) continue;
+				lock_guard<mutex> aa{ pl._sl };
+				if (ST_INGAME != pl._s_state) continue;
+
+				if (RANGE >= distance(pl._id, c_id)) {
+					clients[c_id].vl.lock();
+					clients[c_id].view_list.insert(pl._id);
+					clients[c_id].vl.unlock();
+					clients[c_id].send_add_object(pl._id);
+				}
 			}
+
+
+			break;
 		}
 
+		case CS_MOVE: {
+			CS_MOVE_PACKET* p = reinterpret_cast<CS_MOVE_PACKET*>(packet);
 
-		break;
-	}
-	case CS_MOVE: {
-		CS_MOVE_PACKET* p = reinterpret_cast<CS_MOVE_PACKET*>(packet);
+			update_move_clients(c_id, p->direction);
+			CheckMoveSector(c_id);
 
-		update_move_clients(c_id, p->direction);
-		CheckMoveSector(c_id);
+			unordered_set<int> new_nl;
+			new_nl = MakeNearList(c_id);
 
-		unordered_set<int> new_nl;
-		new_nl = MakeNearList(c_id);
+			update_move_view_list(c_id, p, new_nl);
+			check_erase_view_list(c_id, new_nl);
 
-		clients[c_id].send_move_packet(c_id, p->client_time);
+			break;
+		}
 
-		for (auto n : new_nl)
-		{
-			if (clients[n]._id == c_id) continue;
-			lock_guard<mutex> aa{ clients[n]._sl };
-			if (ST_INGAME != clients[n]._s_state) continue;
+		case CS_ATTACK: {
+			CS_ATTACK_PACKET* p = reinterpret_cast<CS_ATTACK_PACKET*>(packet);
 
-			// view list에 없으면
 			clients[c_id].vl.lock();
-			if (clients[c_id].view_list.count(n) == 0)
+			unordered_set<int> search_vl = clients[c_id].view_list;
+			clients[c_id].vl.unlock();
+
+			for (int monsters : search_vl)
 			{
-				//viewlist에 추가
-				clients[c_id].view_list.insert(n);
-				clients[c_id].vl.unlock();
 
-				// 나 <= 상대 put
-				clients[c_id].send_add_object(n);
+			}
 
-				check_view_list(n, c_id, p);
+			break;
+		}
+	}
+}
 
+void update_move_view_list(int& c_id, CS_MOVE_PACKET* p, std::unordered_set<int>& new_nl)
+{
+
+	clients[c_id].send_move_packet(c_id, p->client_time);
+
+	for (auto n : new_nl)
+	{
+		if (clients[n]._id == c_id) continue;
+		lock_guard<mutex> aa{ clients[n]._sl };
+		if (ST_INGAME != clients[n]._s_state) continue;
+
+		// view list에 없으면
+		clients[c_id].vl.lock();
+		if (clients[c_id].view_list.count(n) == 0)
+		{
+			//viewlist에 추가
+			clients[c_id].view_list.insert(n);
+			clients[c_id].vl.unlock();
+
+			// 나 <= 상대 put
+			clients[c_id].send_add_object(n);
+
+			check_view_list(n, c_id, p);
+
+		}
+		else
+		{
+			clients[c_id].vl.unlock();
+			check_view_list(n, c_id, p);
+		}
+	}
+}
+
+void check_erase_view_list(int& c_id, std::unordered_set<int>& new_nl)
+{
+	clients[c_id].vl.lock();
+	unordered_set<int> new_list = clients[c_id].view_list;
+	clients[c_id].vl.unlock();
+
+	// view_list에 있는 모든 객체에 대해
+	for (auto view : new_list)
+	{
+		// near에 없으면
+		if (new_nl.count(view) == 0)
+		{
+			clients[c_id].vl.lock();
+			clients[c_id].view_list.erase(view);
+			clients[c_id].vl.unlock();
+			remove_view_list(c_id, view);
+
+			// 상대 view_list에 있으면
+			clients[view].vl.lock();
+			if (clients[view].view_list.count(c_id))
+			{
+				clients[view].view_list.erase(c_id);
+				clients[view].vl.unlock();
+				remove_view_list(view, c_id);
 			}
 			else
 			{
-				clients[c_id].vl.unlock();
-				check_view_list(n, c_id, p);
+				clients[view].vl.unlock();
 			}
 		}
-
-		//////////
-
-		clients[c_id].vl.lock();
-		unordered_set<int> new_list = clients[c_id].view_list;
-		clients[c_id].vl.unlock();
-
-		// view_list에 있는 모든 객체에 대해
-		for (auto view : new_list)
-		{
-			// near에 없으면
-			if (new_nl.count(view) == 0)
-			{
-				clients[c_id].vl.lock();
-				clients[c_id].view_list.erase(view);
-				clients[c_id].vl.unlock();
-				remove_view_list(c_id, view);
-
-				// 상대 view_list에 있으면
-				clients[view].vl.lock();
-				if (clients[view].view_list.count(c_id))
-				{
-					clients[view].view_list.erase(c_id);
-					clients[view].vl.unlock();
-					remove_view_list(view, c_id);
-				}
-				else
-				{
-					clients[view].vl.unlock();
-				}
-			}
-		}
-		break;
-	}
 	}
 }
 
