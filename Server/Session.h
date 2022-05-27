@@ -23,9 +23,9 @@ public:
 	short _sector_x, _sector_y;
 	mutex _secl;
 
-	int hp = 100;
-	int level = 1;
-	int exp = 0;
+	int _hp = 100;
+	int _level = 1;
+	int _exp = 0;
 
 	chrono::system_clock::time_point next_move_time;
 public:

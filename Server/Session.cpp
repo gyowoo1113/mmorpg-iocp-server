@@ -147,9 +147,9 @@ void CSession::send_login_info_packet()
 	p.type = SC_LOGIN_INFO;
 	p.x = x;
 	p.y = y;
-	p.hp = hp;
-	p.exp = exp;
-	p.level = level;
+	p.hp = _hp;
+	p.exp = _exp;
+	p.level = _level;
 	do_send(&p);
 }
 
