@@ -47,6 +47,7 @@ sf::TcpSocket socket;
 string userChatting;
 deque<Text> chat;
 bool isChatting = false;
+bool isShowChatting = true;
 bool isMoving = false;
 
 int backgrounds[W_WIDTH][W_HEIGHT] = {};
@@ -252,7 +253,7 @@ void drawMaps()
 
 void drawChatting()
 {
-	if (isChatting == false) return;
+	if (isShowChatting == false) return;
 
 	window->draw(shape);
 
@@ -327,6 +328,8 @@ void KeyInput(sf::Event& e)
 			break;
 
 		case sf::Keyboard::R:
+			if (isChatting) return;
+
 			player.setAttack();
 
 			CS_ATTACK_PACKET p;
@@ -358,6 +361,10 @@ void KeyInput(sf::Event& e)
 			}
 			break;
 
+		case Keyboard::Num3:
+			isShowChatting = !isShowChatting;
+			break;
+
 	}
 
 	if (-1 != direction) {
@@ -378,6 +385,7 @@ Text setTextMessage(string str, bool isSystemMessage)
 
 	if (isSystemMessage)
 	{
+		text.setFillColor(Color(0, 180, 0));
 		text.setOutlineThickness(0.4f);
 		text.setOutlineColor(Color::Blue);
 	}
@@ -402,8 +410,6 @@ void setSystemMessage(char* text)
 		chat.pop_front();
 
 	chat.push_back(setTextMessage(text,true));
-
-	userChatting.clear();
 }
 
 //*** Server *** //
