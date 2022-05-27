@@ -104,6 +104,14 @@ void CSession::process_attack()
 		if (isMonsterCollisionAttack(mon, _id) == false)
 			continue;
 
+		bool is_dying = clients[mon].decreaseHp(50);
+		
+		if (is_dying)
+		{
+			int mon_level = clients[mon]._level;
+			_exp += mon_level * mon_level * 2;
+		}
+
 		for (int i = 0; i < MAX_USER; ++i)
 		{
 			lock_guard<mutex> aa{ clients[i]._sl };
@@ -194,4 +202,16 @@ void CSession::send_remove_object(int c_id)
 	p.size = sizeof(SC_REMOVE_PLAYER_PACKET);
 	p.type = SC_REMOVE_PLAYER;
 	do_send(&p);
+}
+
+// ** status ** // 
+
+bool CSession::decreaseHp(int hp)
+{
+	_hp -= hp;
+	cout << _hp << endl;
+	if (_hp <= 0)
+		return true;
+
+	return false;
 }

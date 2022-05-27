@@ -28,6 +28,10 @@ public:
 		CGameObject::draw();
 	}
 
+	void setHp(int hp) {
+		m_hp = hp;
+	}
+
 private:
 	int m_level;
 	int m_hp;

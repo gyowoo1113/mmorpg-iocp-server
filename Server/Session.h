@@ -73,5 +73,7 @@ public:
 	void remove_view_list(int& view);
 
 	void process_attack();
+
+	bool decreaseHp(int hp);
 };
 
