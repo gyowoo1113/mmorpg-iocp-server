@@ -13,8 +13,6 @@ const int BUFSIZE = 256;
 SOCKET server_socket;
 HANDLE handle_iocp;
 
-int tiles[W_WIDTH][W_HEIGHT] = {};
-
 int get_new_client_id()
 {
 	for (int i = 0; i < MAX_USER; ++i) {
