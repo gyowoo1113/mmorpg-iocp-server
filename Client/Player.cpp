@@ -41,7 +41,11 @@ void CPlayer::calculateMaxExp()
 void CPlayer::setStatus(int hp, int level, int exp)
 {
 	m_hp = hp;
-	m_level = level;
 	m_exp = exp;
-	updateExp();
+
+	if (m_level != level)
+	{
+		m_level = level;
+		calculateMaxExp();
+	}
 }

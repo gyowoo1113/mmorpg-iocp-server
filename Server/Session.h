@@ -23,9 +23,10 @@ public:
 	short _sector_x, _sector_y;
 	mutex _secl;
 
-	int _hp = 100;
-	int _level = 1;
-	int _exp = 0;
+	atomic<int> _hp = 100;
+	atomic<int> _level = 1;
+	atomic<int> _exp = 0;
+	atomic<int> _maxExp = 0;
 
 	chrono::system_clock::time_point next_move_time;
 public:
@@ -41,6 +42,7 @@ public:
 		_sector_x = x / 10;
 		_sector_y = y / 10;
 		next_move_time = chrono::system_clock::now() + chrono::seconds(1);
+		calculateMaxExp();
 	}
 	~CSession() {}
 
@@ -77,5 +79,8 @@ public:
 	void process_attack();
 
 	bool decreaseHp(int hp);
+	void updateExp(int c_id);
+	void calculateMaxExp();
+	void setLevelUp(int remainExp);
 };
 
