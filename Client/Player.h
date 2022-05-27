@@ -29,7 +29,9 @@ public:
 	void setParameter(sf::Text& text);
 	void setLevelUp(int RemainExp);
 	void getExp(int exp);
+	void updateExp();
 	void calculateMaxExp();
+	void setStatus(int hp, int level, int exp);
 	string getId() { return m_id; }
 
 	virtual void draw() {

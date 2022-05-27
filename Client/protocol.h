@@ -49,6 +49,9 @@ struct SC_LOGIN_INFO_PACKET {
 	char	type;
 	int		id;
 	short	x, y;
+	int		hp;
+	int		level;
+	int		exp;
 };
 
 struct SC_ADD_PLAYER_PACKET {

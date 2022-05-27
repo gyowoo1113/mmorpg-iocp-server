@@ -18,11 +18,17 @@ void CPlayer::setLevelUp(int remainExp)
 	++m_level;
 	m_maxExp *= 2;
 	m_exp = remainExp;
+	calculateMaxExp();
 }
 
 void CPlayer::getExp(int exp)
 {
 	m_exp += exp;
+	updateExp();
+}
+
+void CPlayer::updateExp()
+{
 	if (m_maxExp <= m_exp)
 		setLevelUp(m_exp - m_maxExp);
 }
@@ -30,4 +36,12 @@ void CPlayer::getExp(int exp)
 void CPlayer::calculateMaxExp()
 {
 	m_maxExp = pow(2, m_level - 1) * 100;
+}
+
+void CPlayer::setStatus(int hp, int level, int exp)
+{
+	m_hp = hp;
+	m_level = level;
+	m_exp = exp;
+	updateExp();
 }

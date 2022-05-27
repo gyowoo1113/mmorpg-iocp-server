@@ -186,7 +186,6 @@ void DrawWindows()
 {
 	receiveData();
 
-	player.getExp(1);
 	player.setParameter(playerText);
 
 	drawMaps();
@@ -444,6 +443,8 @@ void ProcessPacket(char* ptr)
 		player.move(packet->x, packet->y);
 		::g_left_x = packet->x - SCREEN_WIDTH/2;
 		::g_top_y = packet->y - SCREEN_HEIGHT/2;
+		player.setStatus(packet->hp, packet->level, packet->exp);
+		player.calculateMaxExp();
 		player.setActive(true);
 		break;
 	}
