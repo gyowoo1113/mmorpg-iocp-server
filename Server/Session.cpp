@@ -110,6 +110,7 @@ void CSession::process_attack()
 		{
 			int mon_level = clients[mon]._level;
 			_exp += mon_level * mon_level * 2;
+			send_change_status_packet(_id);
 		}
 
 		for (int i = 0; i < MAX_USER; ++i)
@@ -192,6 +193,18 @@ void CSession::send_chat_packet(int c_id, const char* mess)
 	p.size = sizeof(SC_CHAT_PACKET) - sizeof(p.mess) + strlen(mess) + 1;
 	p.type = SC_CHAT;
 	strcpy_s(p.mess, mess);
+	do_send(&p);
+}
+
+void CSession::send_change_status_packet(int c_id)
+{
+	SC_CHANGE_STATUS_PACKET p;
+	p.size = sizeof(SC_CHANGE_STATUS_PACKET);
+	p.type = SC_CHANGE_STATUS;
+	p.id = c_id;
+	p.hp = _hp;
+	p.exp = _exp;
+	p.level = _level;
 	do_send(&p);
 }
 

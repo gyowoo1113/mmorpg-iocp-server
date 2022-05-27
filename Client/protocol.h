@@ -19,6 +19,7 @@ constexpr char SC_ADD_PLAYER = 3;
 constexpr char SC_REMOVE_PLAYER = 4;
 constexpr char SC_MOVE_PLAYER = 5;
 constexpr char SC_CHAT = 6;
+constexpr char SC_CHANGE_STATUS = 7;
 
 #pragma pack (push, 1)
 
@@ -81,6 +82,15 @@ struct SC_CHAT_PACKET {
 	char	type;
 	int	id;
 	char	mess[256];
+};
+
+struct SC_CHANGE_STATUS_PACKET {
+	unsigned char size;
+	char	type;
+	int	id;
+	int hp;
+	int level;
+	int exp;
 };
 
 #pragma pack (pop)

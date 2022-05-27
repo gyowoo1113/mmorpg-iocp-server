@@ -507,6 +507,23 @@ void ProcessPacket(char* ptr)
 			setSystemMessage(my_packet->mess);
 		break;
 	}
+	case SC_CHANGE_STATUS:
+	{	
+		SC_CHANGE_STATUS_PACKET* packet = reinterpret_cast<SC_CHANGE_STATUS_PACKET*>(ptr);
+		int c_id = packet->id;
+
+		if (c_id == g_myid) {
+			player.setStatus(packet->hp, packet->level, packet->exp);
+		}
+		else if (c_id < MAX_USER){
+			players[c_id].setStatus(packet->hp, packet->level, packet->exp);
+		}
+		else {
+			npcs[c_id - MAX_USER].setHp(packet->hp);
+		}
+
+		break; 
+	}
 	default:
 		printf("Unknown PACKET type [%d]\n", ptr[1]);
 	}
