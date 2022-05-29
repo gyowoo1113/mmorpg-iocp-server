@@ -33,7 +33,8 @@ public:
 	void calculateH(sNode* node);
 	void calculateF(sNode* node);
 	void calculateScore(sNode* node, float& weight);
-	bool searchDirections(vector<position>& road,int startX, int startY, int endX, int endY);
+	bool searchRoad(vector<position>& road,int startX, int startY, int endX, int endY);
+	void initSearchLists(std::vector<position>& road);
 	void compareG(sNode* node, int dir);
 
 protected:

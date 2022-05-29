@@ -30,29 +30,11 @@ void CAstar::calculateScore(sNode* node, float& weight)
 	calculateF(node);
 }
 
-bool CAstar::searchDirections(vector<position>& road, int startX, int startY, int endX, int endY)
+bool CAstar::searchRoad(vector<position>& road, int startX, int startY, int endX, int endY)
 {
-	road.clear();
-
 	start_pos = make_pair(startX, startY);
 	end_pos = make_pair(endX, endY);
-
-	sNode* opens = new sNode(start_pos);
-	float s_weight = 0.0f;
-	calculateScore(opens,s_weight);
-	open.push_back(opens);
-
-	for (int i = 0; i < W_WIDTH; ++i)
-	{
-		for (int j = 0; j < W_HEIGHT; ++j)
-		{
-			if (tiles[i][j])
-			{
-				position pos = make_pair(i, j);
-				closed.insert(pos);
-			}
-		}
-	}
+	initSearchLists(road);
 
 	position now_pos;
 	sNode* pop_node;
@@ -89,6 +71,30 @@ bool CAstar::searchDirections(vector<position>& road, int startX, int startY, in
 	}
 
 	return true;
+}
+
+void CAstar::initSearchLists(std::vector<position>& road)
+{
+	road.clear();
+	open.clear();
+	closed.clear();
+
+	sNode* opens = new sNode(start_pos);
+	float s_weight = 0.0f;
+	calculateScore(opens, s_weight);
+	open.push_back(opens);
+
+	for (int i = 0; i < W_WIDTH; ++i)
+	{
+		for (int j = 0; j < W_HEIGHT; ++j)
+		{
+			if (tiles[i][j])
+			{
+				position pos = make_pair(i, j);
+				closed.insert(pos);
+			}
+		}
+	}
 }
 
 void CAstar::compareG(sNode* node, int dir)
