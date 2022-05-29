@@ -1,7 +1,6 @@
 #pragma once
 #include <set>
 
-typedef pair<int, int> position;
 
 int dx[8] = { 0,0,1,-1,1,-1,-1,1 };
 int dy[8] = { 1,-1,0,0,-1,1,-1,1 };
@@ -37,12 +36,15 @@ public:
 	void calculateG(sNode* node, float& weight);
 	void calculateH(sNode* node);
 	void calculateF(sNode* node);
-	void calculateWeight(sNode* node, float& weight);
+	void calculateScore(sNode* node, float& weight);
 
 protected:
 	sNode* pStart = nullptr;
 	sNode* pEnd = nullptr;
 	set<sNode> closed;
 	set<sNode> open;
+
+	position start_pos;
+	position end_pos;
 };
 

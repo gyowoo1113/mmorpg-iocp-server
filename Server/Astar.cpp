@@ -3,13 +3,15 @@
 
 void CAstar::calculateG(sNode* node, float& weight)
 {
-	node->g = node->pParent->g + weight;
+	if (node->pParent != nullptr)
+		node->g = node->pParent->g + weight;
+	else
+		node->g = 0;
 }
 
 void CAstar::calculateH(sNode* node)
 {
-	if (pEnd == nullptr) return;
-	node->h = abs(node->pos.first - pEnd->pos.first) + abs(node->pos.second - pEnd->pos.second);
+	node->h = abs(node->pos.first - end_pos.first) + abs(node->pos.second - end_pos.second);
 }
 
 void CAstar::calculateF(sNode* node)
@@ -17,7 +19,7 @@ void CAstar::calculateF(sNode* node)
 	node->f = node->g + node->h;
 }
 
-void CAstar::calculateWeight(sNode* node, float& weight)
+void CAstar::calculateScore(sNode* node, float& weight)
 {
 	calculateG(node, weight);
 	calculateH(node);

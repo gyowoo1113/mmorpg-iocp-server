@@ -18,6 +18,7 @@
 extern constexpr int RANGE = 5;
 class CSession;
 
+typedef pair<int, int> position;
 extern unordered_set<int> sector[W_WIDTH / 10][W_HEIGHT / 10];
 extern int tiles[W_WIDTH][W_HEIGHT];
 extern mutex secl;
