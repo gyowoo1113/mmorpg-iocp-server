@@ -32,10 +32,10 @@ void CAstar::calculateScore(sNode* node, float& weight)
 
 bool CAstar::searchDirections(vector<position>& road, int startX, int startY, int endX, int endY)
 {
+	road.clear();
+
 	start_pos = make_pair(startX, startY);
 	end_pos = make_pair(endX, endY);
-
-	road.push_back(start_pos);
 
 	sNode* opens = new sNode(start_pos);
 	float s_weight = 0.0f;
@@ -59,16 +59,18 @@ bool CAstar::searchDirections(vector<position>& road, int startX, int startY, in
 	while (true)
 	{
 		if (open.size() == 0) return false;
-		if (road.back() == end_pos) return true;
 
 		open.sort(compF);
 		pop_node = open.front();
 		open.pop_front();
 		now_pos = pop_node->pos;
 
+		if (now_pos == end_pos) break;
+
 		for (int i = 0; i < 8; i++) {
 			int x = now_pos.first + dx[i], y = now_pos.second + dy[i];
 			if (x < 0 || y < 0) continue;
+			if (x > W_WIDTH || y > W_HEIGHT) continue;
 
 			auto p = closed.find(make_pair(x, y));
 			if (p != closed.end()) continue;
@@ -78,4 +80,12 @@ bool CAstar::searchDirections(vector<position>& road, int startX, int startY, in
 			open.push_back(new_node);
 		}
 	}
+
+	for (sNode* node = pop_node; node->pParent != nullptr; node = node->pParent)
+	{
+		cout << node->pos.first << " " << node->pos.second << endl;
+		road.push_back(node->pos);
+	}
+
+	return true;
 }
