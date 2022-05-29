@@ -1,6 +1,10 @@
 #include "pch.h"
 #include "Astar.h"
 
+bool compF(const sNode* lhs, const sNode* rhs) {
+	return lhs->f < rhs->f;
+};
+
 void CAstar::calculateG(sNode* node, float& weight)
 {
 	if (node->pParent != nullptr)
@@ -36,7 +40,7 @@ bool CAstar::searchDirections(vector<position>& road, int startX, int startY, in
 	sNode* opens = new sNode(start_pos);
 	float s_weight = 0.0f;
 	calculateScore(opens,s_weight);
-	open.push(opens);
+	open.push_back(opens);
 
 	for (int i = 0; i < W_WIDTH; ++i)
 	{
@@ -51,16 +55,16 @@ bool CAstar::searchDirections(vector<position>& road, int startX, int startY, in
 	}
 
 	position now_pos;
+	sNode* pop_node;
 	while (true)
 	{
 		if (open.size() == 0) return false;
 		if (road.back() == end_pos) return true;
 
-		sNode* pop_node = open.top();
-		open.pop();
-		closed.insert(pop_node->pos);
+		open.sort(compF);
+		pop_node = open.front();
+		open.pop_front();
 		now_pos = pop_node->pos;
-		road.push_back(now_pos);
 
 		for (int i = 0; i < 8; i++) {
 			int x = now_pos.first + dx[i], y = now_pos.second + dy[i];
@@ -71,7 +75,7 @@ bool CAstar::searchDirections(vector<position>& road, int startX, int startY, in
 
 			sNode* new_node = new sNode(make_pair(x, y), pop_node);
 			calculateScore(new_node, weight[i]);
-			open.push(new_node);
+			open.push_back(new_node);
 		}
 	}
 }

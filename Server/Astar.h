@@ -23,11 +23,6 @@ struct sNode {
 	{
 
 	}
-
-	bool operator<(const sNode& rhs) const
-	{
-		return f < rhs.f;
-	}
 };
 
 class CAstar
@@ -44,7 +39,7 @@ protected:
 	sNode* pStart = nullptr;
 	sNode* pEnd = nullptr;
 	set<position> closed;
-	priority_queue<sNode*> open;
+	list<sNode*> open;
 
 	position start_pos;
 	position end_pos;
