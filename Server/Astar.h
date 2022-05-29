@@ -34,6 +34,7 @@ public:
 	void calculateF(sNode* node);
 	void calculateScore(sNode* node, float& weight);
 	bool searchDirections(vector<position>& road,int startX, int startY, int endX, int endY);
+	void compareG(sNode* node, int dir);
 
 protected:
 	sNode* pStart = nullptr;

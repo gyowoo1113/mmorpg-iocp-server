@@ -78,6 +78,7 @@ bool CAstar::searchDirections(vector<position>& road, int startX, int startY, in
 			sNode* new_node = new sNode(make_pair(x, y), pop_node);
 			calculateScore(new_node, weight[i]);
 			open.push_back(new_node);
+			compareG(new_node, i);
 		}
 	}
 
@@ -88,4 +89,24 @@ bool CAstar::searchDirections(vector<position>& road, int startX, int startY, in
 	}
 
 	return true;
+}
+
+void CAstar::compareG(sNode* node, int dir)
+{
+	int _x = node->pos.first + dx[dir];
+	int _y = node->pos.second + dy[dir];
+
+	std::list<sNode*>::iterator iter;
+	for (iter = open.begin(); iter != open.end(); ++iter)
+	{
+		if ((*iter)->pos.first == _x && (*iter)->pos.second == _y)
+		{
+			if ((*iter)->g >= node->g + weight[dir])
+			{
+				(*iter)->pParent = node;
+				calculateG((*iter), weight[dir]);
+				calculateF((*iter));
+			}
+		}
+	}
 }
