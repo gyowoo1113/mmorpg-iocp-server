@@ -1,5 +1,6 @@
 #pragma once
 #include <set>
+#include <queue>
 
 
 int dx[8] = { 0,0,1,-1,1,-1,-1,1 };
@@ -37,12 +38,13 @@ public:
 	void calculateH(sNode* node);
 	void calculateF(sNode* node);
 	void calculateScore(sNode* node, float& weight);
+	bool searchDirections(vector<position>& road,int startX, int startY, int endX, int endY);
 
 protected:
 	sNode* pStart = nullptr;
 	sNode* pEnd = nullptr;
-	set<sNode> closed;
-	set<sNode> open;
+	set<position> closed;
+	priority_queue<sNode*> open;
 
 	position start_pos;
 	position end_pos;
