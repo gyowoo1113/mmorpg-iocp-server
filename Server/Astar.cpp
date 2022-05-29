@@ -95,18 +95,17 @@ void CAstar::compareG(sNode* node, int dir)
 {
 	int _x = node->pos.first + dx[dir];
 	int _y = node->pos.second + dy[dir];
+	position pos = make_pair(_x, _y);
 
-	std::list<sNode*>::iterator iter;
-	for (iter = open.begin(); iter != open.end(); ++iter)
+	auto iter = find_if(open.begin(), open.end(), [&pos](sNode* a) {
+		if (a->pos == pos) return true;
+		else return false;
+	});
+
+	if (iter != open.end())
 	{
-		if ((*iter)->pos.first == _x && (*iter)->pos.second == _y)
-		{
-			if ((*iter)->g >= node->g + weight[dir])
-			{
-				(*iter)->pParent = node;
-				calculateG((*iter), weight[dir]);
-				calculateF((*iter));
-			}
-		}
+		(*iter)->pParent = node;
+		calculateG((*iter), weight[dir]);
+		calculateF((*iter));
 	}
 }
