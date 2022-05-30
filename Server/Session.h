@@ -28,6 +28,11 @@ public:
 	atomic<int> _exp = 0;
 	atomic<int> _maxExp = 0;
 
+	atomic<int> _target_id = -1;
+
+	mutex _pathl;
+	stack<pair<int, int>> pathfind_pos;
+	
 	chrono::system_clock::time_point next_move_time;
 public:
 	CSession()
