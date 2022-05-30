@@ -30,7 +30,7 @@ void CAstar::calculateScore(sNode* node, float& weight)
 	calculateF(node);
 }
 
-bool CAstar::searchRoad(vector<position>& road, int startX, int startY, int endX, int endY)
+bool CAstar::searchRoad(stack<position>& road, int startX, int startY, int endX, int endY)
 {
 	start_pos = make_pair(startX, startY);
 	end_pos = make_pair(endX, endY);
@@ -66,16 +66,16 @@ bool CAstar::searchRoad(vector<position>& road, int startX, int startY, int endX
 
 	for (sNode* node = pop_node; node->pParent != nullptr; node = node->pParent)
 	{
-		cout << node->pos.first << " " << node->pos.second << endl;
-		road.push_back(node->pos);
+		road.push(node->pos);
 	}
 
 	return true;
 }
 
-void CAstar::initSearchLists(std::vector<position>& road)
+void CAstar::initSearchLists(stack<position>& road)
 {
-	road.clear();
+	while (road.empty() == false)
+		road.pop();
 	open.clear();
 	closed.clear();
 

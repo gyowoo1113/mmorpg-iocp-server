@@ -3,9 +3,7 @@
 #include <queue>
 
 
-int dx[8] = { 0,0,1,-1,1,-1,-1,1 };
-int dy[8] = { 1,-1,0,0,-1,1,-1,1 };
-float weight[8] = { 1.0f, 1.0f, 1.0f, 1.0f, 1.4f, 1.4f, 1.4f, 1.4f};
+typedef pair<int, int> position;
 
 struct sNode {
 	position pos;
@@ -33,8 +31,8 @@ public:
 	void calculateH(sNode* node);
 	void calculateF(sNode* node);
 	void calculateScore(sNode* node, float& weight);
-	bool searchRoad(vector<position>& road,int startX, int startY, int endX, int endY);
-	void initSearchLists(std::vector<position>& road);
+	bool searchRoad(stack<position>& road,int startX, int startY, int endX, int endY);
+	void initSearchLists(stack<position>& road);
 	void compareG(sNode* node, int dir);
 
 protected:
@@ -45,5 +43,9 @@ protected:
 
 	position start_pos;
 	position end_pos;
+
+	int dx[8] = { 0,0,1,-1,1,-1,-1,1 };
+	int dy[8] = { 1,-1,0,0,-1,1,-1,1 };
+	float weight[8] = { 1.0f, 1.0f, 1.0f, 1.0f, 1.4f, 1.4f, 1.4f, 1.4f };
 };
 
