@@ -9,8 +9,7 @@ void CSession::update_move_view_list(CS_MOVE_PACKET* p, std::unordered_set<int>&
 	for (auto n : new_nl)
 	{
 		if (clients[n]._id == _id) continue;
-		lock_guard<mutex> aa{ clients[n]._sl };
-		if (ST_INGAME != clients[n]._s_state) continue;
+		if (ST_INGAME != clients[n]._state) continue;
 
 		vl.lock();
 		if (view_list.count(n) == 0)
@@ -81,14 +80,9 @@ void CSession::remove_view_list(int& view)
 {
 	if (_id == view) return;
 	if (_id >= MAX_USER) return;
-	_sl.lock();
-	if (_s_state != ST_INGAME) {
-		_sl.unlock();
-		return;
-	}
+	if (_state != ST_INGAME)return;
 
 	send_remove_object(view);
-	_sl.unlock();
 }
 
 // ** packet process ** //
@@ -114,8 +108,7 @@ void CSession::process_attack()
 
 		for (int i = 0; i < MAX_USER; ++i)
 		{
-			lock_guard<mutex> aa{ clients[i]._sl };
-			if (ST_INGAME != clients[i]._s_state) continue;
+			if (ST_INGAME != clients[i]._state) continue;
 			
 			string mess = "User:" + to_string(_id) + " attack to " + clients[mon]._name;
 			clients[i].send_chat_packet(-1, mess.c_str());

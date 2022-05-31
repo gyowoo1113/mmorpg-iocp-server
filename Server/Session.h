@@ -8,8 +8,7 @@ class CSession
 {
 	OVER_EXP _recv_over;
 public:
-	mutex	_sl;
-	SESSION_STATE _s_state;
+	atomic<SESSION_STATE> _state = ST_FREE;
 
 	int _id;
 	SOCKET _socket;
@@ -42,7 +41,7 @@ public:
 		x = rand() % W_WIDTH;
 		y = rand() % W_HEIGHT;
 		_name[0] = 0;
-		_s_state = ST_FREE;
+		_state = ST_FREE;
 		_prev_remain = 0;
 		_sector_x = x / 10;
 		_sector_y = y / 10;

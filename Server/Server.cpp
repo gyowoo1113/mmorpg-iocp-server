@@ -17,13 +17,10 @@ HANDLE handle_iocp;
 int get_new_client_id()
 {
 	for (int i = 0; i < MAX_USER; ++i) {
-		clients[i]._sl.lock();
-		if (clients[i]._s_state == ST_FREE) {
-			clients[i]._s_state = ST_ACCEPTED;
-			clients[i]._sl.unlock();
+		if (clients[i]._state == ST_FREE) {
+			clients[i]._state = ST_ACCEPTED;
 			return i;
 		}
-		clients[i]._sl.unlock();
 	}
 	return -1;
 }
@@ -36,21 +33,17 @@ void process_packet(int c_id, char* packet)
 	switch (packet[1]) {
 		case CS_LOGIN: {
 			CS_LOGIN_PACKET* p = reinterpret_cast<CS_LOGIN_PACKET*>(packet);
-			clients[c_id]._sl.lock();
-			if (clients[c_id]._s_state == ST_FREE) {
-				clients[c_id]._sl.unlock();
+			if (clients[c_id]._state == ST_FREE) {
 				break;
 			}
-			if (clients[c_id]._s_state == ST_INGAME) {
-				clients[c_id]._sl.unlock();
+			if (clients[c_id]._state == ST_INGAME) {
 				disconnect(c_id);
 				break;
 			}
 
 			strcpy_s(clients[c_id]._name, p->name);
 			clients[c_id].send_login_info_packet();
-			clients[c_id]._s_state = ST_INGAME;
-			clients[c_id]._sl.unlock();
+			clients[c_id]._state = ST_INGAME;
 
 			int x, y;
 			do {
@@ -68,9 +61,7 @@ void process_packet(int c_id, char* packet)
 			for (int i = 0; i < MAX_USER; ++i) {
 				auto& pl = clients[i];
 				if (pl._id == c_id) continue;
-				pl._sl.lock();
-				if (ST_INGAME != pl._s_state) {
-					pl._sl.unlock();
+				if (ST_INGAME != pl._state) {
 					continue;
 				}
 				if (RANGE >= distance(c_id, pl._id)) {
@@ -79,13 +70,11 @@ void process_packet(int c_id, char* packet)
 					pl.vl.unlock();
 					pl.send_add_object(c_id);
 				}
-				pl._sl.unlock();
 			}
 
 			for (auto& pl : clients) {
 				if (pl._id == c_id) continue;
-				lock_guard<mutex> aa{ pl._sl };
-				if (ST_INGAME != pl._s_state) continue;
+				if (ST_INGAME != pl._state) continue;
 
 				if (RANGE >= distance(pl._id, c_id)) {
 					clients[c_id].vl.lock();
@@ -169,22 +158,17 @@ void update_move_clients(int c_id, char& direction)
 
 void disconnect(int c_id)
 {
-	clients[c_id]._sl.lock();
-	if (clients[c_id]._s_state == ST_FREE) {
-		clients[c_id]._sl.unlock();
+	if (clients[c_id]._state == ST_FREE) {
 		return;
 	}
 	closesocket(clients[c_id]._socket);
-	clients[c_id]._s_state = ST_FREE;
-	clients[c_id]._sl.unlock();
+	clients[c_id]._state = ST_FREE;
 
 	ChangeSector(c_id, false);
 
 	for (auto& pl : clients) {
 		if (pl._id == c_id) continue;
-		pl._sl.lock();
-		if (pl._s_state != ST_INGAME) {
-			pl._sl.unlock();
+		if (pl._state != ST_INGAME) {
 			continue;
 		}
 		SC_REMOVE_PLAYER_PACKET p;
@@ -192,7 +176,6 @@ void disconnect(int c_id)
 		p.size = sizeof(p);
 		p.type = SC_REMOVE_PLAYER;
 		pl.do_send(&p);
-		pl._sl.unlock();
 	}
 }
 
@@ -260,7 +243,7 @@ void move_npc(int npc_id)
 	unordered_set<int> old_vl;
 	for (int i = 0; i < MAX_USER; ++i)
 	{
-		if (clients[i]._s_state != ST_INGAME) continue;
+		if (clients[i]._state != ST_INGAME) continue;
 		if (distance(npc_id, i) <= RANGE) old_vl.insert(i);
 	}
 
@@ -272,7 +255,7 @@ void move_npc(int npc_id)
 	unordered_set<int> new_vl;
 	for (int i = 0; i < MAX_USER; ++i)
 	{
-		if (clients[i]._s_state != ST_INGAME) continue;
+		if (clients[i]._state != ST_INGAME) continue;
 		if (distance(npc_id, i) <= RANGE) new_vl.insert(i);
 	}
 
@@ -353,10 +336,11 @@ void initialize_npc()
 	for (int i = 0; i < NUM_NPC; ++i)
 	{
 		int npc_id = i + MAX_USER;
-		clients[npc_id]._s_state = ST_INGAME;
+		clients[npc_id]._state = ST_INGAME;
 		SetSector(i);
 		sprintf_s(clients[npc_id]._name, "M-%d", npc_id);
 	}
+	cout << " load end .. " << endl;
 }
 
 
