@@ -54,9 +54,7 @@ void process_packet(int c_id, char* packet)
 			clients[c_id].x = x;
 			clients[c_id].y = y;
 
-			clients[c_id]._secl.lock();
 			SetSector(c_id);
-			clients[c_id]._secl.unlock();
 
 			for (int i = 0; i < MAX_USER; ++i) {
 				auto& pl = clients[i];

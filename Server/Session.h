@@ -20,7 +20,6 @@ public:
 	mutex vl;
 
 	short _sector_x, _sector_y;
-	mutex _secl;
 
 	atomic<int> _hp = 100;
 	atomic<int> _level = 1;
