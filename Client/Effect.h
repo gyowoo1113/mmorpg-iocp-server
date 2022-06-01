@@ -15,9 +15,9 @@ public:
 	}
 
 	virtual void animDraw() {
-		if (false == m_active) return;
+		if (false == m_bActive) return;
 
-		if (m_nIdleIndex >= m_frameCount)
+		if (m_nIdleIndex >= m_nFrameCount)
 			initEffect();
 
 		m_sprite.setTextureRect(sf::IntRect(m_nIdleIndex * 16, 0 , 16, 16));
@@ -28,7 +28,7 @@ public:
 	}
 
 	virtual void draw() {
-		if (false == m_active) return;
+		if (false == m_bActive) return;
 
 		m_sprite.setTextureRect(sf::IntRect(m_nIdleIndex * 16, 0, 16, 16));
 		CGameObject::draw();
@@ -46,7 +46,7 @@ public:
 
 	bool isEndFrame()
 	{
-		return (m_nIdleIndex >= m_frameCount);
+		return (m_nIdleIndex >= m_nFrameCount);
 	}
 };
 

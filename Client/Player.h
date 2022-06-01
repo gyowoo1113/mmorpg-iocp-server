@@ -35,7 +35,7 @@ public:
 	string getId() { return m_id; }
 
 	virtual void draw() {
-		if (false == m_active) return;
+		if (false == m_bActive) return;
 
 		m_sprite.setTextureRect(sf::IntRect(m_nStateIndex * 16, 0, 16, 16));
 	
@@ -43,9 +43,9 @@ public:
 	}
 
 	virtual void animDraw() {
-		if (false == m_active) return;
+		if (false == m_bActive) return;
 
-		m_nIdleIndex = (m_nIdleIndex >= m_frameCount) ? 0 : ++m_nIdleIndex;
+		m_nIdleIndex = (m_nIdleIndex >= m_nFrameCount) ? 0 : ++m_nIdleIndex;
 		m_sprite.setTextureRect(sf::IntRect(m_nStateIndex * 16, m_nIdleIndex * 16, 16, 16));
 
 		CGameObject::draw();

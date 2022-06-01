@@ -1,77 +1,44 @@
 #pragma once
 #include "stdafx.h"
 
-class CGameObject
+class CObject
+{
+public:
+	virtual ~CObject() = 0;
+	virtual void draw() = 0;
+	virtual void animDraw() = 0;
+};
+
+class CGameObject : public CObject
 {
 protected:
-	bool m_active;
+	bool m_bActive = false;
 	sf::Sprite m_sprite;
 	int m_nIdleIndex = 0;
 	int m_nStateIndex = 0;
-	int m_frameCount = 0;
+	int m_nFrameCount = 0;
+	int m_x = 0, m_y = 0;
 
 public:
-	int m_x, m_y;
 	CGameObject(sf::Texture& t, int x, int y, int x2, int y2) {
-		m_active = false;
+		m_bActive = false;
 		m_sprite.setTexture(t);
 		m_sprite.setTextureRect(sf::IntRect(x, y, x2, y2));
 	}
 
-	CGameObject() 
-	{
-		m_active = false;
-	}
+	CGameObject() = default;
 
-	void setActive(bool isActive)
-	{
-		m_active = isActive;
-	}
+	void setActive(bool isActive);
+	void spriteMove(int x, int y);
+	void spriteDraw();
+	void move(int x, int y);
+	void setSpriteScale(float x, float y);
+	void setSpriteRect(int x, int y, int x2, int y2);
+	void setState(int index);
+	void setFrameCount(int index);
+	void initIndex();
 
-	void spriteMove(int x, int y) {
-		m_sprite.setPosition((float)x, (float)y);
-	}
-
-	void spriteDraw() {
-		window->draw(m_sprite);
-	}
-
-	void move(int x, int y) {
-		m_x = x;
-		m_y = y;
-	}
-
-	void setSpriteScale(float x, float y) {
-		m_sprite.setScale(sf::Vector2f(x, y));
-	}
-
-	void setSpriteRect(int x, int y, int x2, int y2){
-		m_sprite.setTextureRect(sf::IntRect(x, y, x2, y2));
-	}
-
-	virtual void draw() {
-		if (false == m_active) return;
-
-		float rx = (m_x - ::g_left_x) * (float)TILE_WIDTH;
-		float ry = (m_y - ::g_top_y) * (float)TILE_WIDTH;
-		m_sprite.setPosition(rx, ry);
-		window->draw(m_sprite);
-	}
-
-	virtual void animDraw() {
-
-	}
-
-	void setState(int index) {
-		m_nStateIndex = index;
-	}
-
-	void setFrameCount(int index) {
-		m_frameCount = index - 1;
-	}
-
-	void initIndex() {
-		m_nIdleIndex = 0;
-	}
+	virtual void draw() override;
+	virtual void animDraw() override;
 };
 
