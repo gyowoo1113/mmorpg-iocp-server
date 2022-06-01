@@ -4,7 +4,6 @@
 class CObject
 {
 public:
-	virtual ~CObject() = 0;
 	virtual void draw() = 0;
 	virtual void animDraw() = 0;
 };
@@ -18,14 +17,13 @@ protected:
 	int m_nStateIndex = 0;
 	int m_nFrameCount = 0;
 	int m_x = 0, m_y = 0;
+	int m_nLevel = 1;
+	int m_nHp = 100;
+	string m_sName = "";
 
 public:
-	CGameObject(sf::Texture& t, int x, int y, int x2, int y2) {
-		m_bActive = false;
-		m_sprite.setTexture(t);
-		m_sprite.setTextureRect(sf::IntRect(x, y, x2, y2));
-	}
-
+	CGameObject(sf::Texture& t, int x, int y, int x2, int y2);
+	CGameObject(sf::Texture& t, int x, int y, int x2, int y2, string name, int level, int hp);
 	CGameObject() = default;
 
 	void setActive(bool isActive);
@@ -36,6 +34,7 @@ public:
 	void setSpriteRect(int x, int y, int x2, int y2);
 	void setState(int index);
 	void setFrameCount(int index);
+	void setHp(int hp);
 	void initIndex();
 
 	virtual void draw() override;

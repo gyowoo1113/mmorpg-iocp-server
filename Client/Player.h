@@ -6,88 +6,27 @@
 class CPlayer : public CGameObject
 {
 public:
-	CPlayer(sf::Texture& t, int x, int y, int x2, int y2, std::string id, int level, int hp, int exp)
-		: m_id{ id }, m_level{ level }, m_hp{ hp }, m_exp{ exp }, CGameObject(t, x, y, x2, y2)
-	{
-		calculateMaxExp(); 
-
-		sf::Texture* effectSlash = new sf::Texture;
-		effectSlash->loadFromFile("../Resource/slash.png");
-		m_effectObject = CEffect(*effectSlash, 0, 0, 16, 16,4);
-		m_effectObject.setSpriteScale(2.0f, 2.0f);
-		m_effectObject.setActive(true);
-	};
-	CPlayer()
-	{
-		m_level = 1;
-		m_id = "";
-		m_hp = 100;
-		calculateMaxExp();
-	}
-	~CPlayer() {};
+	CPlayer(sf::Texture& t, int x, int y, int x2, int y2, string id, int level, int hp, int exp);
+	CPlayer();
+	~CPlayer() = default;
 
 	void setParameter(sf::Text& text);
-	void setLevelUp(int RemainExp);
-	void getExp(int exp);
-	void updateExp();
-	void calculateMaxExp();
 	void setStatus(int hp, int level, int exp);
-	string getId() { return m_id; }
+	void setAttack();
+	string getName() { return m_sName; }
+	float getExpRatio();
 
-	virtual void draw() {
-		if (false == m_bActive) return;
+	void calculateMaxExp();
 
-		m_sprite.setTextureRect(sf::IntRect(m_nStateIndex * 16, 0, 16, 16));
-	
-		CGameObject::draw();
-	}
-
-	virtual void animDraw() {
-		if (false == m_bActive) return;
-
-		m_nIdleIndex = (m_nIdleIndex >= m_nFrameCount) ? 0 : ++m_nIdleIndex;
-		m_sprite.setTextureRect(sf::IntRect(m_nStateIndex * 16, m_nIdleIndex * 16, 16, 16));
-
-		CGameObject::draw();
-	}
-
-	void drawAttack() {
-		if (isAttack == false) return;
-
-		m_effectObject.move(m_x - 1, m_y);
-		m_effectObject.draw();
-		m_effectObject.move(m_x + 1, m_y);
-		m_effectObject.draw();
-		m_effectObject.move(m_x, m_y-1);
-		m_effectObject.draw();
-		m_effectObject.move(m_x, m_y+1);
-		m_effectObject.draw();
-
-		m_effectObject.updateIndex();
-
-		if (m_effectObject.isEndFrame())
-		{
-			isAttack = false;
-			m_effectObject.initIndex();
-		}
-	}
-
-	void setAttack(){
-		isAttack = true;
-	}
-
-	float getExpRatio() {
-		return (float) m_exp / (float) m_maxExp;
-	}
+	virtual void draw() override;
+	virtual void animDraw() override;
+	void drawAttack();
 
 private:
-	std::string m_id;
-	int m_level;
-	int m_hp;
-	int m_exp;
-	int m_maxHp = 100;
-	int m_maxExp;
-	bool isAttack = false;
+	int m_nExp;
+	int m_nMaxHp = 100;
+	int m_nMaxExp;
+	bool m_bAttack = false;
 
 	CEffect m_effectObject;
 };

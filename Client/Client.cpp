@@ -394,8 +394,8 @@ Text setTextMessage(string str, bool isSystemMessage)
 
 void setMessage()
 {
-	string chatting = player.getId() + ":" + userChatting;
-	if (chat.size() > 4)
+	string chatting = player.getName() + ":" + userChatting;
+	if (chat.size() > CHAT_LINE)
 		chat.pop_front();
 
 	chat.push_back(setTextMessage(chatting));
@@ -405,7 +405,7 @@ void setMessage()
 
 void setSystemMessage(char* text)
 {
-	if (chat.size() > 4)
+	if (chat.size() > CHAT_LINE)
 		chat.pop_front();
 
 	chat.push_back(setTextMessage(text,true));

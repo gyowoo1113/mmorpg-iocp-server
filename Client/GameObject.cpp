@@ -1,5 +1,18 @@
-#include "GameObject.h"
 #include "stdafx.h"
+#include "GameObject.h"
+
+CGameObject::CGameObject(sf::Texture& t, int x, int y, int x2, int y2)
+{
+	m_sprite.setTexture(t);
+	m_sprite.setTextureRect(sf::IntRect(x, y, x2, y2));
+}
+
+CGameObject::CGameObject(sf::Texture& t, int x, int y, int x2, int y2, string name, int level, int hp)
+: m_sName{ name }, m_nLevel{ level }, m_nHp{ hp }
+{
+	m_sprite.setTexture(t);
+	m_sprite.setTextureRect(sf::IntRect(x, y, x2, y2));
+}
 
 void CGameObject::setActive(bool isActive)
 {
@@ -40,6 +53,11 @@ void CGameObject::setState(int index)
 void CGameObject::setFrameCount(int index)
 {
 	m_nFrameCount = index - 1;
+}
+
+void CGameObject::setHp(int hp)
+{
+	m_nHp = hp;
 }
 
 void CGameObject::initIndex()
