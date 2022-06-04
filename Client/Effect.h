@@ -10,7 +10,8 @@ public:
 
 	virtual void animDraw() override;
 	virtual void draw() override;
-	
+
+	void updateIndex();
 	bool isEndFrame();
 };
 

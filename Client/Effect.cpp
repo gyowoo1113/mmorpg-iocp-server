@@ -29,6 +29,11 @@ void CEffect::draw()
 	CGameObject::draw();
 }
 
+void CEffect::updateIndex()
+{
+	++m_nIdleIndex;
+}
+
 bool CEffect::isEndFrame()
 {
 	return (m_nIdleIndex >= m_nFrameCount);
