@@ -445,6 +445,12 @@ void ProcessPacket(char* ptr)
 	static bool first_time = true;
 	switch (ptr[1])
 	{
+	case SC_LOGIN_FAIL:
+	{
+		cout << "login failed !!!\n";
+		exit(0);
+		break;
+	}
 	case SC_LOGIN_INFO:
 	{
 		SC_LOGIN_INFO_PACKET* packet = reinterpret_cast<SC_LOGIN_INFO_PACKET*>(ptr);

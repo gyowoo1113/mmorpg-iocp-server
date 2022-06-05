@@ -66,6 +66,7 @@ public:
 
 	void rebuild_packet(char* send_buffer, int& remain_data, const ULONG_PTR& key);
 
+	void send_login_fail();
 	void send_login_info_packet();
 	void send_move_packet(int c_id, int client_time);
 	void send_add_object(int c_id);

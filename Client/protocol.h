@@ -14,12 +14,13 @@ constexpr char CS_LOGIN = 0;
 constexpr char CS_MOVE = 1;
 constexpr char CS_ATTACK = 2;
 
-constexpr char SC_LOGIN_INFO = 2;
-constexpr char SC_ADD_PLAYER = 3;
-constexpr char SC_REMOVE_PLAYER = 4;
-constexpr char SC_MOVE_PLAYER = 5;
-constexpr char SC_CHAT = 6;
-constexpr char SC_CHANGE_STATUS = 7;
+constexpr char SC_LOGIN_FAIL = 2;
+constexpr char SC_LOGIN_INFO = 3;
+constexpr char SC_ADD_PLAYER = 4;
+constexpr char SC_REMOVE_PLAYER = 5;
+constexpr char SC_MOVE_PLAYER = 6;
+constexpr char SC_CHAT = 7;
+constexpr char SC_CHANGE_STATUS = 8;
 
 #pragma pack (push, 1)
 
@@ -41,6 +42,11 @@ struct CS_MOVE_PACKET {
 };
 
 struct CS_ATTACK_PACKET {
+	unsigned char size;
+	char	type;
+};
+
+struct SC_LOGIN_FAIL_PACKET {
 	unsigned char size;
 	char	type;
 };

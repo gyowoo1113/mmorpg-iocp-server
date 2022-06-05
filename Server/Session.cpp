@@ -137,6 +137,14 @@ void CSession::rebuild_packet(char* send_buffer, int& remain, const ULONG_PTR& k
 
 // ** packet send ** //
 
+void CSession::send_login_fail()
+{
+	SC_LOGIN_FAIL_PACKET p;
+	p.size = sizeof(SC_LOGIN_FAIL_PACKET);
+	p.type = SC_LOGIN_FAIL;
+	do_send(&p);
+}
+
 void CSession::send_login_info_packet()
 {
 	SC_LOGIN_INFO_PACKET p;
