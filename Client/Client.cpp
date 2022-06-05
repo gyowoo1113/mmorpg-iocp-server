@@ -539,31 +539,31 @@ void send_packet(void* packet)
 void process_data(char* net_buf, size_t io_byte)
 {
 	char* ptr = net_buf;
-	static size_t in_packet_size = 0;
-	static size_t saved_packet_size = 0;
+	static size_t prev_remain = 0;
 	static char packet_buffer[BUF_SIZE];
 
+	io_byte += prev_remain;
+
 	while (0 != io_byte) {
-		if (0 == in_packet_size) in_packet_size = ptr[0];
-		if (io_byte + saved_packet_size >= in_packet_size) {
-			memcpy(packet_buffer + saved_packet_size, ptr, in_packet_size - saved_packet_size);
+		REBUILD_PACKET* packet = reinterpret_cast<REBUILD_PACKET*>(ptr);
+		if (io_byte < packet->size) break;
+		
+		if (io_byte >= packet->size) {
+			memcpy(packet_buffer, ptr, packet->size);
 			ProcessPacket(packet_buffer);
-			ptr += in_packet_size - saved_packet_size;
-			io_byte -= in_packet_size - saved_packet_size;
-			in_packet_size = 0;
-			saved_packet_size = 0;
-		}
-		else {
-			memcpy(packet_buffer + saved_packet_size, ptr, io_byte);
-			saved_packet_size += io_byte;
-			io_byte = 0;
+			ptr += packet->size;
+			io_byte -= packet->size;
 		}
 	}
+
+	prev_remain = io_byte;
+	if (prev_remain > 0)
+		memcpy(packet_buffer, ptr, io_byte);
 }
 
 void receiveData()
 {
-	char net_buf[BUF_SIZE];
+	static char net_buf[BUF_SIZE];
 	size_t	received;
 
 	auto recv_result = socket.receive(net_buf, BUF_SIZE, received);
@@ -572,8 +572,10 @@ void receiveData()
 		wcout << L"Recv 에러!";
 		while (true);
 	}
+	
 	if (recv_result != sf::Socket::NotReady)
 		if (received > 0) process_data(net_buf, received);
+
 }
 
 
