@@ -13,6 +13,8 @@ using namespace std;
 void CreateWindows();
 void setConnectServer();
 void DrawWindows();
+void drawUI();
+void drawPlayers();
 void receiveData();
 void drawMaps();
 void drawChatting();
@@ -186,11 +188,25 @@ void DrawWindows()
 {
 	receiveData();
 
-	player.setParameter(playerText);
-
 	drawMaps();
 	drawChatting();
+	drawPlayers();
+	drawUI();
 
+	window->display();
+	window->clear(Color::Black);
+}
+
+void drawUI()
+{
+	player.setParameter(playerText);
+	shape2.setSize(Vector2f(player.getExpRatio() * WINDOW_WIDTH, EXP_HEIGHT));
+	window->draw(shape2);
+	window->draw(playerText);
+}
+
+void drawPlayers()
+{
 	if (isMoving)
 	{
 		if (direction != -1)
@@ -207,13 +223,6 @@ void DrawWindows()
 	for (auto& pl : npcs) pl.animDraw();
 
 	player.drawAttack();
-
-	shape2.setSize(Vector2f(player.getExpRatio()* WINDOW_WIDTH, EXP_HEIGHT));
-	window->draw(shape2);
-
-	window->draw(playerText);
-	window->display();
-	window->clear(Color::Black);
 }
 
 void drawMaps()
