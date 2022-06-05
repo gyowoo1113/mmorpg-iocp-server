@@ -33,6 +33,14 @@ void process_packet(int c_id, char* packet)
 	switch (packet[1]) {
 		case CS_LOGIN: {
 			CS_LOGIN_PACKET* p = reinterpret_cast<CS_LOGIN_PACKET*>(packet);
+		
+			if (strcmp(p->name, "login"))
+			{
+				clients[c_id].send_login_fail();
+				return;
+			}
+			
+			// ** login success ** // 
 			if (clients[c_id]._state == ST_FREE) {
 				break;
 			}

@@ -427,17 +427,21 @@ void setConnectServer()
 {
 	sf::Socket::Status status = socket.connect("127.0.0.1", PORT_NUM);
 	socket.setBlocking(false);
-
-	CS_LOGIN_PACKET p;
-	p.size = sizeof(CS_LOGIN_PACKET);
-	p.type = CS_LOGIN;
-	strcpy_s(p.name, "TEMP");
-	send_packet(&p);
+	
+	cout << "ID: ";
+	char id[20];
+	scanf_s("%s", id, sizeof(id));
 
 	if (status != sf::Socket::Done) {
 		wcout << L"서버와 연결할 수 없습니다.\n";
 		while (true);
 	}
+
+	CS_LOGIN_PACKET p;
+	p.size = sizeof(CS_LOGIN_PACKET);
+	p.type = CS_LOGIN;
+	strcpy_s(p.name, id);
+	send_packet(&p);
 }
 
 void ProcessPacket(char* ptr)
