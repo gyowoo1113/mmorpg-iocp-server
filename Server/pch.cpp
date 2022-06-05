@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Session.h"
 
+list<USER_DATA> g_database_users;
 concurrent_unordered_set<int> sector[W_WIDTH / 10][W_HEIGHT / 10];
 int tiles[W_WIDTH][W_HEIGHT] = {};
 array<CSession, MAX_USER + NUM_NPC> clients;

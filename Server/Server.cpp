@@ -114,7 +114,6 @@ void process_packet(int c_id, char* packet)
 
 			clients[c_id].process_attack();
 
-
 			break;
 		}
 	}
