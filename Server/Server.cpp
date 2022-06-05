@@ -319,8 +319,6 @@ void move_npc(int npc_id)
 	}
 }
 
-
-
 void do_ai_ver_heart_beat()
 {
 	for (;; ) {
@@ -328,6 +326,21 @@ void do_ai_ver_heart_beat()
 		for (int i = 0; i < NUM_NPC; ++i) {
 			int npc_id = i + MAX_USER;
 			move_npc(npc_id);
+		}
+	}
+}
+
+void initialize_tilemap()
+{
+	ifstream in("../Resource/objects.txt");
+	for (int i = 0; i < W_WIDTH; ++i)
+	{
+		for (int j = 0; j < W_HEIGHT; ++j)
+		{
+			char num;
+			in >> num;
+			int val = num - 'a';
+			tiles[i][j] = (val == 0 || val > 6) ? 0 : 1;
 		}
 	}
 }
@@ -352,17 +365,7 @@ void initialize_npc()
 
 int main()
 {
-	ifstream in("../Resource/objects.txt");
-	for (int i = 0; i < W_WIDTH; ++i)
-	{
-		for (int j = 0; j < W_HEIGHT; ++j)
-		{
-			char num;
-			in >> num;
-			int val = num - 'a';
-			tiles[i][j] = (val == 0 || val > 6) ? 0 : 1;
-		}
-	}
+	initialize_tilemap();
 	initialize_npc();
 
 	WSADATA WSAData;

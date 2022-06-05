@@ -26,6 +26,7 @@ void setSystemMessage(char* text);
 void setMessage();
 
 void process_data(char* net_buf, size_t io_byte);
+void process_remain_data(size_t& prev_remain, const size_t& io_byte, char* net_buf, char* ptr);
 void send_packet(void* packet);
 void ProcessPacket(char* ptr);
 
@@ -559,25 +560,26 @@ void process_data(char* net_buf, size_t io_byte)
 {
 	char* ptr = net_buf;
 	static size_t prev_remain = 0;
-	static char packet_buffer[BUF_SIZE];
 
 	io_byte += prev_remain;
 
-	while (0 != io_byte) {
+	while (io_byte != 0) {
 		REBUILD_PACKET* packet = reinterpret_cast<REBUILD_PACKET*>(ptr);
 		if (io_byte < packet->size) break;
-		
-		if (io_byte >= packet->size) {
-			memcpy(packet_buffer, ptr, packet->size);
-			ProcessPacket(packet_buffer);
-			ptr += packet->size;
-			io_byte -= packet->size;
-		}
+
+		ProcessPacket(ptr);
+		ptr += packet->size;
+		io_byte -= packet->size;
 	}
 
+	process_remain_data(prev_remain, io_byte, net_buf, ptr);
+}
+
+void process_remain_data(size_t& prev_remain, const size_t& io_byte, char* net_buf, char* ptr)
+{
 	prev_remain = io_byte;
-	if (prev_remain > 0)
-		memcpy(packet_buffer, ptr, io_byte);
+	if (prev_remain != 0)
+		memcpy(net_buf, ptr, prev_remain);
 }
 
 void receiveData()
