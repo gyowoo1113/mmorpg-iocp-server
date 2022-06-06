@@ -53,18 +53,14 @@ void process_packet(int c_id, char* packet)
 				break;
 			}
 
-			strcpy_s(clients[c_id]._name, p->name);
+			strcpy_s(clients[c_id]._name, iter->name);
+			clients[c_id].x = iter->x;
+			clients[c_id].y = iter->y;
+			clients[c_id]._level = iter->level;
+			clients[c_id]._exp = iter->exp;
+			clients[c_id]._hp = iter->hp;
 			clients[c_id].send_login_info_packet();
 			clients[c_id]._state = ST_INGAME;
-
-			int x, y;
-			do {
-				x = rand() % W_WIDTH;
-				y = rand() % W_HEIGHT;
-			} while (tiles[x][y]);
-
-			clients[c_id].x = x;
-			clients[c_id].y = y;
 
 			SetSector(c_id);
 
@@ -174,17 +170,14 @@ void disconnect(int c_id)
 	clients[c_id]._state = ST_FREE;
 
 	ChangeSector(c_id, false);
+	update_database(c_id);
 
 	for (auto& pl : clients) {
 		if (pl._id == c_id) continue;
 		if (pl._state != ST_INGAME) {
 			continue;
 		}
-		SC_REMOVE_PLAYER_PACKET p;
-		p.id = c_id;
-		p.size = sizeof(p);
-		p.type = SC_REMOVE_PLAYER;
-		pl.do_send(&p);
+		pl.send_remove_object(c_id);
 	}
 }
 
