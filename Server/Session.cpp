@@ -130,7 +130,7 @@ void CSession::process_packet(char* packet)
 
 			if (iter == g_db_users.end())
 			{
-				send_login_fail();
+				_sendPacket.send_login_fail(*this);
 				return;
 			}
 
@@ -149,7 +149,7 @@ void CSession::process_packet(char* packet)
 			_level = iter->level;
 			_exp = iter->exp;
 			_hp = iter->hp;
-			send_login_info_packet();
+			_sendPacket.send_login_info_packet(*this);
 			_state = ST_INGAME;
 
 			SetSector(_id);
@@ -258,81 +258,30 @@ void CSession::rebuild_packet(char* send_buffer, int& remain)
 
 // ** packet send ** //
 
-void CSession::send_login_fail()
-{
-	SC_LOGIN_FAIL_PACKET p;
-	p.size = sizeof(SC_LOGIN_FAIL_PACKET);
-	p.type = SC_LOGIN_FAIL;
-	do_send(&p);
-}
-
-void CSession::send_login_info_packet()
-{
-	SC_LOGIN_INFO_PACKET p;
-	p.id = _id;
-	p.size = sizeof(SC_LOGIN_INFO_PACKET);
-	p.type = SC_LOGIN_INFO;
-	p.x = x;
-	p.y = y;
-	p.hp = _hp;
-	p.exp = _exp;
-	p.level = _level;
-	do_send(&p);
-}
-
 void CSession::send_move_packet(int c_id, int client_time)
 {
-	SC_MOVE_PLAYER_PACKET p;
-	p.id = c_id;
-	p.size = sizeof(SC_MOVE_PLAYER_PACKET);
-	p.type = SC_MOVE_PLAYER;
-	p.x = clients[c_id].x;
-	p.y = clients[c_id].y;
-	p.client_time = client_time;
-	do_send(&p);
+	_sendPacket.send_move_packet(*this, c_id, client_time);
 }
 
 void CSession::send_add_object(int c_id)
 {
-	SC_ADD_PLAYER_PACKET p;
-	p.id = c_id;
-	p.size = sizeof(SC_ADD_PLAYER_PACKET);
-	p.type = SC_ADD_PLAYER;
-	p.x = clients[c_id].x;
-	p.y = clients[c_id].y;
-	strcpy_s(p.name, clients[c_id]._name);
-	do_send(&p);
+	_sendPacket.send_add_object(*this, c_id);
 }
 
 void CSession::send_chat_packet(int c_id, const char* mess)
 {
-	SC_CHAT_PACKET p;
-	p.id = c_id;
-	p.size = sizeof(SC_CHAT_PACKET) - sizeof(p.mess) + strlen(mess) + 1;
-	p.type = SC_CHAT;
-	strcpy_s(p.mess, mess);
-	do_send(&p);
+	_sendPacket.send_chat_packet(*this, c_id,mess);
 }
 
 void CSession::send_change_status_packet(int c_id)
 {
-	SC_CHANGE_STATUS_PACKET p;
-	p.size = sizeof(SC_CHANGE_STATUS_PACKET);
-	p.type = SC_CHANGE_STATUS;
-	p.id = c_id;
-	p.hp = _hp;
-	p.exp = _exp;
-	p.level = _level;
-	do_send(&p);
+	_sendPacket.send_change_status_packet(*this, c_id);
+
 }
 
 void CSession::send_remove_object(int c_id)
 {
-	SC_REMOVE_PLAYER_PACKET p;
-	p.id = c_id;
-	p.size = sizeof(SC_REMOVE_PLAYER_PACKET);
-	p.type = SC_REMOVE_PLAYER;
-	do_send(&p);
+	_sendPacket.send_remove_object(*this,c_id);
 }
 
 // ** status ** // 

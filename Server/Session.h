@@ -2,6 +2,7 @@
 #include"pch.h"
 #include "over_exp.h"
 #include "Status.h"
+#include "SendPacket.h"
 
 enum SESSION_STATE { ST_FREE, ST_ACCEPTED, ST_INGAME };
 
@@ -33,7 +34,10 @@ public:
 
 	chrono::system_clock::time_point next_move_time;
 
+private:
 	CStatus _status;
+	CSendPacket _sendPacket;
+
 public:
 	CSession()
 	{
