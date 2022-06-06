@@ -17,7 +17,6 @@ void CStatus::updateExp(CSession& client)
     client._exp += mon_level * mon_level * 2;
     if (client._maxExp <= client._exp)
         setLevelUp(client,client._exp - client._maxExp);
-
 }
 
 void CStatus::calculateMaxExp(CSession& client)

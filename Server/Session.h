@@ -47,7 +47,7 @@ public:
 		_sector_x = x / 10;
 		_sector_y = y / 10;
 		next_move_time = chrono::system_clock::now() + chrono::seconds(1);
-		calculateMaxExp();
+		_status.calculateMaxExp(*this);
 	}
 	~CSession() {}
 
@@ -87,10 +87,6 @@ public:
 	void process_attack();
 
 	bool decreaseHp(int hp);
-	void updateExp();
-	void calculateMaxExp();
-	void setLevelUp(int remainExp);
-
 	friend class CStatus;
 };
 
