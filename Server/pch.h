@@ -40,7 +40,6 @@ int distance(int a, int b);
 void disconnect(int c_id);
 void update_move_clients(int c_id, char& direction);
 bool isMonsterCollisionAttack(int& monster_id, int& p_id);
-void process_packet(int c_id, char* packet);
 
 #include "Sector.h"
 #include "Database.h"

@@ -25,100 +25,6 @@ int get_new_client_id()
 	return -1;
 }
 
-void process_packet(int c_id, char* packet)
-{
-	if (c_id < 0 || c_id > MAX_USER - 1) return;
-
-
-	switch (packet[1]) {
-		case CS_LOGIN: {
-			CS_LOGIN_PACKET* p = reinterpret_cast<CS_LOGIN_PACKET*>(packet);
-		
-			auto iter = find_if(g_db_users.begin(), g_db_users.end(), [&p](const USER_DATA user) {
-				return strcmp(p->name, user.name) == 0;
-			});
-
-			if (iter == g_db_users.end())
-			{
-				clients[c_id].send_login_fail();
-				return;
-			}
-			
-			// ** login success ** // 
-			if (clients[c_id]._state == ST_FREE) {
-				break;
-			}
-			if (clients[c_id]._state == ST_INGAME) {
-				disconnect(c_id);
-				break;
-			}
-
-			strcpy_s(clients[c_id]._name, iter->name);
-			clients[c_id].x = iter->x;
-			clients[c_id].y = iter->y;
-			clients[c_id]._level = iter->level;
-			clients[c_id]._exp = iter->exp;
-			clients[c_id]._hp = iter->hp;
-			clients[c_id].send_login_info_packet();
-			clients[c_id]._state = ST_INGAME;
-
-			SetSector(c_id);
-
-			for (int i = 0; i < MAX_USER; ++i) {
-				auto& pl = clients[i];
-				if (pl._id == c_id) continue;
-				if (ST_INGAME != pl._state) {
-					continue;
-				}
-				if (RANGE >= distance(c_id, pl._id)) {
-					pl.vl.lock();
-					pl.view_list.insert(c_id);
-					pl.vl.unlock();
-					pl.send_add_object(c_id);
-				}
-			}
-
-			for (auto& pl : clients) {
-				if (pl._id == c_id) continue;
-				if (ST_INGAME != pl._state) continue;
-
-				if (RANGE >= distance(pl._id, c_id)) {
-					clients[c_id].vl.lock();
-					clients[c_id].view_list.insert(pl._id);
-					clients[c_id].vl.unlock();
-					clients[c_id].send_add_object(pl._id);
-				}
-			}
-
-
-			break;
-		}
-
-		case CS_MOVE: {
-			CS_MOVE_PACKET* p = reinterpret_cast<CS_MOVE_PACKET*>(packet);
-
-			update_move_clients(c_id, p->direction);
-			CheckMoveSector(c_id);
-
-			unordered_set<int> new_nl;
-			new_nl = MakeNearList(c_id);
-
-			clients[c_id].update_move_view_list(p, new_nl);
-			clients[c_id].check_erase_view_list(new_nl);
-
-			break;
-		}
-
-		case CS_ATTACK: {
-			CS_ATTACK_PACKET* p = reinterpret_cast<CS_ATTACK_PACKET*>(packet);
-
-			clients[c_id].process_attack();
-
-			break;
-		}
-	}
-}
-
 void update_move_clients(int c_id, char& direction)
 {
 	short x = clients[c_id].x;
@@ -227,7 +133,7 @@ void do_worker()
 			if (0 == num_bytes) disconnect(key);
 			int remain_data = num_bytes + clients[key]._prev_remain;
 
-			clients[key].rebuild_packet(ex_over->_send_buf, remain_data, key);
+			clients[key].rebuild_packet(ex_over->_send_buf, remain_data);
 			clients[key].do_recv();
 			break;
 		}

@@ -64,7 +64,7 @@ public:
 		WSASend(_socket, &sdata->_wsabuf, 1, 0, 0, &sdata->_over, 0);
 	}
 
-	void rebuild_packet(char* send_buffer, int& remain_data, const ULONG_PTR& key);
+	void rebuild_packet(char* send_buffer, int& remain_data);
 
 	void send_login_fail();
 	void send_login_info_packet();
@@ -80,6 +80,7 @@ public:
 	void check_view_list(int& c_id, CS_MOVE_PACKET* p);
 	void remove_view_list(int& view);
 
+	void process_packet(char* packet);
 	void process_attack();
 
 	bool decreaseHp(int hp);

@@ -87,6 +87,98 @@ void CSession::remove_view_list(int& view)
 
 // ** packet process ** //
 
+void CSession::process_packet(char* packet)
+{
+	if (_id < 0 || _id > MAX_USER - 1) return;
+
+	switch (packet[1]) {
+		case CS_LOGIN: {
+			CS_LOGIN_PACKET* p = reinterpret_cast<CS_LOGIN_PACKET*>(packet);
+
+			auto iter = find_if(g_db_users.begin(), g_db_users.end(), [&p](const USER_DATA user) {
+				return strcmp(p->name, user.name) == 0;
+			});
+
+			if (iter == g_db_users.end())
+			{
+				send_login_fail();
+				return;
+			}
+
+			// ** login success ** // 
+			if (_state == ST_FREE) {
+				break;
+			}
+			if (_state == ST_INGAME) {
+				disconnect(_id);
+				break;
+			}
+
+			strcpy_s(_name, iter->name);
+			x = iter->x;
+			y = iter->y;
+			_level = iter->level;
+			_exp = iter->exp;
+			_hp = iter->hp;
+			send_login_info_packet();
+			_state = ST_INGAME;
+
+			SetSector(_id);
+
+			for (int i = 0; i < MAX_USER; ++i) {
+				auto& pl = clients[i];
+				if (pl._id == _id) continue;
+				if (ST_INGAME != pl._state) {
+					continue;
+				}
+				if (RANGE >= distance(_id, pl._id)) {
+					pl.vl.lock();
+					pl.view_list.insert(_id);
+					pl.vl.unlock();
+					pl.send_add_object(_id);
+				}
+			}
+
+			for (auto& pl : clients) {
+				if (pl._id == _id) continue;
+				if (ST_INGAME != pl._state) continue;
+
+				if (RANGE >= distance(pl._id, _id)) {
+					vl.lock();
+					view_list.insert(pl._id);
+					vl.unlock();
+					send_add_object(pl._id);
+				}
+			}
+
+
+			break;
+		}
+
+		case CS_MOVE: {
+			CS_MOVE_PACKET* p = reinterpret_cast<CS_MOVE_PACKET*>(packet);
+
+			update_move_clients(_id, p->direction);
+			CheckMoveSector(_id);
+
+			unordered_set<int> new_nl;
+			new_nl = MakeNearList(_id);
+
+			update_move_view_list(p, new_nl);
+			check_erase_view_list(new_nl);
+
+			break;
+		}
+
+		case CS_ATTACK: {
+			CS_ATTACK_PACKET* p = reinterpret_cast<CS_ATTACK_PACKET*>(packet);
+			process_attack();
+
+			break;
+		}
+	}
+}
+
 void CSession::process_attack()
 {
 	vl.lock();
@@ -117,7 +209,7 @@ void CSession::process_attack()
 	}
 }
 
-void CSession::rebuild_packet(char* send_buffer, int& remain, const ULONG_PTR& key)
+void CSession::rebuild_packet(char* send_buffer, int& remain)
 {
 	char* temp = send_buffer;
 	
@@ -126,7 +218,7 @@ void CSession::rebuild_packet(char* send_buffer, int& remain, const ULONG_PTR& k
 		REBUILD_PACKET* packet = reinterpret_cast<REBUILD_PACKET*>(temp);
 		if (packet->size > remain) break;
 
-		process_packet(static_cast<int>(key), temp);
+		process_packet(temp);
 		temp += packet->size;
 		remain -= packet->size;
 	}
