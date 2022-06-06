@@ -8,4 +8,5 @@
 
 
 void load_database();
+void update_database(int id);
 void ShowError(SQLHANDLE hHandle, SQLSMALLINT hType, RETCODE RetCode);
