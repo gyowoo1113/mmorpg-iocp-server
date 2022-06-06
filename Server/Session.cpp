@@ -85,6 +85,35 @@ void CSession::remove_view_list(int& view)
 	send_remove_object(view);
 }
 
+unordered_set<int> CSession::MakeNearList()
+{
+	int nearDirectionX[9] = { -1,-1,-1,0,0,0,1,1,1 };
+	int nearDirectionY[9] = { -1,0,1,-1,0,1,-1,0,1 };
+	int h = W_HEIGHT / 10;
+	int w = W_WIDTH / 10;
+
+	unordered_set<int> new_near_list;
+
+	for (int i = 0; i < 9; ++i)
+	{
+		int dirX = _sector_x + nearDirectionX[i];
+		int dirY = _sector_y + nearDirectionY[i];
+
+		if (dirX < 0 || dirY < 0 || dirX > w - 1 || dirY > h - 1) continue;
+
+		for (auto id : sector[dirX][dirY])
+		{
+			if (_id == id) continue;
+			if (RANGE >= distance(_id, id))
+			{
+				new_near_list.insert(id);
+			}
+		}
+	}
+
+	return (new_near_list);
+}
+
 // ** packet process ** //
 
 void CSession::process_packet(char* packet)
@@ -162,7 +191,7 @@ void CSession::process_packet(char* packet)
 			CheckMoveSector(_id);
 
 			unordered_set<int> new_nl;
-			new_nl = MakeNearList(_id);
+			new_nl = MakeNearList();
 
 			update_move_view_list(p, new_nl);
 			check_erase_view_list(new_nl);

@@ -79,6 +79,7 @@ public:
 	void check_erase_view_list(std::unordered_set<int>& new_nl);
 	void check_view_list(int& c_id, CS_MOVE_PACKET* p);
 	void remove_view_list(int& view);
+	unordered_set<int> MakeNearList();
 
 	void process_packet(char* packet);
 	void process_attack();
