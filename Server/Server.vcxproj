@@ -155,6 +155,7 @@
     <ClCompile Include="Sector.cpp" />
     <ClCompile Include="Server.cpp" />
     <ClCompile Include="Session.cpp" />
+    <ClCompile Include="Status.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\Client\protocol.h" />
@@ -164,6 +165,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="Sector.h" />
     <ClInclude Include="Session.h" />
+    <ClInclude Include="Status.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

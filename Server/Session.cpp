@@ -223,7 +223,7 @@ void CSession::process_attack()
 		
 		if (is_dying)
 		{
-			updateExp(mon);
+			updateExp();
 			send_change_status_packet(_id);
 		}
 
@@ -339,30 +339,20 @@ void CSession::send_remove_object(int c_id)
 
 bool CSession::decreaseHp(int hp)
 {
-	_hp -= hp;
-	if (_hp <= 0)
-		return true;
-
-	return false;
+	return _status.decreaseHp(*this,hp);
 }
 
 void CSession::setLevelUp(int remainExp)
 {
-	++_level;
-	_maxExp = _maxExp * 2;
-	_exp = remainExp;
-	calculateMaxExp();
+	_status.setLevelUp(*this, remainExp);
 }
 
-void CSession::updateExp(int c_id)
+void CSession::updateExp()
 {
-	int mon_level = clients[c_id]._level;
-	_exp += mon_level * mon_level * 2;
-	if (_maxExp <= _exp)
-		setLevelUp(_exp - _maxExp);
+	_status.updateExp(*this);
 }
 
 void CSession::calculateMaxExp()
 {
-	_maxExp = pow(2, _level - 1) * 100;
+	_status.calculateMaxExp(*this);
 }

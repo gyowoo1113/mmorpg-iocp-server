@@ -1,6 +1,7 @@
 #pragma once
 #include"pch.h"
 #include "over_exp.h"
+#include "Status.h"
 
 enum SESSION_STATE { ST_FREE, ST_ACCEPTED, ST_INGAME };
 
@@ -19,6 +20,10 @@ public:
 	unordered_set<int> view_list;
 	mutex vl;
 
+	atomic<int> _target_id = -1;
+	mutex _pathl;
+	stack<pair<int, int>> pathfind_pos;
+
 	short _sector_x, _sector_y;
 
 	atomic<int> _hp = 100;
@@ -26,12 +31,9 @@ public:
 	atomic<int> _exp = 0;
 	atomic<int> _maxExp = 0;
 
-	atomic<int> _target_id = -1;
-
-	mutex _pathl;
-	stack<pair<int, int>> pathfind_pos;
-	
 	chrono::system_clock::time_point next_move_time;
+
+	CStatus _status;
 public:
 	CSession()
 	{
@@ -85,8 +87,10 @@ public:
 	void process_attack();
 
 	bool decreaseHp(int hp);
-	void updateExp(int c_id);
+	void updateExp();
 	void calculateMaxExp();
 	void setLevelUp(int remainExp);
+
+	friend class CStatus;
 };
 
