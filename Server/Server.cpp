@@ -34,7 +34,11 @@ void process_packet(int c_id, char* packet)
 		case CS_LOGIN: {
 			CS_LOGIN_PACKET* p = reinterpret_cast<CS_LOGIN_PACKET*>(packet);
 		
-			if (strcmp(p->name, "login"))
+			auto iter = find_if(g_db_users.begin(), g_db_users.end(), [&p](const USER_DATA user) {
+				return strcmp(p->name, user.name) == 0;
+			});
+
+			if (iter == g_db_users.end())
 			{
 				clients[c_id].send_login_fail();
 				return;
@@ -366,6 +370,7 @@ int main()
 {
 	initialize_tilemap();
 	initialize_npc();
+	load_database();
 
 	WSADATA WSAData;
 	WSAStartup(MAKEWORD(2, 2), &WSAData);

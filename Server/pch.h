@@ -25,9 +25,13 @@ extern constexpr int RANGE = 5;
 class CSession;
 struct USER_DATA
 {
+	int x, y;
+	char name[20];
+	int level, exp;
+	int hp;
 };
 
-extern list<USER_DATA> g_database_users;
+extern list<USER_DATA> g_db_users;
 extern concurrent_unordered_set<int> sector[W_WIDTH / 10][W_HEIGHT / 10];
 extern int tiles[W_WIDTH][W_HEIGHT];
 extern array<CSession, MAX_USER + NUM_NPC> clients;
@@ -39,3 +43,4 @@ bool isMonsterCollisionAttack(int& monster_id, int& p_id);
 void process_packet(int c_id, char* packet);
 
 #include "Sector.h"
+#include "Database.h"
