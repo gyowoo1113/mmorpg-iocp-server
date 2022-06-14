@@ -456,9 +456,9 @@ void ProcessPacket(char* ptr)
 		exit(0);
 		break;
 	}
-	case SC_LOGIN_INFO:
+	case SC_LOGIN_OK:
 	{
-		SC_LOGIN_INFO_PACKET* packet = reinterpret_cast<SC_LOGIN_INFO_PACKET*>(ptr);
+		SC_LOGIN_OK_PACKET* packet = reinterpret_cast<SC_LOGIN_OK_PACKET*>(ptr);
 		g_myid = packet->id;
 		player.move(packet->x, packet->y);
 		::g_left_x = packet->x - SCREEN_WIDTH/2;
@@ -469,9 +469,9 @@ void ProcessPacket(char* ptr)
 		break;
 	}
 
-	case SC_ADD_PLAYER:
+	case SC_ADD_OBJECT:
 	{
-		SC_ADD_PLAYER_PACKET* my_packet = reinterpret_cast<SC_ADD_PLAYER_PACKET*>(ptr);
+		SC_ADD_OBJECT_PACKET* my_packet = reinterpret_cast<SC_ADD_OBJECT_PACKET*>(ptr);
 		int id = my_packet->id;
 
 		if (id < MAX_USER) {
@@ -485,9 +485,9 @@ void ProcessPacket(char* ptr)
 		break;
 	}
 
-	case SC_MOVE_PLAYER:
+	case SC_MOVE_OBJECT:
 	{
-		SC_MOVE_PLAYER_PACKET* my_packet = reinterpret_cast<SC_MOVE_PLAYER_PACKET*>(ptr);
+		SC_MOVE_OBJECT_PACKET* my_packet = reinterpret_cast<SC_MOVE_OBJECT_PACKET*>(ptr);
 		int other_id = my_packet->id;
 		if (other_id == g_myid) {
 			::g_left_x = my_packet->x - SCREEN_WIDTH / 2;
@@ -503,9 +503,9 @@ void ProcessPacket(char* ptr)
 		break;
 	}
 
-	case SC_REMOVE_PLAYER:
+	case SC_REMOVE_OBJECT:
 	{
-		SC_REMOVE_PLAYER_PACKET* my_packet = reinterpret_cast<SC_REMOVE_PLAYER_PACKET*>(ptr);
+		SC_REMOVE_OBJECT_PACKET* my_packet = reinterpret_cast<SC_REMOVE_OBJECT_PACKET*>(ptr);
 		int other_id = my_packet->id;
 		if (other_id == g_myid) {
 			player.setActive(false);
@@ -527,9 +527,9 @@ void ProcessPacket(char* ptr)
 			setSystemMessage(my_packet->mess);
 		break;
 	}
-	case SC_CHANGE_STATUS:
+	case SC_STAT_CHANGE:
 	{	
-		SC_CHANGE_STATUS_PACKET* packet = reinterpret_cast<SC_CHANGE_STATUS_PACKET*>(ptr);
+		SC_STAT_CHANGE_PACKET* packet = reinterpret_cast<SC_STAT_CHANGE_PACKET*>(ptr);
 		int c_id = packet->id;
 
 		if (c_id == g_myid) {
