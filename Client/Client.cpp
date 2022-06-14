@@ -26,7 +26,6 @@ void setSystemMessage(char* text);
 void setMessage();
 
 void process_data(char* net_buf, size_t io_byte);
-void process_remain_data(size_t& prev_remain, const size_t& io_byte, char* net_buf, char* ptr);
 void send_packet(void* packet);
 void ProcessPacket(char* ptr);
 
@@ -559,32 +558,31 @@ void send_packet(void* packet)
 void process_data(char* net_buf, size_t io_byte)
 {
 	char* ptr = net_buf;
-	static size_t prev_remain = 0;
+	static size_t in_packet_size = 0;
+	static size_t saved_packet_size = 0;
+	static char packet_buffer[BUF_SIZE];
 
-	io_byte += prev_remain;
-
-	while (io_byte != 0) {
-		REBUILD_PACKET* packet = reinterpret_cast<REBUILD_PACKET*>(ptr);
-		if (io_byte < packet->size) break;
-
-		ProcessPacket(ptr);
-		ptr += packet->size;
-		io_byte -= packet->size;
+	while (0 != io_byte) {
+		if (0 == in_packet_size) in_packet_size = ptr[0];
+		if (io_byte + saved_packet_size >= in_packet_size) {
+			memcpy(packet_buffer + saved_packet_size, ptr, in_packet_size - saved_packet_size);
+			ProcessPacket(packet_buffer);
+			ptr += in_packet_size - saved_packet_size;
+			io_byte -= in_packet_size - saved_packet_size;
+			in_packet_size = 0;
+			saved_packet_size = 0;
+		}
+		else {
+			memcpy(packet_buffer + saved_packet_size, ptr, io_byte);
+			saved_packet_size += io_byte;
+			io_byte = 0;
+		}
 	}
-
-	process_remain_data(prev_remain, io_byte, net_buf, ptr);
-}
-
-void process_remain_data(size_t& prev_remain, const size_t& io_byte, char* net_buf, char* ptr)
-{
-	prev_remain = io_byte;
-	if (prev_remain != 0)
-		memcpy(net_buf, ptr, prev_remain);
 }
 
 void receiveData()
 {
-	static char net_buf[BUF_SIZE];
+	char net_buf[BUF_SIZE];
 	size_t	received;
 
 	auto recv_result = socket.receive(net_buf, BUF_SIZE, received);
