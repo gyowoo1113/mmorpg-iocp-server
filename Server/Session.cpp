@@ -242,7 +242,7 @@ void CSession::rebuild_packet(char* send_buffer, int& remain)
 {
 	char* temp = send_buffer;
 	
-	while (remain != 0) 
+	while (remain > 0) 
 	{
 		REBUILD_PACKET* packet = reinterpret_cast<REBUILD_PACKET*>(temp);
 		if (packet->size > remain) break;

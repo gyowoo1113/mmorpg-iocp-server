@@ -87,6 +87,13 @@ void disconnect(int c_id)
 	}
 }
 
+
+void accept_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
+void recv_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
+void send_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
+
+
+typedef void (*funcion_pointer)(OVER_EXP*, DWORD&, ULONG_PTR&);
 void do_worker()
 {
 	while (true) {
@@ -105,44 +112,50 @@ void do_worker()
 			}
 		}
 
-		switch (ex_over->_comp_type) {
-		case OP_ACCEPT: {
-			SOCKET c_socket = reinterpret_cast<SOCKET>(ex_over->_wsabuf.buf);
-			int client_id = get_new_client_id();
-			if (client_id != -1) {
-				clients[client_id].x = 0;
-				clients[client_id].y = 0;
-				clients[client_id]._id = client_id;
-				clients[client_id]._name[0] = 0;
-				clients[client_id]._prev_remain = 0;
-				clients[client_id]._socket = c_socket;
-				CreateIoCompletionPort(reinterpret_cast<HANDLE>(c_socket), handle_iocp, client_id, 0);
-				clients[client_id].do_recv();
-				c_socket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
-			}
-			else {
-				cout << "Max user exceeded.\n";
-			}
-			ZeroMemory(&ex_over->_over, sizeof(ex_over->_over));
-			ex_over->_wsabuf.buf = reinterpret_cast<CHAR*>(c_socket);
-			int addr_size = sizeof(SOCKADDR_IN);
-			AcceptEx(server_socket, c_socket, ex_over->_send_buf, 0, addr_size + 16, addr_size + 16, 0, &ex_over->_over);
-			break;
-		}
-		case OP_RECV: {
-			if (0 == num_bytes) disconnect(key);
-			int remain_data = num_bytes + clients[key]._prev_remain;
-
-			clients[key].rebuild_packet(ex_over->_send_buf, remain_data);
-			clients[key].do_recv();
-			break;
-		}
-		case OP_SEND:
-			if (0 == num_bytes) disconnect(key);
-			delete ex_over;
-			break;
-		}
+		funcion_pointer fp[static_cast<int>(COMP_TYPE::length)]
+			= { &accept_client, &recv_client,&send_client };
+		(*fp[static_cast<int>(ex_over->_comp_type)])(ex_over, num_bytes, key);
 	}
+}
+
+
+void accept_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
+{
+	SOCKET c_socket = reinterpret_cast<SOCKET>(ex_over->_wsabuf.buf);
+	int client_id = get_new_client_id();
+	if (client_id != -1) {
+		clients[client_id].x = 0;
+		clients[client_id].y = 0;
+		clients[client_id]._id = client_id;
+		clients[client_id]._name[0] = 0;
+		clients[client_id]._prev_remain = 0;
+		clients[client_id]._socket = c_socket;
+		CreateIoCompletionPort(reinterpret_cast<HANDLE>(c_socket), handle_iocp, client_id, 0);
+		clients[client_id].do_recv();
+		c_socket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
+	}
+	else {
+		cout << "Max user exceeded.\n";
+	}
+	ZeroMemory(&ex_over->_over, sizeof(ex_over->_over));
+	ex_over->_wsabuf.buf = reinterpret_cast<CHAR*>(c_socket);
+	int addr_size = sizeof(SOCKADDR_IN);
+	AcceptEx(server_socket, c_socket, ex_over->_send_buf, 0, addr_size + 16, addr_size + 16, 0, &ex_over->_over);
+}
+
+void recv_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
+{
+	if (0 == num_bytes) disconnect(key);
+	int remain_data = num_bytes + clients[key]._prev_remain;
+
+	clients[key].rebuild_packet(ex_over->_send_buf, remain_data);
+	clients[key].do_recv();
+}
+
+void send_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
+{
+	if (0 == num_bytes) disconnect(key);
+	delete ex_over;
 }
 
 

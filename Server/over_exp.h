@@ -2,7 +2,7 @@
 #include "pch.h"
 
 
-enum COMP_TYPE { OP_ACCEPT, OP_RECV, OP_SEND };
+enum COMP_TYPE { OP_ACCEPT, OP_RECV, OP_SEND , length};
 
 class OVER_EXP {
 public:
