@@ -37,9 +37,10 @@ extern int tiles[W_WIDTH][W_HEIGHT];
 extern array<CSession, MAX_USER + NUM_NPC> clients;
 
 int distance(int a, int b);
-void disconnect(int c_id);
 void update_move_clients(int c_id, char& direction);
 bool isMonsterCollisionAttack(int& monster_id, int& p_id);
 
 #include "Sector.h"
 #include "Database.h"
+#include "Astar.h"
+#include "World.h"

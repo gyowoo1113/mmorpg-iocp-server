@@ -139,7 +139,7 @@ void CSession::process_packet(char* packet)
 				break;
 			}
 			if (_state == ST_INGAME) {
-				disconnect(_id);
+				World::instance().disconnect(_id);
 				break;
 			}
 
