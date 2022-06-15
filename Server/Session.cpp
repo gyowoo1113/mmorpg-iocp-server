@@ -226,7 +226,7 @@ void CSession::process_attack()
 
 		if (is_dying)
 		{
-			_status.updateExp(*this);
+			_status.updateExp(*this, mon);
 			send_change_status_packet(_id);
 		}
 	}

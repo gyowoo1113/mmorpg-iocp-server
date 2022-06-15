@@ -24,12 +24,23 @@ void CStatus::healHp(CSession& client)
     }
 }
 
-void CStatus::updateExp(CSession& client)
+void CStatus::updateExp(CSession& client, int mon_id)
 {
-    int mon_level = client._level;
-    client._exp += mon_level * mon_level * 2;
+    int mon_level = clients[mon_id]._level;
+    int gainExp = mon_level * mon_level * 2;
+    int mtype = clients[mon_id].monsterMoveType + 1;
+    int type = clients[mon_id].monsterType + 1;
+
+    gainExp *= mtype;
+    gainExp *= type;
+
+    client._exp += gainExp;
     if (client._maxExp <= client._exp)
         setLevelUp(client,client._exp - client._maxExp);
+
+    string user(client._name), mons(clients[mon_id]._name);
+    string mess = "User:" + user + " kill to " + mons + ", gain " + to_string(gainExp) + " Exp";
+    client.chatSystemMessage(mess);
 }
 
 void CStatus::calculateMaxExp(CSession& client)

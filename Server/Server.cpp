@@ -66,7 +66,6 @@ void move_npc(int npc_id)
 
 	char dir = static_cast<char>(rand() % 4);
 	update_move_clients(npc_id,dir);
-
 	CheckMoveSector(npc_id);
 
 	unordered_set<int> new_vl;
