@@ -22,7 +22,7 @@
 using namespace concurrency;
 using namespace chrono;
 
-extern constexpr int RANGE = 5;
+extern constexpr int RANGE = 7;
 class CSession;
 struct USER_DATA
 {

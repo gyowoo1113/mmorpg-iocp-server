@@ -1,6 +1,35 @@
 #include "pch.h"
 #include "Session.h"
 
+
+// ** init ** //
+
+
+CSession::CSession()
+{
+	_id = -1;
+	_socket = 0;
+	x = rand() % W_WIDTH;
+	y = rand() % W_HEIGHT;
+	_name[0] = 0;
+	_state = ST_FREE;
+	_prev_remain = 0;
+	_sector_x = x / 10;
+	_sector_y = y / 10;
+	next_move_time = chrono::system_clock::now() + chrono::seconds(1);
+	_status.calculateMaxExp(*this);
+}
+
+void CSession::init(SOCKET& socket, int id)
+{
+	x = 0;
+	y = 0;
+	_id = id;
+	_name[0] = 0;
+	_prev_remain = 0;
+	_socket = socket;
+}
+
 // ** view list ** //
 void CSession::update_move_view_list(CS_MOVE_PACKET* p, std::unordered_set<int>& new_nl)
 {
@@ -143,6 +172,7 @@ void CSession::process_packet(char* packet)
 				break;
 			}
 
+
 			strcpy_s(_name, iter->name);
 			x = iter->x;
 			y = iter->y;
@@ -185,31 +215,36 @@ void CSession::process_packet(char* packet)
 		}
 
 		case CS_MOVE: {
-			CS_MOVE_PACKET* p = reinterpret_cast<CS_MOVE_PACKET*>(packet);
-
-			update_move_clients(_id, p->direction);
-			CheckMoveSector(_id);
-
-			unordered_set<int> new_nl;
-			new_nl = MakeNearList();
-
-			update_move_view_list(p, new_nl);
-			check_erase_view_list(new_nl);
+			moveObject(packet);
 
 			break;
 		}
 
 		case CS_ATTACK: {
-			CS_ATTACK_PACKET* p = reinterpret_cast<CS_ATTACK_PACKET*>(packet);
-			process_attack();
+			process_attack(packet);
 
 			break;
 		}
 	}
 }
 
-void CSession::process_attack()
+void CSession::moveObject(char* packet)
 {
+	CS_MOVE_PACKET* p = reinterpret_cast<CS_MOVE_PACKET*>(packet);
+
+	update_move_clients(_id, p->direction);
+	CheckMoveSector(_id);
+
+	unordered_set<int> new_nl;
+	new_nl = MakeNearList();
+
+	update_move_view_list(p, new_nl);
+	check_erase_view_list(new_nl);
+}
+
+void CSession::process_attack(char* packet)
+{
+	CS_ATTACK_PACKET* p = reinterpret_cast<CS_ATTACK_PACKET*>(packet);
 	vl.lock();
 	unordered_set<int> search_vl =view_list;
 	vl.unlock();
@@ -235,16 +270,6 @@ void CSession::process_attack()
 void CSession::chatSystemMessage(std::string& mess)
 {
 	send_chat_packet(-1, mess.c_str());
-}
-
-void CSession::init(SOCKET& socket, int id )
-{
-	x = 0;
-	y = 0;
-	_id = id;
-	_name[0] = 0;
-	_prev_remain = 0;
-	_socket = socket;
 }
 
 void CSession::rebuild_packet(char* send_buffer, int& remain)
@@ -285,7 +310,6 @@ void CSession::send_chat_packet(int c_id, const char* mess)
 void CSession::send_change_status_packet(int c_id)
 {
 	_sendPacket.send_change_status_packet(*this, c_id);
-
 }
 
 void CSession::send_remove_object(int c_id)

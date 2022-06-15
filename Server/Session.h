@@ -43,20 +43,7 @@ private:
 	CSendPacket _sendPacket;
 
 public:
-	CSession()
-	{
-		_id = -1;
-		_socket = 0;
-		x = rand() % W_WIDTH;
-		y = rand() % W_HEIGHT;
-		_name[0] = 0;
-		_state = ST_FREE;
-		_prev_remain = 0;
-		_sector_x = x / 10;
-		_sector_y = y / 10;
-		next_move_time = chrono::system_clock::now() + chrono::seconds(1);
-		_status.calculateMaxExp(*this);
-	}
+	CSession();
 	~CSession() {}
 
 	void init(SOCKET& socket,int id);
@@ -92,7 +79,9 @@ public:
 	unordered_set<int> MakeNearList();
 
 	void process_packet(char* packet);
-	void process_attack();
+	void moveObject(char* packet);
+	void process_attack(char* packet);
+
 	void chatSystemMessage(std::string& mess);
 
 	bool decreaseHp(int hp);
