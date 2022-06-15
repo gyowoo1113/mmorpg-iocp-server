@@ -166,6 +166,7 @@ void eventTimer()
 	while (true)
 	{
 		
+		World::instance().getTimer().update();
 	}
 }
 
@@ -215,10 +216,10 @@ int main()
 	AcceptEx(server_socket, c_socket, a_over._send_buf, 0, addr_size + 16, addr_size + 16, 0, &a_over._over);
 
 	vector <thread> worker_threads;
-	for (int i = 0; i < 6; ++i)
+	for (int i = 0; i < 5; ++i)
 		worker_threads.emplace_back(do_worker);
-	thread ai_thread{ do_ai_ver_heart_beat };
-	ai_thread.join();
+	thread timer_thread{ eventTimer };
+	timer_thread.join();
 	for (auto& th : worker_threads)
 		th.join();
 

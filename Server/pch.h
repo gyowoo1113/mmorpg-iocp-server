@@ -20,6 +20,7 @@
 #include "Session.h"
 
 using namespace concurrency;
+using namespace chrono;
 
 extern constexpr int RANGE = 5;
 class CSession;
