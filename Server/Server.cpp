@@ -64,8 +64,8 @@ void move_npc(int npc_id)
 		if (distance(npc_id, i) <= RANGE) old_vl.insert(i);
 	}
 
-	//char dir = static_cast<char>(rand() % 4);
-	//update_move_clients(npc_id,dir);
+	char dir = static_cast<char>(rand() % 4);
+	update_move_clients(npc_id,dir);
 
 	CheckMoveSector(npc_id);
 
@@ -82,10 +82,6 @@ void move_npc(int npc_id)
 			clients[p_id].view_list.insert(npc_id);
 			clients[p_id].vl.unlock();
 			clients[p_id].send_add_object(npc_id);
-
-			clients[npc_id]._target_id = p_id;
-			cout << npc_id << ":find" << endl;
-
 		}
 		else {
 			clients[p_id].send_move_packet(npc_id, 0);
@@ -105,28 +101,6 @@ void move_npc(int npc_id)
 				clients[p_id].vl.unlock();
 			}
 		}
-	}
-
-	if (clients[npc_id]._target_id != -1)
-	{
-		int target = clients[npc_id]._target_id;
-		CAstar astar;
-		pair<int, int> pos;
-
-		clients[npc_id]._pathl.lock();
-		astar.searchRoad(clients[npc_id].pathfind_pos, clients[npc_id].x, clients[npc_id].y, clients[target].x, clients[target].y);
-		if (clients[npc_id].pathfind_pos.empty() == false)
-		{
-			pos = clients[npc_id].pathfind_pos.top();
-			clients[npc_id].pathfind_pos.pop();
-
-			clients[npc_id].x = pos.first;
-			clients[npc_id].y = pos.second;
-		}
-		clients[npc_id]._pathl.unlock();
-		cout << npc_id << ":chase - " << clients[npc_id].x << " " << clients[npc_id].y << endl;
-		clients[target].send_move_packet(npc_id, 0);
-
 	}
 }
 
