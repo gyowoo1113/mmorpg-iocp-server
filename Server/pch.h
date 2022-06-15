@@ -40,6 +40,7 @@ extern array<CSession, MAX_USER + NUM_NPC> clients;
 int distance(int a, int b);
 void update_move_clients(int c_id, char& direction);
 bool isMonsterCollisionAttack(int& monster_id, int& p_id);
+void move_npc(int npc_id);
 
 #include "Sector.h"
 #include "Database.h"

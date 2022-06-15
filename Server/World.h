@@ -22,6 +22,7 @@ public:
 	void recv_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
 	void send_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
 
+	void moveNpcEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
 private:
 	static World _instance;
 	CEventTimer* _timer;

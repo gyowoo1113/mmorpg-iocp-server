@@ -134,3 +134,17 @@ void World::send_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 	delete ex_over;
 }
 
+// ------ Event ------------------ // 
+
+void World::moveNpcEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
+{
+	cout << "event!!" << endl;
+	for (int i = 0; i < NUM_NPC; ++i) {
+		int npc_id = i + MAX_USER;
+		move_npc(npc_id);
+	}
+
+	pair<int, int> id{-1,-1 };
+	addEvent(id, COMP_TYPE::EV_MOVE, 1000);
+}
+
