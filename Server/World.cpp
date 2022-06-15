@@ -29,8 +29,9 @@ void World::process_event(TIMER_EVENT& avent)
 
 void World::addEvent(pair<int, int> id, COMP_TYPE type, int time)
 {
+	lock_guard<mutex> tt{ _lock };
 	TIMER_EVENT avent{ id,type, system_clock::now() + milliseconds(time) };
-	_timer->pushEvent(avent);
+	getTimer().pushEvent(avent);
 }
 
 // -------------------------------------------//

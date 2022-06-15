@@ -28,5 +28,6 @@ private:
 	CEventTimer* _timer;
 	SOCKET server_socket;
 	HANDLE handle_iocp;
+	mutex _lock;
 };
 

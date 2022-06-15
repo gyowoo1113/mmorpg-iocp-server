@@ -154,8 +154,9 @@ void do_worker()
 		}
 
 		//member_funcion_pointer fp[static_cast<int>(COMP_TYPE::length)]
-		member_funcion_pointer fp[3]
-			= { &World::accept_client, &World::recv_client,&World::send_client };
+		member_funcion_pointer fp[4]
+			= { &World::accept_client, &World::recv_client,&World::send_client ,
+		&World::moveNpcEvent};
 		(World::instance().*fp[static_cast<int>(ex_over->_comp_type)])(ex_over, num_bytes, key);
 	}
 }
@@ -163,6 +164,8 @@ void do_worker()
 
 void eventTimer()
 {
+	pair<int, int> id{ 0,0 };
+	World::instance().addEvent(id, COMP_TYPE::EV_MOVE, 1000);
 	while (true)
 	{
 		this_thread::sleep_for(10ms);

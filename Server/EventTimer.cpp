@@ -24,6 +24,5 @@ bool CEventTimer::isEventStart()
 
 void CEventTimer::pushEvent(TIMER_EVENT ev)
 {
-	lock_guard<mutex> tt{ timer_lock };
-	eventQueue.push(ev);
+	eventQueue.emplace(ev);
 }
