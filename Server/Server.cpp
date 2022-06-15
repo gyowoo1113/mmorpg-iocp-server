@@ -57,6 +57,8 @@ void update_move_clients(int c_id, char& direction)
 
 void move_npc(int npc_id)
 {
+	if (clients[npc_id].isMonsterMoving() == false)return;
+
 	unordered_set<int> old_vl;
 	for (int i = 0; i < MAX_USER; ++i)
 	{

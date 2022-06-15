@@ -88,6 +88,8 @@ public:
 	void heal();
 	
 	void setMonsterTypes();
+	bool isMonsterMoving();
+	short getMonsterType() { return monsterType; }
 	
 	
 	friend class CStatus;

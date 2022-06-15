@@ -336,3 +336,7 @@ void CSession::setMonsterTypes()
 	monsterType = rand() % 2;
 	monsterMoveType = rand() % 2;
 }
+
+bool CSession::isMonsterMoving(){
+	return (_target_id != -1 || monsterMoveType);
+}
