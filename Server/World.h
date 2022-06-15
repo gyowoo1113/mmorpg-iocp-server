@@ -13,7 +13,7 @@ public:
 	void initialize_tilemap();
 	void initialize_npc();
 
-	void process_work(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
+	void process_event(TIMER_EVENT& avent);
 	void accept_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
 	void recv_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
 	void send_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);

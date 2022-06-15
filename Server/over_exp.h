@@ -8,6 +8,7 @@ public:
 	WSABUF _wsabuf;
 	char _send_buf[BUF_SIZE];
 	COMP_TYPE _comp_type;
+	int target_id;
 	OVER_EXP()
 	{
 		_wsabuf.len = BUF_SIZE;

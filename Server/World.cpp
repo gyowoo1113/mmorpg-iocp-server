@@ -9,6 +9,14 @@ World& World::instance()
 	return _instance;
 }
 
+void World::process_event(TIMER_EVENT& avent)
+{
+	auto ex_over = new OVER_EXP;
+	ex_over->_comp_type = avent.ev;
+	ex_over->target_id = avent.id.second;
+	PostQueuedCompletionStatus(handle_iocp, 1, avent.id.first, &ex_over->_over);
+}
+
 // -------------------------------------------//
 void World::disconnect(int c_id)
 {
@@ -75,11 +83,6 @@ void World::initialize_npc()
 
 
 // ------------------------- //
-
-void World::process_work(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
-{
-
-}
 
 void World::accept_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 {
