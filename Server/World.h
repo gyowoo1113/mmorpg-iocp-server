@@ -16,7 +16,7 @@ public:
 	void initialize_npc();
 
 	void process_event(TIMER_EVENT& avent);
-	void addEvent(pair<int, int>& id, COMP_TYPE& type, int time);
+	void addEvent(pair<int, int> id, COMP_TYPE type, int time);
 
 	void accept_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
 	void recv_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);

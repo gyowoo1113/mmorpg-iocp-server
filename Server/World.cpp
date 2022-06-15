@@ -27,7 +27,7 @@ void World::process_event(TIMER_EVENT& avent)
 	PostQueuedCompletionStatus(handle_iocp, 1, avent.id.first, &ex_over->_over);
 }
 
-void World::addEvent(pair<int, int>& id, COMP_TYPE& type, int time)
+void World::addEvent(pair<int, int> id, COMP_TYPE type, int time)
 {
 	TIMER_EVENT avent{ id,type, system_clock::now() + milliseconds(time) };
 	_timer->pushEvent(avent);
