@@ -42,8 +42,9 @@ int direction = -1;
 
 string s = "me";
 CPlayer player;
-CPlayer players[MAX_USER];
-CMonster npcs[NUM_NPC];
+unordered_map<int, CPlayer> players;
+unordered_map<int, CMonster> npcs;
+
 sf::TcpSocket socket;
 
 string userChatting;
@@ -118,16 +119,6 @@ void client_initialize()
 		CGameObject mtile = CGameObject{ *objecttiles, 16 * i, 0, 16, 16 };
 		mtile.setSpriteScale(fscale, fscale);
 		objecttile.emplace_back(mtile);
-	}
-
-	for (auto& pl : players) {
-		pl = CPlayer(*playertiles, 0, 0, 16, 16, s, 3, 80, 20);
-		pl.setSpriteScale(fscale, fscale);
-	}
-
-	for (auto& pl : npcs) {
-		pl = CMonster( *monstertiles, 0, 0, 16, 16,"flam",1,50,10 );
-		pl.setSpriteScale(fscale, fscale);
 	}
 
 	player = CPlayer(*playertiles, 0, 0, 16, 16, s, 3, 80, 20);
@@ -219,8 +210,8 @@ void drawPlayers()
 		player.draw();
 	}
 
-	for (auto& pl : players) pl.draw();
-	for (auto& pl : npcs) pl.animDraw();
+	for (auto& pl : players) pl.second.draw();
+	for (auto& pl : npcs) pl.second.animDraw();
 
 	player.drawAttack();
 }
@@ -474,12 +465,22 @@ void ProcessPacket(char* ptr)
 		int id = my_packet->id;
 
 		if (id < MAX_USER) {
+			if (0 != players.count(id)) break;
+
+
+			// level, exp , hp 정보 불필요
+			players[id] = CPlayer(*playertiles, 0, 0, 16, 16, my_packet->name, 0,0,0);
+			players[id].setSpriteScale(fscale, fscale);
 			players[id].move(my_packet->x, my_packet->y);
 			players[id].setActive(true);
 		}
 		else {
-			npcs[id - MAX_USER].move(my_packet->x, my_packet->y);
-			npcs[id - MAX_USER].setActive(true);
+			if (0 != npcs.count(id)) break;
+
+			npcs[id] = CMonster(*monstertiles, 0, 0, 16, 16, my_packet->name, my_packet->level, my_packet->hp, 0);
+			npcs[id].setSpriteScale(fscale, fscale);
+			npcs[id].move(my_packet->x, my_packet->y);
+			npcs[id].setActive(true);
 		}
 		break;
 	}
@@ -494,10 +495,12 @@ void ProcessPacket(char* ptr)
 			player.move(my_packet->x, my_packet->y);
 		}
 		else if (other_id < MAX_USER) {
+			if (players.count(other_id) == 0) break;
 			players[other_id].move(my_packet->x, my_packet->y);
 		}
 		else {
-			npcs[other_id - MAX_USER].move(my_packet->x, my_packet->y);
+			if (npcs.count(other_id) == 0) break;
+			npcs[other_id].move(my_packet->x, my_packet->y);
 		}
 		break;
 	}
@@ -510,10 +513,14 @@ void ProcessPacket(char* ptr)
 			player.setActive(false);
 		}
 		else if (other_id < MAX_USER) {
+			if (players.count(other_id) == 0) break;
 			players[other_id].setActive(false);
+			players.erase(other_id);
 		}
 		else {
-			npcs[other_id - MAX_USER].setActive(false);
+			if (npcs.count(other_id) == 0) break;
+			npcs[other_id].setActive(false);
+			npcs.erase(other_id);
 		}
 		break;
 	}
@@ -535,10 +542,12 @@ void ProcessPacket(char* ptr)
 			player.setStatus(packet->hp, packet->level, packet->exp);
 		}
 		else if (c_id < MAX_USER){
+			if (players.count(c_id) == 0) break;
 			players[c_id].setStatus(packet->hp, packet->level, packet->exp);
 		}
 		else {
-			npcs[c_id - MAX_USER].setHp(packet->hp);
+			if (npcs.count(c_id) == 0) break;
+			npcs[c_id].setHp(packet->hp);
 		}
 
 		break; 
