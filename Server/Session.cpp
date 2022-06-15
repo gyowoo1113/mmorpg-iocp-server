@@ -238,6 +238,16 @@ void CSession::process_attack()
 	}
 }
 
+void CSession::init(SOCKET& socket, int id )
+{
+	x = 0;
+	y = 0;
+	_id = id;
+	_name[0] = 0;
+	_prev_remain = 0;
+	_socket = socket;
+}
+
 void CSession::rebuild_packet(char* send_buffer, int& remain)
 {
 	char* temp = send_buffer;

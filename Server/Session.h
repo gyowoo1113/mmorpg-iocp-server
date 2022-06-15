@@ -55,6 +55,8 @@ public:
 	}
 	~CSession() {}
 
+	void init(SOCKET& socket,int id);
+
 	void do_recv()
 	{
 		DWORD recv_flag = 0;

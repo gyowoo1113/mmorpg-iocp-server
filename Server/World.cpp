@@ -98,19 +98,14 @@ void World::initialize_npc()
 }
 
 
-// ------------------------- //
+// ----- accept, recv, send ------- //
 
 void World::accept_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 {
 	SOCKET c_socket = reinterpret_cast<SOCKET>(ex_over->_wsabuf.buf);
 	int client_id = get_new_client_id();
 	if (client_id != -1) {
-		clients[client_id].x = 0;
-		clients[client_id].y = 0;
-		clients[client_id]._id = client_id;
-		clients[client_id]._name[0] = 0;
-		clients[client_id]._prev_remain = 0;
-		clients[client_id]._socket = c_socket;
+		clients[client_id].init(c_socket,client_id);
 		CreateIoCompletionPort(reinterpret_cast<HANDLE>(c_socket), handle_iocp, client_id, 0);
 		clients[client_id].do_recv();
 		c_socket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
