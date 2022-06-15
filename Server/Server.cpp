@@ -165,7 +165,7 @@ void eventTimer()
 {
 	while (true)
 	{
-		
+		this_thread::sleep_for(10ms);
 		World::instance().getTimer().update();
 	}
 }

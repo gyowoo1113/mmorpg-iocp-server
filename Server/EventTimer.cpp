@@ -5,7 +5,7 @@ void CEventTimer::update()
 {
 	while (true)
 	{
-		lock_guard<mutex> tt{timer_lock};
+		lock_guard<mutex> tt{ timer_lock };
 		if (isEventStart() == false) break;
 
 		TIMER_EVENT ev = eventQueue.top();
@@ -24,7 +24,6 @@ bool CEventTimer::isEventStart()
 
 void CEventTimer::pushEvent(TIMER_EVENT ev)
 {
-	timer_lock.lock();
+	lock_guard<mutex> tt{ timer_lock };
 	eventQueue.push(ev);
-	timer_lock.unlock();
 }
