@@ -35,6 +35,10 @@ public:
 	chrono::system_clock::time_point next_move_time;
 
 private:
+
+	short monsterType = 0;
+	short monsterMoveType = 0;
+
 	CStatus _status;
 	CSendPacket _sendPacket;
 
@@ -92,6 +96,10 @@ public:
 
 	bool decreaseHp(int hp);
 	void heal();
+	
+	void setMonsterTypes();
+	
+	
 	friend class CStatus;
 	friend class CSendPacket;
 };

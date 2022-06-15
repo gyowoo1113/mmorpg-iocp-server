@@ -86,8 +86,9 @@ void makeObjects()
 
 sf::Texture* maptiles;
 sf::Texture* playertiles;
-sf::Texture* monstertiles;
 sf::Texture* objecttiles;
+
+vector<Texture*> monstertiles;
 vector<CGameObject> maptile;
 vector<CGameObject> objecttile;
 sf::RectangleShape shape;
@@ -100,12 +101,20 @@ void client_initialize()
 	maptiles = new sf::Texture;
 	playertiles = new Texture;
 	objecttiles = new Texture;
-	monstertiles = new Texture;
 	// 총 14개 타일종류
 	maptiles->loadFromFile("../Resource/background.png");
 	playertiles->loadFromFile("../Resource/Idle.png");
 	objecttiles->loadFromFile("../Resource/objects.png");	
-	monstertiles->loadFromFile("../Resource/Flam.png");
+
+
+	string m_res_name[4] = { "mushroom","Flam","Flam2","Skull" };
+
+	for (int i = 0; i < 4; ++i) {
+		Texture* mons = new Texture;
+		string m_name = "../Resource/" + m_res_name[i] + ".png";
+		mons->loadFromFile(m_name);
+		monstertiles.emplace_back(mons);
+	}
 
 	for (int i = 0; i < 14; ++i)
 	{
@@ -477,7 +486,7 @@ void ProcessPacket(char* ptr)
 		else {
 			if (0 != npcs.count(id)) break;
 
-			npcs[id] = CMonster(*monstertiles, 0, 0, 16, 16, my_packet->name, my_packet->level, my_packet->hp, 0);
+			npcs[id] = CMonster(*monstertiles[my_packet->race], 0, 0, 16, 16, my_packet->name, my_packet->level, my_packet->hp, 0);
 			npcs[id].setSpriteScale(fscale, fscale);
 			npcs[id].move(my_packet->x, my_packet->y);
 			npcs[id].setActive(true);

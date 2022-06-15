@@ -305,3 +305,11 @@ void CSession::heal()
 {
 	_status.healHp(*this);
 }
+
+// ** Monster ** // 
+
+void CSession::setMonsterTypes()
+{
+	monsterType = rand() % 2;
+	monsterMoveType = rand() % 2;
+}

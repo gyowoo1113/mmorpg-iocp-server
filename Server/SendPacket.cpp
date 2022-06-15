@@ -44,6 +44,7 @@ void CSendPacket::send_add_object(CSession& client, int c_id)
 	p.type = SC_ADD_OBJECT;
 	p.x = clients[c_id].x;
 	p.y = clients[c_id].y;
+	p.race = clients[c_id].monsterType * 2 +  clients[c_id].monsterMoveType;
 	strcpy_s(p.name, clients[c_id]._name);
 	client.do_send(&p);
 }

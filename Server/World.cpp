@@ -92,6 +92,7 @@ void World::initialize_npc()
 	{
 		int npc_id = i + MAX_USER;
 		clients[npc_id]._state = ST_INGAME;
+		clients[npc_id].setMonsterTypes();
 		SetSector(i);
 		sprintf_s(clients[npc_id]._name, "M-%d", npc_id);
 	}
@@ -155,4 +156,5 @@ void World::healEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 
 void World::monsterAttackEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 {
+
 }
