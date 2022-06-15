@@ -5,6 +5,7 @@ class CSession;
 class CStatus
 {
 public:
+	void healHp(CSession& client);
 	bool decreaseHp(CSession& client, int hp);
 	void updateExp(CSession& client);
 	void calculateMaxExp(CSession& client);

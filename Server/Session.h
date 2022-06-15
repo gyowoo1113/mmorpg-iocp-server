@@ -91,6 +91,7 @@ public:
 	void process_attack();
 
 	bool decreaseHp(int hp);
+	void heal();
 	friend class CStatus;
 	friend class CSendPacket;
 };

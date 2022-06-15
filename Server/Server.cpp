@@ -170,18 +170,6 @@ void eventTimer()
 	}
 }
 
-void do_ai_ver_heart_beat()
-{
-	for (;; ) {
-		auto start_t = chrono::system_clock::now();
-		for (int i = 0; i < NUM_NPC; ++i) {
-			int npc_id = i + MAX_USER;
-			move_npc(npc_id);
-		}
-	}
-}
-
-
 int main()
 {
 	World::instance().initialize_tilemap();

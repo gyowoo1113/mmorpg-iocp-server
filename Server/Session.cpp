@@ -300,3 +300,8 @@ bool CSession::decreaseHp(int hp)
 {
 	return _status.decreaseHp(*this,hp);
 }
+
+void CSession::heal()
+{
+	_status.healHp(*this);
+}

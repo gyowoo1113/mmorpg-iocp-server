@@ -11,6 +11,14 @@ bool CStatus::decreaseHp(CSession& client, int hp)
     return false;
 }
 
+void CStatus::healHp(CSession& client)
+{
+    client._hp += 10;
+    if (client._hp < 100)
+    {
+    }
+}
+
 void CStatus::updateExp(CSession& client)
 {
     int mon_level = client._level;
