@@ -93,6 +93,7 @@ public:
 
 	void process_packet(char* packet);
 	void process_attack();
+	void chatSystemMessage(std::string& mess);
 
 	bool decreaseHp(int hp);
 	void heal();

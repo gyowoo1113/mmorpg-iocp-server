@@ -221,21 +221,20 @@ void CSession::process_attack()
 
 		bool is_dying = clients[mon].decreaseHp(50);
 		
+		string mess = "User:" + to_string(_id) + " attack " + clients[mon]._name + ", 50 Damage";
+		chatSystemMessage(mess);
+
 		if (is_dying)
 		{
 			_status.updateExp(*this);
 			send_change_status_packet(_id);
 		}
-
-		for (int i = 0; i < MAX_USER; ++i)
-		{
-			if (ST_INGAME != clients[i]._state) continue;
-			
-			string mess = "User:" + to_string(_id) + " attack to " + clients[mon]._name;
-			clients[i].send_chat_packet(-1, mess.c_str());
-		}
-
 	}
+}
+
+void CSession::chatSystemMessage(std::string& mess)
+{
+	send_chat_packet(-1, mess.c_str());
 }
 
 void CSession::init(SOCKET& socket, int id )
