@@ -148,3 +148,11 @@ void World::moveNpcEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 	addEvent(id, COMP_TYPE::EV_MOVE, 1000);
 }
 
+void World::healEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
+{
+	clients[key].heal();
+}
+
+void World::monsterAttackEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
+{
+}

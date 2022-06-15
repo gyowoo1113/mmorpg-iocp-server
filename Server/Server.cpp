@@ -127,10 +127,10 @@ void do_worker()
 			}
 		}
 
-		//member_funcion_pointer fp[static_cast<int>(COMP_TYPE::length)]
-		member_funcion_pointer fp[4]
-			= { &World::accept_client, &World::recv_client,&World::send_client ,
-		&World::moveNpcEvent};
+		member_funcion_pointer fp[static_cast<int>(COMP_TYPE::length)]
+			= { &World::accept_client, &World::recv_client,&World::send_client,
+		&World::moveNpcEvent,&World::healEvent,&World::monsterAttackEvent};
+
 		(World::instance().*fp[static_cast<int>(ex_over->_comp_type)])(ex_over, num_bytes, key);
 	}
 }
@@ -184,6 +184,7 @@ int main()
 	for (int i = 0; i < 5; ++i)
 		worker_threads.emplace_back(do_worker);
 	thread timer_thread{ eventTimer };
+
 	timer_thread.join();
 	for (auto& th : worker_threads)
 		th.join();

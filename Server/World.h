@@ -23,6 +23,9 @@ public:
 	void send_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
 
 	void moveNpcEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
+	void healEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
+	void monsterAttackEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
+
 private:
 	static World _instance;
 	CEventTimer* _timer;

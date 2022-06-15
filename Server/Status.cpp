@@ -8,6 +8,9 @@ bool CStatus::decreaseHp(CSession& client, int hp)
     if (client._hp <= 0)
         return true;
 
+    pair<int, int> id{ client._id,client._id };
+    World::instance().addEvent(id, COMP_TYPE::EV_HEAL, 5000);
+
     return false;
 }
 
@@ -16,6 +19,8 @@ void CStatus::healHp(CSession& client)
     client._hp += 10;
     if (client._hp < 100)
     {
+        pair<int, int> id{ client._id,client._id };
+        World::instance().addEvent(id, COMP_TYPE::EV_HEAL, 5000);
     }
 }
 
