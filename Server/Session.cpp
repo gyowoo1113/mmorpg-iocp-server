@@ -114,6 +114,16 @@ void CSession::remove_view_list(int& view)
 	send_remove_object(view);
 }
 
+void CSession::checkInsertViewList(int insert_id)
+{
+	if (RANGE >= distance(insert_id, _id)) {
+		vl.lock();
+		view_list.insert(insert_id);
+		vl.unlock();
+		send_add_object(insert_id);
+	}
+}
+
 unordered_set<int> CSession::MakeNearList()
 {
 	int nearDirectionX[9] = { -1,-1,-1,0,0,0,1,1,1 };
@@ -190,26 +200,14 @@ void CSession::process_packet(char* packet)
 				if (ST_INGAME != pl._state) {
 					continue;
 				}
-				if (RANGE >= distance(_id, pl._id)) {
-					pl.vl.lock();
-					pl.view_list.insert(_id);
-					pl.vl.unlock();
-					pl.send_add_object(_id);
-				}
+				pl.checkInsertViewList(_id);
 			}
 
 			for (auto& pl : clients) {
 				if (pl._id == _id) continue;
 				if (ST_INGAME != pl._state) continue;
-
-				if (RANGE >= distance(pl._id, _id)) {
-					vl.lock();
-					view_list.insert(pl._id);
-					vl.unlock();
-					send_add_object(pl._id);
-				}
+				checkInsertViewList(pl._id);
 			}
-
 
 			break;
 		}
