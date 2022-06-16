@@ -91,6 +91,13 @@ public:
 	void setMonsterTypes();
 	bool isMonsterMoving();
 	short getMonsterType() { return monsterType; }
+	void moveMonster();
+	void setPeaceTarget(int id) { 
+		if (monsterType==0) _target_id = id; 
+	}
+	void setArgoTarget(int id) {
+		if (monsterType == 1) _target_id = id;
+	}
 	
 	
 	friend class CStatus;

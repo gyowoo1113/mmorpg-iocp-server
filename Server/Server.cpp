@@ -66,9 +66,8 @@ void move_npc(int npc_id)
 		if (distance(npc_id, i) <= RANGE) old_vl.insert(i);
 	}
 
-	char dir = static_cast<char>(rand() % 4);
-	update_move_clients(npc_id,dir);
-	CheckMoveSector(npc_id);
+	clients[npc_id].moveMonster();
+
 
 	unordered_set<int> new_vl;
 	for (int i = 0; i < MAX_USER; ++i)

@@ -253,6 +253,7 @@ void CSession::process_attack(char* packet)
 			continue;
 
 		bool is_dying = clients[mon].decreaseHp(50);
+		clients[mon].setPeaceTarget(_id);
 		
 		string mess = "User:" + to_string(_id) + " attack " + clients[mon]._name + ", 50 Damage";
 		chatSystemMessage(mess);
@@ -337,4 +338,42 @@ void CSession::setMonsterTypes()
 
 bool CSession::isMonsterMoving(){
 	return (_target_id != -1 || monsterMoveType);
+}
+
+void CSession::moveMonster()
+{
+	if (_target_id == -1) 
+	{
+		char dir = static_cast<char>(rand() % 4);
+		update_move_clients(_id, dir);
+	}
+	else
+	{
+		auto start_t = chrono::system_clock::now();
+
+		CAstar astar;
+		pair<int, int> pos;
+
+		_pathl.lock();
+		astar.searchRoad(pathfind_pos,x, y, clients[_target_id].x, clients[_target_id].y);
+		if (pathfind_pos.empty() == false)
+		{
+			pos = pathfind_pos.top();
+			pathfind_pos.pop();
+
+			x = pos.first; y = pos.second;
+		}
+		_pathl.unlock();
+		cout << _id << ":chase - " << x << " " << y << endl;
+
+
+		auto end_t = chrono::system_clock::now();
+		auto ai_t = end_t - start_t;
+		cout << "AI time : " << chrono::duration_cast<chrono::milliseconds>(ai_t).count();
+		cout << "ms\n";
+		this_thread::sleep_until(start_t + chrono::seconds(1));
+	}
+
+
+	CheckMoveSector(_id);
 }
