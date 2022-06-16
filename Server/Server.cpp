@@ -104,6 +104,11 @@ void move_npc(int npc_id)
 		}
 	}
 
+	if (new_vl.empty())
+	{
+		clients[npc_id]._state = ST_SLEEP;
+		return;
+	}
 
 	pair<int, int> id{ npc_id, npc_id};
 	World::instance().addEvent(id, COMP_TYPE::EV_MOVE, 1000);

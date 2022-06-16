@@ -59,7 +59,9 @@ void CSession::update_move_view_list(CS_MOVE_PACKET* p, std::unordered_set<int>&
 		}
 
 		if (n < MAX_USER) continue;
-		move_npc(n);
+
+		pair<int, int>id {n, n};
+		World::instance().addEvent(id, EV_MOVE, 1000);
 	}
 }
 
@@ -218,7 +220,10 @@ void CSession::process_packet(char* packet)
 				if (n < MAX_USER)
 					clients[n].checkInsertViewList(_id);
 				else
-					move_npc(n);
+				{
+					pair<int, int>id{ n, n };
+					World::instance().addEvent(id, EV_MOVE, 1000);
+				}
 			}
 
 			break;
