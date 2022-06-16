@@ -94,7 +94,7 @@ void World::initialize_npc()
 	for (int i = 0; i < NUM_NPC; ++i)
 	{
 		int npc_id = i + MAX_USER;
-		clients[npc_id]._state = ST_INGAME;
+		clients[npc_id]._state = ST_SLEEP;
 		clients[npc_id].setMonsterTypes();
 		SetSector(i);
 		sprintf_s(clients[npc_id]._name, "M-%d", npc_id);
@@ -143,13 +143,7 @@ void World::send_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 
 void World::moveNpcEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 {
-	for (int i = 0; i < NUM_NPC; ++i) {
-		int npc_id = i + MAX_USER;
-		move_npc(npc_id);
-	}
-
-	pair<int, int> id{-1,-1 };
-	addEvent(id, COMP_TYPE::EV_MOVE, 1000);
+	move_npc(key);
 }
 
 void World::healEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)

@@ -4,7 +4,7 @@
 #include "Status.h"
 #include "SendPacket.h"
 
-enum SESSION_STATE { ST_FREE, ST_ACCEPTED, ST_INGAME };
+enum SESSION_STATE { ST_FREE, ST_ACCEPTED, ST_INGAME, ST_SLEEP };
 
 class CSession
 {

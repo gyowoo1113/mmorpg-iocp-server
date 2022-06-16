@@ -57,6 +57,7 @@ void update_move_clients(int c_id, char& direction)
 
 void move_npc(int npc_id)
 {
+	if (clients[npc_id]._state == ST_SLEEP) return;
 	if (clients[npc_id].isMonsterMoving() == false)return;
 
 	unordered_set<int> old_vl;
@@ -102,6 +103,10 @@ void move_npc(int npc_id)
 			}
 		}
 	}
+
+
+	pair<int, int> id{ npc_id, npc_id};
+	World::instance().addEvent(id, COMP_TYPE::EV_MOVE, 1000);
 }
 
 

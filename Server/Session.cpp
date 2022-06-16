@@ -38,6 +38,8 @@ void CSession::update_move_view_list(CS_MOVE_PACKET* p, std::unordered_set<int>&
 	for (auto n : new_nl)
 	{
 		if (clients[n]._id == _id) continue;
+		if (clients[n]._state == ST_SLEEP)
+			clients[n]._state = ST_INGAME;
 		if (ST_INGAME != clients[n]._state) continue;
 
 		vl.lock();
@@ -55,6 +57,9 @@ void CSession::update_move_view_list(CS_MOVE_PACKET* p, std::unordered_set<int>&
 			vl.unlock();
 			clients[n].check_view_list(_id, p);
 		}
+
+		if (n < MAX_USER) continue;
+		move_npc(n);
 	}
 }
 
@@ -84,6 +89,9 @@ void CSession::check_erase_view_list(std::unordered_set<int>& new_nl)
 			{
 				clients[view].vl.unlock();
 			}
+
+			if (view < MAX_USER) continue;
+			clients[view]._state = ST_SLEEP;
 		}
 	}
 }
@@ -193,20 +201,24 @@ void CSession::process_packet(char* packet)
 			_state = ST_INGAME;
 
 			SetSector(_id);
+			CheckMoveSector(_id);
 
-			for (int i = 0; i < MAX_USER; ++i) {
-				auto& pl = clients[i];
-				if (pl._id == _id) continue;
-				if (ST_INGAME != pl._state) {
-					continue;
-				}
-				pl.checkInsertViewList(_id);
-			}
+			unordered_set<int> new_nl;
+			new_nl = MakeNearList();
 
-			for (auto& pl : clients) {
-				if (pl._id == _id) continue;
-				if (ST_INGAME != pl._state) continue;
-				checkInsertViewList(pl._id);
+			for (auto n : new_nl)
+			{
+				if (clients[n]._id == _id) continue;
+				if (clients[n]._state == ST_SLEEP)
+					clients[n]._state = ST_INGAME;
+				if (ST_INGAME != clients[n]._state) continue;
+
+				checkInsertViewList(n);
+
+				if (n < MAX_USER)
+					clients[n].checkInsertViewList(_id);
+				else
+					move_npc(n);
 			}
 
 			break;
@@ -362,8 +374,8 @@ void CSession::moveMonster()
 			x = pos.first; y = pos.second;
 		}
 		_pathl.unlock();
-		cout << _id << ":chase - " << x << " " << y << endl;
 	}
 
+	cout << _name << " move " << endl;
+
 	CheckMoveSector(_id);
-}
