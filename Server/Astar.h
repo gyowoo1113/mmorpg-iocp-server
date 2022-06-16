@@ -35,10 +35,12 @@ public:
 	void initSearchLists(stack<position>& road);
 	void compareG(sNode* node, int dir);
 
+	static void initMapClosedList();
+
 protected:
 	sNode* pStart = nullptr;
 	sNode* pEnd = nullptr;
-	set<position> closed;
+	static set<position> closed;
 	list<sNode*> open;
 
 	position start_pos;
@@ -48,4 +50,3 @@ protected:
 	int dy[8] = { 1,-1,0,0,-1,1,-1,1 };
 	float weight[8] = { 1.0f, 1.0f, 1.0f, 1.0f, 1.4f, 1.4f, 1.4f, 1.4f };
 };
-

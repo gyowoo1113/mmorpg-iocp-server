@@ -349,8 +349,6 @@ void CSession::moveMonster()
 	}
 	else
 	{
-		auto start_t = chrono::system_clock::now();
-
 		CAstar astar;
 		pair<int, int> pos;
 
@@ -365,15 +363,7 @@ void CSession::moveMonster()
 		}
 		_pathl.unlock();
 		cout << _id << ":chase - " << x << " " << y << endl;
-
-
-		auto end_t = chrono::system_clock::now();
-		auto ai_t = end_t - start_t;
-		cout << "AI time : " << chrono::duration_cast<chrono::milliseconds>(ai_t).count();
-		cout << "ms\n";
-		this_thread::sleep_until(start_t + chrono::seconds(1));
 	}
-
 
 	CheckMoveSector(_id);
 }

@@ -79,6 +79,9 @@ void World::initialize_tilemap()
 			tiles[i][j] = (val == 0 || val > 6) ? 0 : 1;
 		}
 	}
+
+	CAstar astar;
+	astar.initMapClosedList();
 }
 
 void World::initialize_npc()

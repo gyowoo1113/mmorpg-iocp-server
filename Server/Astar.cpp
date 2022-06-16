@@ -1,6 +1,23 @@
 #include "pch.h"
 #include "Astar.h"
 
+set<position> CAstar::closed;
+
+void CAstar::initMapClosedList()
+{
+	for (int i = 0; i < W_WIDTH; ++i)
+	{
+		for (int j = 0; j < W_HEIGHT; ++j)
+		{
+			if (tiles[i][j])
+			{
+				position pos = make_pair(i, j);
+				closed.insert(pos);
+			}
+		}
+	}
+}
+
 bool compF(const sNode* lhs, const sNode* rhs) {
 	return lhs->f < rhs->f;
 };
@@ -77,24 +94,11 @@ void CAstar::initSearchLists(stack<position>& road)
 	while (road.empty() == false)
 		road.pop();
 	open.clear();
-	closed.clear();
 
 	sNode* opens = new sNode(start_pos);
 	float s_weight = 0.0f;
 	calculateScore(opens, s_weight);
 	open.push_back(opens);
-
-	for (int i = 0; i < W_WIDTH; ++i)
-	{
-		for (int j = 0; j < W_HEIGHT; ++j)
-		{
-			if (tiles[i][j])
-			{
-				position pos = make_pair(i, j);
-				closed.insert(pos);
-			}
-		}
-	}
 }
 
 void CAstar::compareG(sNode* node, int dir)
