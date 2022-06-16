@@ -39,7 +39,11 @@ void CSession::update_move_view_list(CS_MOVE_PACKET* p, std::unordered_set<int>&
 	{
 		if (clients[n]._id == _id) continue;
 		if (clients[n]._state == ST_SLEEP)
+		{
 			clients[n]._state = ST_INGAME;
+			pair<int, int> id{ n, n };
+			World::instance().addEvent(id, EV_MOVE, 1000);
+		}
 		if (ST_INGAME != clients[n]._state) continue;
 
 		vl.lock();
@@ -60,8 +64,6 @@ void CSession::update_move_view_list(CS_MOVE_PACKET* p, std::unordered_set<int>&
 
 		if (n < MAX_USER) continue;
 
-		pair<int, int>id {n, n};
-		World::instance().addEvent(id, EV_MOVE, 1000);
 	}
 }
 
@@ -212,18 +214,18 @@ void CSession::process_packet(char* packet)
 			{
 				if (clients[n]._id == _id) continue;
 				if (clients[n]._state == ST_SLEEP)
+				{
 					clients[n]._state = ST_INGAME;
+
+					pair<int, int>id{ n, n };
+					World::instance().addEvent(id, EV_MOVE, 1000);
+				}
 				if (ST_INGAME != clients[n]._state) continue;
 
 				checkInsertViewList(n);
 
 				if (n < MAX_USER)
 					clients[n].checkInsertViewList(_id);
-				else
-				{
-					pair<int, int>id{ n, n };
-					World::instance().addEvent(id, EV_MOVE, 1000);
-				}
 			}
 
 			break;

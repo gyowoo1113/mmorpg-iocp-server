@@ -148,8 +148,6 @@ void do_worker()
 
 void eventTimer()
 {
-	pair<int, int> id{ 0,0 };
-	World::instance().addEvent(id, COMP_TYPE::EV_MOVE, 1000);
 	while (true)
 	{
 		this_thread::sleep_for(10ms);
