@@ -10,5 +10,6 @@ public:
 	void updateExp(CSession& client, int mon_id);
 	void calculateMaxExp(CSession& client);
 	void setLevelUp(CSession& client, int remainExp);
+	void respawn(CSession& client);
 };
 

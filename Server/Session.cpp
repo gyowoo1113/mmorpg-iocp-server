@@ -31,9 +31,9 @@ void CSession::init(SOCKET& socket, int id)
 }
 
 // ** view list ** //
-void CSession::update_move_view_list(CS_MOVE_PACKET* p, std::unordered_set<int>& new_nl)
+void CSession::update_move_view_list(int client_time, std::unordered_set<int>& new_nl)
 {
-	send_move_packet(_id, p->client_time);
+	send_move_packet(_id, client_time);
 
 	for (auto n : new_nl)
 	{
@@ -54,12 +54,12 @@ void CSession::update_move_view_list(CS_MOVE_PACKET* p, std::unordered_set<int>&
 			
 			send_add_object(n);
 
-			clients[n].check_view_list(_id, p);
+			clients[n].check_view_list(_id, client_time);
 		}
 		else
 		{
 			vl.unlock();
-			clients[n].check_view_list(_id, p);
+			clients[n].check_view_list(_id, client_time);
 		}
 
 		if (n < MAX_USER) continue;
@@ -101,12 +101,12 @@ void CSession::check_erase_view_list(std::unordered_set<int>& new_nl)
 	}
 }
 
-void CSession::check_view_list(int& c_id, CS_MOVE_PACKET* p)
+void CSession::check_view_list(int& c_id, int client_time)
 {
 	vl.lock();
 	if (view_list.count(c_id))
 	{
-		send_move_packet(c_id, p->client_time);
+		send_move_packet(c_id, client_time);
 		vl.unlock();
 	}
 	else
@@ -256,7 +256,7 @@ void CSession::moveObject(char* packet)
 	unordered_set<int> new_nl;
 	new_nl = MakeNearList();
 
-	update_move_view_list(p, new_nl);
+	update_move_view_list(p->client_time, new_nl);
 	check_erase_view_list(new_nl);
 }
 
@@ -346,6 +346,27 @@ bool CSession::decreaseHp(int hp)
 void CSession::heal()
 {
 	_status.healHp(*this);
+
+// ** Respawn ** //
+
+void CSession::respawnPlayer()
+{
+	_status.respawn(*this);
+
+	string name(_name);
+	auto iter = find_if(g_db_users.begin(), g_db_users.end(), [&name](const USER_DATA user) {
+		return strcmp(name.c_str(), user.name) == 0;
+	});
+
+	x = iter->x; y = iter->y;
+
+	CheckMoveSector(_id);
+
+	unordered_set<int> new_nl;
+	new_nl = MakeNearList();
+
+	update_move_view_list(0, new_nl);
+	check_erase_view_list(new_nl);
 }
 
 // ** Monster ** // 
@@ -397,17 +418,21 @@ void CSession::movePathToNpc()
 		if (_isAttack == false) return;
 
 		_isAttack = false;
-		clients[_target_id].decreaseHp(_level);
-		//short attackType = monsterType * 2 + monsterMoveType;
+		bool isDying = clients[_target_id].decreaseHp(_level);
 		clients[_target_id].send_change_status_packet(_target_id);
 
 		string mess = "Monster:" + to_string(_id) + " attack " + clients[_target_id]._name + ","+ to_string(_level) + " Damage";
 		clients[_target_id].chatSystemMessage(mess);
 
+		//short attackType = monsterType * 2 + monsterMoveType;
 		//send_change_status_packet(_id,attackType);
 
 		pair<int, int> id{ _id,_target_id };
 		World::instance().addEvent(id, EV_ATTACK_ACTIVE, 1000);
+
+		if (isDying) {
+			clients[_target_id].respawnPlayer();
+		}
 	}
 }
 

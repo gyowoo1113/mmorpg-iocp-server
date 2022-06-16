@@ -73,9 +73,9 @@ public:
 	void send_change_status_packet(int c_id);
 
 
-	void update_move_view_list(CS_MOVE_PACKET* p, std::unordered_set<int>& new_nl);
+	void update_move_view_list(int client_time, std::unordered_set<int>& new_nl);
 	void check_erase_view_list(std::unordered_set<int>& new_nl);
-	void check_view_list(int& c_id, CS_MOVE_PACKET* p);
+	void check_view_list(int& c_id, int client_time);
 	void remove_view_list(int& view);
 	void checkInsertViewList(int insert_id);
 	unordered_set<int> MakeNearList();
@@ -89,6 +89,7 @@ public:
 	bool decreaseHp(int hp);
 	void heal();
 	void setAttack(bool attack) { _isAttack = attack; }
+	void respawnPlayer();
 	
 	void setMonsterTypes();
 	bool isMonsterMoving();
