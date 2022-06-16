@@ -92,14 +92,12 @@ public:
 	bool isMonsterMoving();
 	short getMonsterType() { return monsterType; }
 	void moveMonster();
-	void setPeaceTarget(int id) { 
-		if (monsterType==0) _target_id = id; 
-	}
-	void setArgoTarget(int id) {
-		if (monsterType == 1) _target_id = id;
+	void setPeaceTarget(int id);
+	void setArgoTarget(int id);
 	void checkTargetRelease(int id) {
 		if (_target_id == id )_target_id = -1;
 	}
+	void checkArgoStart(int c_id);
 	
 	
 	friend class CStatus;

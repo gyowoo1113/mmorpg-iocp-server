@@ -64,6 +64,7 @@ void CSession::update_move_view_list(CS_MOVE_PACKET* p, std::unordered_set<int>&
 
 		if (n < MAX_USER) continue;
 
+		clients[n].checkArgoStart(_id);
 	}
 }
 
@@ -263,7 +264,7 @@ void CSession::process_attack(char* packet)
 {
 	CS_ATTACK_PACKET* p = reinterpret_cast<CS_ATTACK_PACKET*>(packet);
 	vl.lock();
-	unordered_set<int> search_vl =view_list;
+	unordered_set<int> search_vl = view_list;
 	vl.unlock();
 
 	for (int mon : search_vl)
@@ -383,6 +384,27 @@ void CSession::moveMonster()
 		_pathl.unlock();
 	}
 
-	cout << _name << " move " << endl;
-
 	CheckMoveSector(_id);
+}
+
+void CSession::setPeaceTarget(int id)
+{
+	if (monsterType != 0) return;
+
+	_target_id = id;
+}
+
+void CSession::setArgoTarget(int id)
+{
+	if (monsterType != 1) return;
+
+	_target_id = id;
+}
+
+void CSession::checkArgoStart(int c_id)
+{
+	if (monsterType != 1) return;
+
+	if (distance(c_id, _id) <= MONSTER_RANGE)
+		setArgoTarget(c_id);
+}

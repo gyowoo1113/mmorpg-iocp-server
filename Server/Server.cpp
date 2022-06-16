@@ -88,6 +88,7 @@ void move_npc(int npc_id)
 			clients[p_id].send_move_packet(npc_id, 0);
 			clients[p_id].vl.unlock();
 		}
+		clients[npc_id].checkArgoStart(p_id);
 	}
 
 	for (auto p_id : old_vl) {
