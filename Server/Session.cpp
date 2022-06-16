@@ -377,18 +377,14 @@ void CSession::setMonsterTypes()
 	monsterMoveType = rand() % 2;
 }
 
-bool CSession::isMonsterMoving(){
-	return (_target_id != -1 || monsterMoveType);
-}
-
 void CSession::moveMonster()
 {
-	if (_target_id == -1) 
+	if (_target_id == -1 && monsterMoveType == 1) 
 	{
 		char dir = static_cast<char>(rand() % 4);
 		update_move_clients(_id, dir);
 	}
-	else
+	else if (_target_id != -1)
 	{
 		movePathToNpc();
 	}

@@ -92,7 +92,6 @@ public:
 	void respawnPlayer();
 	
 	void setMonsterTypes();
-	bool isMonsterMoving();
 	short getMonsterType() { return monsterType; }
 	void moveMonster();
 	void movePathToNpc();
