@@ -59,6 +59,9 @@ void CStatus::setLevelUp(CSession& client, int remainExp)
 void CStatus::respawn(CSession& client)
 {
     client._hp = 100;
+
+    if (client._id >= MAX_USER) return;
+
     int exp = client._exp / 2;
     client._exp = exp;
 }

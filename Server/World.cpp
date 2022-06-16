@@ -160,3 +160,28 @@ void World::AttackActiveEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& ke
 {
 	clients[key].setAttack(true);
 }
+
+void World::npcRespawnEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
+{
+	clients[key]._state = ST_SLEEP;
+	clients[key].setRespawnStatus();
+
+	unordered_set<int> new_nl;
+	new_nl = clients[key].MakeNearList();
+
+	for (auto p_id : new_nl) {
+		if (p_id >= MAX_USER) continue;
+
+		clients[p_id].vl.lock();
+		if (clients[p_id].view_list.count(key) == 0) {
+			clients[p_id].view_list.insert(key);
+			clients[p_id].vl.unlock();
+			clients[p_id].send_add_object(key);
+		}
+		else {
+			clients[p_id].send_move_packet(key, 0);
+			clients[p_id].vl.unlock();
+		}
+		clients[key].checkArgoStart(p_id);
+	}
+}

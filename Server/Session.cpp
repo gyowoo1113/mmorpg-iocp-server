@@ -155,6 +155,7 @@ unordered_set<int> CSession::MakeNearList()
 
 		for (auto id : sector[dirX][dirY])
 		{
+			if (clients[id]._state == ST_FREE) continue;
 			if (_id == id) continue;
 			if (RANGE >= distance(_id, id))
 			{
@@ -282,6 +283,7 @@ void CSession::process_attack(char* packet)
 		{
 			_status.updateExp(*this, mon);
 			send_change_status_packet(_id);
+			clients[mon].readyToRespawn();
 		}
 	}
 }
@@ -367,6 +369,36 @@ void CSession::respawnPlayer()
 
 	update_move_view_list(0, new_nl);
 	check_erase_view_list(new_nl);
+}
+
+void CSession::setRespawnStatus()
+{
+	_status.respawn(*this);
+}
+
+void CSession::readyToRespawn()
+{
+	_state = ST_FREE;
+	
+	unordered_set<int> new_nl;
+	new_nl = MakeNearList();
+
+	for (auto p_id : new_nl) 
+	{
+		if (p_id >= MAX_USER) continue;
+
+		clients[p_id].vl.lock();
+		clients[p_id].view_list.erase(_id);
+		clients[p_id].vl.unlock();
+		clients[p_id].remove_view_list(_id);
+	}
+
+	vl.lock();
+	view_list.clear();
+	vl.unlock();
+
+	pair<int, int> id{ _id,_id };
+	World::instance().addEvent(id, EV_RESPAWN, 300000);
 }
 
 // ** Monster ** // 

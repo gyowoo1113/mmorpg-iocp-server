@@ -90,6 +90,8 @@ public:
 	void heal();
 	void setAttack(bool attack) { _isAttack = attack; }
 	void respawnPlayer();
+	void setRespawnStatus();
+	void readyToRespawn();
 	
 	void setMonsterTypes();
 	short getMonsterType() { return monsterType; }
