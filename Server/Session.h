@@ -97,6 +97,8 @@ public:
 	}
 	void setArgoTarget(int id) {
 		if (monsterType == 1) _target_id = id;
+	void checkTargetRelease(int id) {
+		if (_target_id == id )_target_id = -1;
 	}
 	
 	

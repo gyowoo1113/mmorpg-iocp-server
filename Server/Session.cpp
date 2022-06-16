@@ -93,7 +93,7 @@ void CSession::check_erase_view_list(std::unordered_set<int>& new_nl)
 			}
 
 			if (view < MAX_USER) continue;
-			clients[view]._state = ST_SLEEP;
+			clients[view].checkTargetRelease(_id);
 		}
 	}
 }
