@@ -140,7 +140,8 @@ void do_worker()
 
 		member_funcion_pointer fp[static_cast<int>(COMP_TYPE::length)]
 			= { &World::accept_client, &World::recv_client,&World::send_client,
-		&World::moveNpcEvent,&World::healEvent,&World::monsterAttackEvent};
+		&World::moveNpcEvent,&World::healEvent,&World::monsterAttackEvent,
+		&World::AttackActiveEvent};
 
 		(World::instance().*fp[static_cast<int>(ex_over->_comp_type)])(ex_over, num_bytes, key);
 	}

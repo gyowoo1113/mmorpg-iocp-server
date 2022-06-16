@@ -155,3 +155,8 @@ void World::monsterAttackEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& k
 {
 
 }
+
+void World::AttackActiveEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
+{
+	clients[key].setAttack(true);
+}

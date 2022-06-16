@@ -38,6 +38,7 @@ private:
 
 	short monsterType = 0;
 	short monsterMoveType = 0;
+	bool _isAttack = true;
 
 	CStatus _status;
 	CSendPacket _sendPacket;
@@ -87,11 +88,13 @@ public:
 
 	bool decreaseHp(int hp);
 	void heal();
+	void setAttack(bool attack) { _isAttack = attack; }
 	
 	void setMonsterTypes();
 	bool isMonsterMoving();
 	short getMonsterType() { return monsterType; }
 	void moveMonster();
+	void movePathToNpc();
 	void setPeaceTarget(int id);
 	void setArgoTarget(int id);
 	void checkTargetRelease(int id) {

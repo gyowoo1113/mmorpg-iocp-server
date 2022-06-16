@@ -1,7 +1,7 @@
 #pragma once
 #include "pch.h"
 
-enum COMP_TYPE { OP_ACCEPT, OP_RECV, OP_SEND, EV_MOVE, EV_HEAL, EV_ATTACK, length };
+enum COMP_TYPE { OP_ACCEPT, OP_RECV, OP_SEND, EV_MOVE, EV_HEAL, EV_ATTACK, EV_ATTACK_ACTIVE,length };
 class OVER_EXP {
 public:
 	WSAOVERLAPPED _over;

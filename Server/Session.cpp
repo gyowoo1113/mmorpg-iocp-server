@@ -369,22 +369,46 @@ void CSession::moveMonster()
 	}
 	else
 	{
-		CAstar astar;
-		pair<int, int> pos;
-
-		_pathl.lock();
-		astar.searchRoad(pathfind_pos,x, y, clients[_target_id].x, clients[_target_id].y);
-		if (pathfind_pos.empty() == false)
-		{
-			pos = pathfind_pos.top();
-			pathfind_pos.pop();
-
-			x = pos.first; y = pos.second;
-		}
-		_pathl.unlock();
+		movePathToNpc();
 	}
 
 	CheckMoveSector(_id);
+}
+
+void CSession::movePathToNpc()
+{
+	CAstar astar;
+	pair<int, int> pos;
+
+	lock_guard<mutex> pp{ _pathl };
+	astar.searchRoad(pathfind_pos, x, y, clients[_target_id].x, clients[_target_id].y);
+
+	if (pathfind_pos.empty()) return;
+
+	if (pathfind_pos.size() != 1)
+	{
+		pos = pathfind_pos.top();
+		pathfind_pos.pop();
+
+		x = pos.first; y = pos.second;
+	}
+	else
+	{
+		if (_isAttack == false) return;
+
+		_isAttack = false;
+		clients[_target_id].decreaseHp(_level);
+		//short attackType = monsterType * 2 + monsterMoveType;
+		clients[_target_id].send_change_status_packet(_target_id);
+
+		string mess = "Monster:" + to_string(_id) + " attack " + clients[_target_id]._name + ","+ to_string(_level) + " Damage";
+		clients[_target_id].chatSystemMessage(mess);
+
+		//send_change_status_packet(_id,attackType);
+
+		pair<int, int> id{ _id,_target_id };
+		World::instance().addEvent(id, EV_ATTACK_ACTIVE, 1000);
+	}
 }
 
 void CSession::setPeaceTarget(int id)
