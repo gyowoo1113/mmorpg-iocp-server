@@ -181,12 +181,6 @@ void CSession::process_packet(char* packet)
 				return strcmp(p->name, user.name) == 0;
 			});
 
-			if (iter == g_db_users.end())
-			{
-				_sendPacket.send_login_fail(*this);
-				return;
-			}
-
 			// ** login success ** // 
 			if (_state == ST_FREE) {
 				break;
@@ -197,12 +191,29 @@ void CSession::process_packet(char* packet)
 			}
 
 
-			strcpy_s(_name, iter->name);
-			x = iter->x;
-			y = iter->y;
-			_level = iter->level;
-			_exp = iter->exp;
-			_hp = iter->hp;
+			if (iter == g_db_users.end())
+			{
+				do {
+					x = rand() % 2000;
+					y = rand() % 2000;
+				} while (tiles[x][y]);
+
+				_level = 1;
+				_exp = 0;
+				_hp = 100;
+
+				insertToDatabase(p->name, x, y, _level, _exp, _hp);
+			}
+			else
+			{
+				strcpy_s(_name, iter->name);
+				x = iter->x;
+				y = iter->y;
+				_level = iter->level;
+				_exp = iter->exp;
+				_hp = iter->hp;
+			}
+
 			_sendPacket.send_login_info_packet(*this);
 			_state = ST_INGAME;
 
