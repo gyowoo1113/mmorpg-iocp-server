@@ -339,9 +339,9 @@ void CSession::send_change_status_packet(int c_id)
 	_sendPacket.send_change_status_packet(*this, c_id);
 }
 
-void CSession::send_attack_packet(int c_id, int skill_type)
+void CSession::send_attack_packet(int c_id, int skill_type , short x , short y)
 {
-	_sendPacket.send_attack_packet(*this, c_id, skill_type);
+	_sendPacket.send_attack_packet(*this, c_id, skill_type , x , y);
 }
 
 void CSession::sendMonsterAttack(int id, string& mess)
@@ -349,11 +349,11 @@ void CSession::sendMonsterAttack(int id, string& mess)
 	unordered_set<int> new_nl;
 	new_nl = MakeNearList();
 
-	send_attack_packet(id, 0);
+	send_attack_packet(id, 0 , x, y);
 	chatSystemMessage(mess);
 	for (auto p_id : new_nl)
 	{
-		clients[p_id].send_attack_packet(id, 0);
+		clients[p_id].send_attack_packet(id, 0 , x , y);
 		clients[p_id].chatSystemMessage(mess);
 	}
 }

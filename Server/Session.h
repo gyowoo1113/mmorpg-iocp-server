@@ -71,7 +71,7 @@ public:
 	void send_remove_object(int c_id);
 	void send_chat_packet(int c_id, const char* mess);
 	void send_change_status_packet(int c_id);
-	void send_attack_packet(int c_id, int skill_type);
+	void send_attack_packet(int c_id, int skill_type, short x = 0 , short y = 0);
 	
 	void sendMonsterAttack(int id, string& mess);
 

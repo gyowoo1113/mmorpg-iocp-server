@@ -127,6 +127,7 @@ struct SC_ATTACK_PACKET {
 	unsigned char size;
 	char	type;
 	int		id;			 // -1 : 쿨타임 초기화, 0 : 일반공격	1: 버프스킬
+	short	x, y;
 	short	skill_type;
 };
 
