@@ -497,20 +497,19 @@ void CSession::movePathToNpc()
 	if (isAttack == false) return;
 	if (_isAttack == false) return;
 
-		_isAttack = false;
-		bool isDying = clients[_target_id].decreaseHp(_level);
+	_isAttack = false;
+	//	bool isDying = clients[_target_id].decreaseHp(_level);
 
-		if (isDying) {
-			clients[_target_id].respawnPlayer();
-		}
-		clients[_target_id].send_change_status_packet(_target_id);
+	//	if (isDying) {
+	//		clients[_target_id].respawnPlayer();
+	//	}
+	//	clients[_target_id].send_change_status_packet(_target_id);
 
-		string mess = "Monster:" + to_string(_id) + " attack " + clients[_target_id]._name + "," + to_string(_level) + " Damage";
-		clients[_target_id].sendMonsterAttack(_id, mess);
+	string mess = "Monster:" + to_string(_id) + " attack " + clients[_target_id]._name + "," + to_string(_level) + " Damage";
+	clients[_target_id].sendMonsterAttack(_id, mess);
 
-		pair<int, int> id{ _id,_target_id };
-		World::instance().addEvent(id, EV_ATTACK_ACTIVE, 1000);
-	}
+	pair<int, int> id{ _id,_target_id };
+	World::instance().addEvent(id, EV_ATTACK_ACTIVE, 1000);
 }
 
 void CSession::setPeaceTarget(int id)
