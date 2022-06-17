@@ -47,7 +47,7 @@ void CAstar::calculateScore(sNode* node, float& weight)
 	calculateF(node);
 }
 
-bool CAstar::searchRoad(int startX, int startY, int endX, int endY)
+bool CAstar::searchRoad(short startX, short startY, short endX, short endY)
 {
 	start_pos = make_pair(startX, startY);
 	end_pos = make_pair(endX, endY);
@@ -128,7 +128,7 @@ bool CAstar::getPathPosition(short* x, short* y)
 	if (checkNode->pParent->pos == start_pos) return true;
 
 	checkNode = checkNode->pParent;
-	*x = checkNode->pos.first;
-	*y = checkNode->pos.second;
+	x = &checkNode->pos.first;
+	y = &checkNode->pos.second;
 	return false;
 }

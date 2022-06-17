@@ -3,7 +3,7 @@
 #include <queue>
 
 
-typedef pair<int, int> position;
+typedef pair<short, short> position;
 
 struct sNode {
 	position pos;
@@ -31,7 +31,7 @@ public:
 	void calculateH(sNode* node);
 	void calculateF(sNode* node);
 	void calculateScore(sNode* node, float& weight);
-	bool searchRoad(int startX, int startY, int endX, int endY);
+	bool searchRoad(short startX, short startY, short endX, short endY);
 	void initSearchLists();
 	void compareG(sNode* node, int dir);
 	bool getPathPosition(short* x, short* y);
