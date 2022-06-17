@@ -31,9 +31,10 @@ public:
 	void calculateH(sNode* node);
 	void calculateF(sNode* node);
 	void calculateScore(sNode* node, float& weight);
-	bool searchRoad(stack<position>& road,int startX, int startY, int endX, int endY);
-	void initSearchLists(stack<position>& road);
+	bool searchRoad(int startX, int startY, int endX, int endY);
+	void initSearchLists();
 	void compareG(sNode* node, int dir);
+	position& getPathPosition();
 
 	static void initMapClosedList();
 
@@ -42,9 +43,10 @@ protected:
 	sNode* pEnd = nullptr;
 	static set<position> closed;
 	list<sNode*> open;
+	stack<position> pathStack;
 
-	position start_pos;
-	position end_pos;
+	position start_pos{ 0,0 };
+	position end_pos{ 0,0 };
 
 	int dx[8] = { 0,0,1,-1,1,-1,-1,1 };
 	int dy[8] = { 1,-1,0,0,-1,1,-1,1 };

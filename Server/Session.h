@@ -3,6 +3,7 @@
 #include "over_exp.h"
 #include "Status.h"
 #include "SendPacket.h"
+#include "Astar.h"
 
 enum SESSION_STATE { ST_FREE, ST_ACCEPTED, ST_INGAME, ST_SLEEP };
 
@@ -40,6 +41,8 @@ private:
 	short monsterMoveType = 0;
 	bool _isAttack = true;
 	bool _isHealing = false;
+
+	CAstar _astar;
 
 	CStatus _status;
 	CSendPacket _sendPacket;

@@ -47,11 +47,12 @@ void CAstar::calculateScore(sNode* node, float& weight)
 	calculateF(node);
 }
 
-bool CAstar::searchRoad(stack<position>& road, int startX, int startY, int endX, int endY)
+bool CAstar::searchRoad(int startX, int startY, int endX, int endY)
 {
 	start_pos = make_pair(startX, startY);
 	end_pos = make_pair(endX, endY);
-	initSearchLists(road);
+	initSearchLists();
+	pEnd = nullptr;
 
 	position now_pos;
 	sNode* pop_node;
@@ -83,18 +84,13 @@ bool CAstar::searchRoad(stack<position>& road, int startX, int startY, int endX,
 		}
 	}
 
-	for (sNode* node = pop_node; node->pParent != nullptr; node = node->pParent)
-	{
-		road.push(node->pos);
-	}
+	pEnd = pop_node;
 
 	return true;
 }
 
-void CAstar::initSearchLists(stack<position>& road)
+void CAstar::initSearchLists()
 {
-	while (road.empty() == false)
-		road.pop();
 	open.clear();
 
 	sNode* opens = new sNode(start_pos);
@@ -120,4 +116,24 @@ void CAstar::compareG(sNode* node, int dir)
 		calculateG((*iter), weight[dir]);
 		calculateF((*iter));
 	}
+}
+
+position& CAstar::getPathPosition()
+{
+	// -1 : fail, -2 : find
+	position pos{ -1,-1 };
+	if (pEnd == nullptr) return pos;
+	sNode* checkNode = pEnd;
+
+	if (checkNode == nullptr) return pos;
+	if (checkNode->pParent == nullptr) return pos;
+
+	if (checkNode->pParent->pos == start_pos) {
+		pos.first = -2;
+		return pos;
+	}
+
+	checkNode = checkNode->pParent;
+	pos = checkNode->pos;
+	return pos;
 }

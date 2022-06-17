@@ -482,21 +482,18 @@ void CSession::moveMonster()
 
 void CSession::movePathToNpc()
 {
-	CAstar astar;
-	pair<int, int> pos;
-
-	lock_guard<mutex> pp{ _pathl };
-	bool isFind = astar.searchRoad(pathfind_pos, x, y, clients[_target_id].x, clients[_target_id].y);
-
+	pair<int, int> path;
+	_pathl.lock();
+	bool isFind = _astar.searchRoad(clients[_target_id].x, clients[_target_id].y, x, y);
+	_pathl.unlock();
 	if (isFind == false) _target_id = -1;
-	if (pathfind_pos.empty()) return;
 
-	if (pathfind_pos.size() != 1)
+	path = _astar.getPathPosition();
+	if (path.first == -1) return;
+
+	if (path.first != -2)
 	{
-		pos = pathfind_pos.top();
-		pathfind_pos.pop();
-
-		x = pos.first; y = pos.second;
+		x = path.first; y = path.second;
 	}
 	else
 	{
