@@ -163,6 +163,8 @@ int main()
 	World::instance().initialize_npc();
 	load_database();
 
+	cout << "load end\n";
+
 	WSADATA WSAData;
 	WSAStartup(MAKEWORD(2, 2), &WSAData);
 

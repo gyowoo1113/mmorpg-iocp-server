@@ -66,8 +66,8 @@ void load_database()
 
 								strcpy_s(user.name, str);
 
-								cout << "x,y:" << user_x <<","<< user_y << " level,exp: " << user_level << "," << user_exp << "hp:" << user_hp << " name:" << str;
-								cout << endl;
+								//cout << "x,y:" << user_x <<","<< user_y << " level,exp: " << user_level << "," << user_exp << "hp:" << user_hp << " name:" << str;
+								//cout << endl;
 								g_db_users.push_back(user);
 							}
 							else
