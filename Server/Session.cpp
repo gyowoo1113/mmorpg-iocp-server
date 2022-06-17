@@ -488,12 +488,14 @@ void CSession::movePathToNpc()
 void CSession::setPeaceTarget(int id)
 {
 	if (monsterType != 0) return;
+	if (_target_id != -1) return;
 
 	_target_id = id;
 }
 
 void CSession::setArgoTarget(int id)
 {
+	if (_target_id != -1) return;
 	if (monsterType != 1) return;
 
 	_target_id = id;
@@ -502,6 +504,7 @@ void CSession::setArgoTarget(int id)
 void CSession::checkArgoStart(int c_id)
 {
 	if (monsterType != 1) return;
+	if (_target_id != -1) return;
 
 	if (distance(c_id, _id) <= MONSTER_RANGE)
 		setArgoTarget(c_id);
