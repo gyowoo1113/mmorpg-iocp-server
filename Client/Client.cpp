@@ -221,6 +221,7 @@ void drawPlayers()
 
 	for (auto& pl : players) pl.second.draw();
 	for (auto& pl : npcs) pl.second.animDraw();
+	for (auto& pl : players) pl.second.drawAttack();
 
 	player.drawAttack();
 }
@@ -560,6 +561,18 @@ void ProcessPacket(char* ptr)
 		}
 
 		break; 
+	}
+	case SC_ATTACK:
+	{
+		SC_ATTACK_PACKET* packet = reinterpret_cast<SC_ATTACK_PACKET*>(ptr);
+		int c_id = packet->id;
+		int type = packet->skill_type;
+		if (c_id < MAX_USER) {
+			if (players.count(c_id) == 0) break;
+			players[c_id].setAttack();
+		}
+
+		break;
 	}
 	default:
 		printf("Unknown PACKET type [%d]\n", ptr[1]);

@@ -79,3 +79,13 @@ void CSendPacket::send_change_status_packet(CSession& client, int c_id)
 	p.level = clients[c_id]._level;
 	client.do_send(&p);
 }
+
+void CSendPacket::send_attack_packet(CSession& client,int c_id, int skill_type)
+{
+	SC_ATTACK_PACKET p;
+	p.size = sizeof(SC_ATTACK_PACKET);
+	p.id = c_id; 
+	p.type = SC_ATTACK;
+	p.skill_type = skill_type;
+	client.do_send(&p);
+}

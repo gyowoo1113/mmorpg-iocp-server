@@ -22,6 +22,7 @@ constexpr char SC_REMOVE_OBJECT = 14;
 constexpr char SC_MOVE_OBJECT = 15;
 constexpr char SC_CHAT = 16;
 constexpr char SC_STAT_CHANGE = 17;
+constexpr char SC_ATTACK = 18;
 
 #pragma pack (push, 1)
 
@@ -120,6 +121,13 @@ struct SC_STAT_CHANGE_PACKET {
 	short	level;
 	int		exp;
 	int		hp, hpmax;
+};
+
+struct SC_ATTACK_PACKET {
+	unsigned char size;
+	char	type;
+	int		id;			 // -1 : 쿨타임 초기화, 0 : 일반공격	1: 버프스킬
+	short	skill_type;
 };
 
 #pragma pack (pop)

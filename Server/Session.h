@@ -71,6 +71,7 @@ public:
 	void send_remove_object(int c_id);
 	void send_chat_packet(int c_id, const char* mess);
 	void send_change_status_packet(int c_id);
+	void send_attack_packet(int c_id, int skill_type);
 
 
 	void update_move_view_list(int client_time, std::unordered_set<int>& new_nl);

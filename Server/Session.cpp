@@ -241,7 +241,13 @@ void CSession::process_packet(char* packet)
 
 		case CS_ATTACK: {
 			process_attack(packet);
+			unordered_set<int> new_nl;
+			new_nl = MakeNearList();
 
+			for (auto& n : new_nl)
+			{
+				clients[n].send_attack_packet(_id, 0);
+			}
 			break;
 		}
 	}
@@ -331,6 +337,11 @@ void CSession::send_chat_packet(int c_id, const char* mess)
 void CSession::send_change_status_packet(int c_id)
 {
 	_sendPacket.send_change_status_packet(*this, c_id);
+}
+
+void CSession::send_attack_packet(int c_id, int skill_type)
+{
+	_sendPacket.send_attack_packet(*this, c_id, skill_type);
 }
 
 void CSession::send_remove_object(int c_id)
