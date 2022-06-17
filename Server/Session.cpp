@@ -367,12 +367,33 @@ void CSession::send_remove_object(int c_id)
 
 bool CSession::decreaseHp(int hp)
 {
-	return _status.decreaseHp(*this,hp);
+	bool isDying = _status.decreaseHp(*this, hp);
+	checkHealing();
+
+	return isDying;
 }
 
 void CSession::heal()
 {
-	_status.healHp(*this);
+	bool isHeal = _status.healHp(*this);
+
+	if (isHeal)
+	{
+		_sendPacket.send_change_status_packet(*this, _id);
+		string mess = "player Heal!!";
+		chatSystemMessage(mess);
+	}
+}
+
+void CSession::checkHealing()
+{
+	if (_isHealing) return;
+	_isHealing = true;
+
+	pair<int, int> id{ _id,_id };
+	World::instance().addEvent(id, EV_HEAL, 5000);
+}
+
 
 // ** Respawn ** //
 
@@ -471,6 +492,7 @@ void CSession::movePathToNpc()
 
 		_isAttack = false;
 		bool isDying = clients[_target_id].decreaseHp(_level);
+
 		if (isDying) {
 			clients[_target_id].respawnPlayer();
 		}

@@ -39,6 +39,7 @@ private:
 	short monsterType = 0;
 	short monsterMoveType = 0;
 	bool _isAttack = true;
+	bool _isHealing = false;
 
 	CStatus _status;
 	CSendPacket _sendPacket;
@@ -91,6 +92,7 @@ public:
 
 	bool decreaseHp(int hp);
 	void heal();
+	void checkHealing();
 	void setAttack(bool attack) { _isAttack = attack; }
 	void respawnPlayer();
 	void setRespawnStatus();
