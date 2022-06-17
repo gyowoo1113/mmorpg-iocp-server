@@ -222,6 +222,7 @@ void drawPlayers()
 	for (auto& pl : players) pl.second.draw();
 	for (auto& pl : npcs) pl.second.animDraw();
 	for (auto& pl : players) pl.second.drawAttack();
+	for (auto& pl : npcs) pl.second.drawAttack();
 
 	player.drawAttack();
 }
@@ -570,6 +571,11 @@ void ProcessPacket(char* ptr)
 		if (c_id < MAX_USER) {
 			if (players.count(c_id) == 0) break;
 			players[c_id].setAttack();
+		}
+		else {
+			if (npcs.count(c_id) == 0) break;
+			npcs[c_id].effectMove(packet->x, packet->y);
+			npcs[c_id].setAttack();
 		}
 
 		break;

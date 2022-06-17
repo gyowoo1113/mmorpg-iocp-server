@@ -344,6 +344,20 @@ void CSession::send_attack_packet(int c_id, int skill_type)
 	_sendPacket.send_attack_packet(*this, c_id, skill_type);
 }
 
+void CSession::sendMonsterAttack(int id, string& mess)
+{
+	unordered_set<int> new_nl;
+	new_nl = MakeNearList();
+
+	send_attack_packet(id, 0);
+	chatSystemMessage(mess);
+	for (auto p_id : new_nl)
+	{
+		clients[p_id].send_attack_packet(id, 0);
+		clients[p_id].chatSystemMessage(mess);
+	}
+}
+
 void CSession::send_remove_object(int c_id)
 {
 	_sendPacket.send_remove_object(*this,c_id);
@@ -374,7 +388,6 @@ void CSession::respawnPlayer()
 	x = iter->x; y = iter->y;
 
 	CheckMoveSector(_id);
-
 	unordered_set<int> new_nl;
 	new_nl = MakeNearList();
 
@@ -460,11 +473,8 @@ void CSession::movePathToNpc()
 		bool isDying = clients[_target_id].decreaseHp(_level);
 		clients[_target_id].send_change_status_packet(_target_id);
 
-		string mess = "Monster:" + to_string(_id) + " attack " + clients[_target_id]._name + ","+ to_string(_level) + " Damage";
-		clients[_target_id].chatSystemMessage(mess);
-
-		//short attackType = monsterType * 2 + monsterMoveType;
-		//send_change_status_packet(_id,attackType);
+		string mess = "Monster:" + to_string(_id) + " attack " + clients[_target_id]._name + "," + to_string(_level) + " Damage";
+		clients[_target_id].sendMonsterAttack(_id, mess);
 
 		pair<int, int> id{ _id,_target_id };
 		World::instance().addEvent(id, EV_ATTACK_ACTIVE, 1000);

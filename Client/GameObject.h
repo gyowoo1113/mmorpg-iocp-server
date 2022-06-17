@@ -6,6 +6,7 @@ class CObject
 public:
 	virtual void draw() = 0;
 	virtual void animDraw() = 0;
+	virtual void drawAttack() = 0;
 };
 
 class CGameObject : public CObject
@@ -36,8 +37,11 @@ public:
 	void setFrameCount(int index);
 	void setHp(int hp);
 	void initIndex();
+	int getX() { return m_x; }
+	int getY() { return m_y; }
 
 	virtual void draw() override;
 	virtual void animDraw() override;
+	virtual void drawAttack() override;
 };
 

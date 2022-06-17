@@ -20,14 +20,12 @@ public:
 
 	virtual void draw() override;
 	virtual void animDraw() override;
-	void drawAttack();
+	virtual void drawAttack() override;
 
 private:
 	int m_nExp;
 	int m_nMaxHp = 100;
 	int m_nMaxExp;
 	bool m_bAttack = false;
-
 	CEffect m_effectObject;
 };
-

@@ -80,3 +80,7 @@ void CGameObject::draw()
 void CGameObject::animDraw()
 {
 }
+
+void CGameObject::drawAttack()
+{
+}
