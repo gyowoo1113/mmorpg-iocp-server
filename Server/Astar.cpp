@@ -118,22 +118,17 @@ void CAstar::compareG(sNode* node, int dir)
 	}
 }
 
-position& CAstar::getPathPosition()
+bool CAstar::getPathPosition(short* x, short* y)
 {
-	// -1 : fail, -2 : find
-	position pos{ -1,-1 };
-	if (pEnd == nullptr) return pos;
+	if (pEnd == nullptr) return false;
 	sNode* checkNode = pEnd;
 
-	if (checkNode == nullptr) return pos;
-	if (checkNode->pParent == nullptr) return pos;
-
-	if (checkNode->pParent->pos == start_pos) {
-		pos.first = -2;
-		return pos;
-	}
+	if (checkNode == nullptr) return false;
+	if (checkNode->pParent == nullptr) return false;
+	if (checkNode->pParent->pos == start_pos) return true;
 
 	checkNode = checkNode->pParent;
-	pos = checkNode->pos;
-	return pos;
+	*x = checkNode->pos.first;
+	*y = checkNode->pos.second;
+	return false;
 }

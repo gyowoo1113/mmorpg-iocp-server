@@ -34,7 +34,7 @@ public:
 	bool searchRoad(int startX, int startY, int endX, int endY);
 	void initSearchLists();
 	void compareG(sNode* node, int dir);
-	position& getPathPosition();
+	bool getPathPosition(short* x, short* y);
 
 	static void initMapClosedList();
 

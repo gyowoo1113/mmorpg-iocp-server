@@ -488,16 +488,9 @@ void CSession::movePathToNpc()
 	_pathl.unlock();
 	if (isFind == false) _target_id = -1;
 
-	path = _astar.getPathPosition();
-	if (path.first == -1) return;
-
-	if (path.first != -2)
-	{
-		x = path.first; y = path.second;
-	}
-	else
-	{
-		if (_isAttack == false) return;
+	bool isAttack = _astar.getPathPosition(&x,&y);
+	if (isAttack == false) return;
+	if (_isAttack == false) return;
 
 		_isAttack = false;
 		bool isDying = clients[_target_id].decreaseHp(_level);
