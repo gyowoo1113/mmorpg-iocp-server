@@ -1,14 +1,12 @@
 #include "stdafx.h"
 #include "Player.h"
 
-CPlayer::CPlayer(sf::Texture& t, int x, int y, int x2, int y2, string id, int level, int hp, int exp)
+CPlayer::CPlayer(sf::Texture& t, sf::Texture& et, int x, int y, int x2, int y2, string id, int level, int hp, int exp)
 : m_nExp{ exp }, CGameObject(t, x, y, x2, y2, id, level, hp)
 {
 	calculateMaxExp();
 
-	sf::Texture* effectSlash = new sf::Texture;
-	effectSlash->loadFromFile("../Resource/slash.png");
-	m_effectObject = CEffect(*effectSlash, 0, 0, 16, 16, 4);
+	m_effectObject = CEffect(et, 0, 0, 16, 16, 4);
 	m_effectObject.setSpriteScale(2.0f, 2.0f);
 	m_effectObject.setActive(true);
 }

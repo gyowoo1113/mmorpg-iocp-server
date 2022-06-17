@@ -6,7 +6,7 @@
 class CPlayer : public CGameObject
 {
 public:
-	CPlayer(sf::Texture& t, int x, int y, int x2, int y2, string id, int level, int hp, int exp);
+	CPlayer(sf::Texture& t, sf::Texture& et, int x, int y, int x2, int y2, string id, int level, int hp, int exp);
 	CPlayer();
 	~CPlayer() = default;
 

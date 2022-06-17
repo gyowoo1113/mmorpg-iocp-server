@@ -6,7 +6,7 @@
 class CMonster : public CGameObject
 {
 public:
-	CMonster(sf::Texture& t, int x, int y, int x2, int y2, std::string name, int level, int hp, int exp);
+	CMonster(sf::Texture& t, sf::Texture& et, int x, int y, int x2, int y2, std::string name, int level, int hp, int exp);
 	CMonster();
 	~CMonster() = default;
 

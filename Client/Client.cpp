@@ -88,6 +88,7 @@ sf::Texture* maptiles;
 sf::Texture* playertiles;
 sf::Texture* objecttiles;
 
+vector<Texture*> effectTiles;
 vector<Texture*> monstertiles;
 vector<CGameObject> maptile;
 vector<CGameObject> objecttile;
@@ -106,6 +107,14 @@ void client_initialize()
 	playertiles->loadFromFile("../Resource/Idle.png");
 	objecttiles->loadFromFile("../Resource/objects.png");	
 
+	string res_effect_name[2] = { "slash","Fire"};
+
+	for (int i = 0; i < 2; ++i) {
+		Texture* eff  = new Texture;
+		string m_name = "../Resource/" + res_effect_name[i] + ".png";
+		eff->loadFromFile(m_name);
+		effectTiles.emplace_back(eff);
+	}
 
 	string m_res_name[4] = { "mushroom","Flam","Flam2","Skull" };
 
@@ -130,7 +139,7 @@ void client_initialize()
 		objecttile.emplace_back(mtile);
 	}
 
-	player = CPlayer(*playertiles, 0, 0, 16, 16, s, 3, 80, 20);
+	player = CPlayer(*playertiles,*effectTiles[0], 0, 0, 16, 16, s, 3, 80, 20);
 	player.setFrameCount(4);
 	player.setSpriteScale(fscale, fscale);
 
@@ -480,7 +489,7 @@ void ProcessPacket(char* ptr)
 
 
 			// level, exp , hp 정보 불필요
-			players[id] = CPlayer(*playertiles, 0, 0, 16, 16, my_packet->name, 0,0,0);
+			players[id] = CPlayer(*playertiles, *effectTiles[0], 0, 0, 16, 16, my_packet->name, 0,0,0);
 			players[id].setSpriteScale(fscale, fscale);
 			players[id].move(my_packet->x, my_packet->y);
 			players[id].setActive(true);
@@ -488,7 +497,7 @@ void ProcessPacket(char* ptr)
 		else {
 			if (0 != npcs.count(id)) break;
 
-			npcs[id] = CMonster(*monstertiles[my_packet->race], 0, 0, 16, 16, my_packet->name, my_packet->level, my_packet->hp, 0);
+			npcs[id] = CMonster(*monstertiles[my_packet->race],*effectTiles[1], 0, 0, 16, 16, my_packet->name, my_packet->level, my_packet->hp, 0);
 			npcs[id].setSpriteScale(fscale, fscale);
 			npcs[id].move(my_packet->x, my_packet->y);
 			npcs[id].setActive(true);
