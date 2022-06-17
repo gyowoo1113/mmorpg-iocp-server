@@ -364,6 +364,7 @@ void CSession::sendMonsterAttack(int id, string& mess)
 	chatSystemMessage(mess);
 	for (auto p_id : new_nl)
 	{
+		if (p_id >= MAX_USER) continue;
 		clients[p_id].send_attack_packet(id, 0 , x , y);
 		clients[p_id].chatSystemMessage(mess);
 	}
@@ -486,7 +487,11 @@ void CSession::movePathToNpc()
 	_pathl.lock();
 	bool isFind = _astar.searchRoad(clients[_target_id].x, clients[_target_id].y, x, y);
 	_pathl.unlock();
-	if (isFind == false) _target_id = -1;
+
+	if (isFind == false) {
+		_target_id = -1;
+		return;
+	}
 
 	bool isAttack = _astar.getPathPosition(&x,&y);
 	if (isAttack == false) return;

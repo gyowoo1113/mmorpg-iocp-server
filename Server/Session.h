@@ -39,7 +39,7 @@ private:
 
 	short monsterType = 0;
 	short monsterMoveType = 0;
-	bool _isAttack = true;
+	atomic<bool> _isAttack = true;
 	bool _isHealing = false;
 
 	CAstar _astar;
