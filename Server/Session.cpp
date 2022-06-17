@@ -486,8 +486,9 @@ void CSession::movePathToNpc()
 	pair<int, int> pos;
 
 	lock_guard<mutex> pp{ _pathl };
-	astar.searchRoad(pathfind_pos, x, y, clients[_target_id].x, clients[_target_id].y);
+	bool isFind = astar.searchRoad(pathfind_pos, x, y, clients[_target_id].x, clients[_target_id].y);
 
+	if (isFind == false) _target_id = -1;
 	if (pathfind_pos.empty()) return;
 
 	if (pathfind_pos.size() != 1)

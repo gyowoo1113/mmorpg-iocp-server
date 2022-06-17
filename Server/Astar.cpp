@@ -55,8 +55,10 @@ bool CAstar::searchRoad(stack<position>& road, int startX, int startY, int endX,
 
 	position now_pos;
 	sNode* pop_node;
+	int cnt = 0;
 	while (true)
 	{
+		if (cnt++ > 50) return false;
 		if (open.size() == 0) return false;
 
 		open.sort(compF);
