@@ -128,7 +128,7 @@ bool CAstar::getPathPosition(short* x, short* y)
 	if (checkNode->pParent->pos == start_pos) return true;
 
 	checkNode = checkNode->pParent;
-	x = &checkNode->pos.first;
-	y = &checkNode->pos.second;
+	*x = checkNode->pos.first;
+	*y = checkNode->pos.second;
 	return false;
 }
