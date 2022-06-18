@@ -39,7 +39,6 @@ public:
 	static void initMapClosedList();
 
 protected:
-	sNode* pStart = nullptr;
 	sNode* pEnd = nullptr;
 	static set<position> closed;
 	list<sNode*> open;

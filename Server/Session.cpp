@@ -499,7 +499,6 @@ void CSession::moveMonster()
 
 void CSession::movePathToNpc()
 {
-	pair<int, int> path;
 	_pathl.lock();
 	bool isFind = _astar.searchRoad(clients[_target_id].x, clients[_target_id].y, x, y);
 	_pathl.unlock();
@@ -509,22 +508,29 @@ void CSession::movePathToNpc()
 		return;
 	}
 
+	_pathl.lock();
 	bool isAttack = _astar.getPathPosition(&x,&y);
+	_pathl.unlock();
+
+
 	if (isAttack == false) return;
 	if (_isAttack == false) return;
 
+
+	_pathl.lock();
 	_isAttack = false;
 	bool isDying = clients[_target_id].decreaseHp(_level);
-
 	if (isDying) {
 		clients[_target_id].respawnPlayer();
 	}
-	clients[_target_id].send_change_status_packet(_target_id);
 
+	clients[_target_id].send_change_status_packet(_target_id);
 	string mess = "Monster:" + to_string(_id) + " attack " + clients[_target_id]._name + " and " + to_string(_level) + " Damage";
 	clients[_target_id].sendMonsterAttack(_id, mess);
 
 	pair<int, int> id{ _id,_target_id };
+	_pathl.unlock();
+
 	World::instance().addEvent(id, EV_ATTACK_ACTIVE, 1000);
 }
 
