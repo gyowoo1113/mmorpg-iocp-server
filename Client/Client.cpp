@@ -40,13 +40,13 @@ int g_top_y = 0;
 int g_myid;
 int direction = -1;
 
-string s = "me";
 CPlayer player;
 unordered_map<int, CPlayer> players;
 unordered_map<int, CMonster> npcs;
 
 sf::TcpSocket socket;
 
+string playerName;
 string userChatting;
 deque<Text> chat;
 bool isChatting = false;
@@ -139,7 +139,7 @@ void client_initialize()
 		objecttile.emplace_back(mtile);
 	}
 
-	player = CPlayer(*playertiles,*effectTiles[0], 0, 0, 16, 16, s, 3, 80, 20);
+	player = CPlayer(*playertiles,*effectTiles[0], 0, 0, 16, 16, playerName, 3, 80, 20);
 	player.setFrameCount(4);
 	player.setSpriteScale(fscale, fscale);
 
@@ -442,6 +442,8 @@ void setConnectServer()
 	cout << "ID: ";
 	char id[20];
 	scanf_s("%s", id, sizeof(id));
+	playerName.replace(playerName.begin(), playerName.end(), id);
+
 
 	if (status != sf::Socket::Done) {
 		wcout << L"서버와 연결할 수 없습니다.\n";
