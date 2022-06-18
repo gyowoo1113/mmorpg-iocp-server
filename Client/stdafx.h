@@ -24,3 +24,4 @@ constexpr int CHAT_LINE = 4;
 
 extern int g_left_x;
 extern int g_top_y;
+extern sf::Font g_font;

@@ -33,7 +33,7 @@ sf::RenderWindow _window(sf::VideoMode(WINDOW_WIDTH, WINDOW_HEIGHT), "2D CLIENT"
 RenderWindow* window = &_window;
 sf::Text playerText;
 sf::Text chattingText;
-sf::Font font;
+sf::Font g_font;
 
 int g_left_x = 0;
 int g_top_y = 0;
@@ -179,16 +179,16 @@ int main() {
 
 void CreateWindows()
 {
-	if (!font.loadFromFile("../Resource/Font/Goyang.ttf"))
+	if (!g_font.loadFromFile("../Resource/Font/Goyang.ttf"))
 	{
 		cout << "fail!!" << endl;
 	}
 
-	playerText.setFont(font);
+	playerText.setFont(g_font);
 	playerText.setCharacterSize(24);
 	playerText.setPosition(Vector2f(0, 0));
 	playerText.setOutlineThickness(3.0f);
-	chattingText.setFont(font);
+	chattingText.setFont(g_font);
 	chattingText.setCharacterSize(CHAT_SIZE);
 	chattingText.setPosition(Vector2f(0, WINDOW_HEIGHT - CHAT_SIZE - 5 - EXP_HEIGHT));
 }
@@ -398,7 +398,7 @@ void KeyInput(sf::Event& e)
 Text setTextMessage(string str, bool isSystemMessage)
 {
 	sf::Text text;
-	text.setFont(font);
+	text.setFont(g_font);
 	text.setCharacterSize(CHAT_SIZE);
 	text.setString(str);
 
