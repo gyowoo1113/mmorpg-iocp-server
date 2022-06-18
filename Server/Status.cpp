@@ -58,7 +58,7 @@ void CStatus::updateExp(CSession& client, int mon_id)
 
     string user(client._name), mons(clients[mon_id]._name);
     string mess = "User:" + user + " kill to " + mons + ", gain " + to_string(gainExp) + " Exp";
-    client.chatSystemMessage(mess);
+    client.chatMessage(mess);
 }
 
 void CStatus::calculateMaxExp(CSession& client)

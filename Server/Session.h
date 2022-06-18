@@ -91,7 +91,7 @@ public:
 	void moveObject(char* packet);
 	void process_attack(char* packet);
 
-	void chatSystemMessage(std::string& mess);
+	void chatMessage(std::string& mess, int id = -1);
 
 	bool decreaseHp(int hp);
 	void heal();

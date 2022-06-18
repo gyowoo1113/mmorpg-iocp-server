@@ -294,7 +294,7 @@ void CSession::process_attack(char* packet)
 		clients[mon].setPeaceTarget(_id);
 		
 		string mess = "User:" + to_string(_id) + " attack " + clients[mon]._name + ", 50 Damage";
-		chatSystemMessage(mess);
+		chatMessage(mess);
 
 		if (is_dying)
 		{
@@ -305,9 +305,9 @@ void CSession::process_attack(char* packet)
 	}
 }
 
-void CSession::chatSystemMessage(std::string& mess)
+void CSession::chatMessage(std::string& mess, int id)
 {
-	send_chat_packet(-1, mess.c_str());
+	send_chat_packet(id, mess.c_str());
 }
 
 void CSession::rebuild_packet(char* send_buffer, int& remain)
@@ -361,12 +361,12 @@ void CSession::sendMonsterAttack(int id, string& mess)
 	new_nl = MakeNearList();
 
 	send_attack_packet(id, 0 , x, y);
-	chatSystemMessage(mess);
+	chatMessage(mess);
 	for (auto p_id : new_nl)
 	{
 		if (p_id >= MAX_USER) continue;
 		clients[p_id].send_attack_packet(id, 0 , x , y);
-		clients[p_id].chatSystemMessage(mess);
+		clients[p_id].chatMessage(mess);
 	}
 }
 
@@ -393,7 +393,7 @@ void CSession::heal()
 	{
 		_sendPacket.send_change_status_packet(*this, _id);
 		string mess = "player Heal!!";
-		chatSystemMessage(mess);
+		chatMessage(mess);
 	}
 }
 
