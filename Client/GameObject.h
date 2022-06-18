@@ -14,6 +14,8 @@ class CGameObject : public CObject
 protected:
 	bool m_bActive = false;
 	sf::Sprite m_sprite;
+	sf::Text nameUI;
+
 	int m_nIdleIndex = 0;
 	int m_nStateIndex = 0;
 	int m_nFrameCount = 0;
@@ -37,6 +39,7 @@ public:
 	void setFrameCount(int index);
 	void setHp(int hp);
 	void initIndex();
+	void setNameUI(const char name[]);
 	int getX() { return m_x; }
 	int getY() { return m_y; }
 

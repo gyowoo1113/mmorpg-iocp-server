@@ -12,6 +12,7 @@ CGameObject::CGameObject(sf::Texture& t, int x, int y, int x2, int y2, string na
 {
 	m_sprite.setTexture(t);
 	m_sprite.setTextureRect(sf::IntRect(x, y, x2, y2));
+	setNameUI(name.c_str());
 }
 
 void CGameObject::setActive(bool isActive)
@@ -65,6 +66,15 @@ void CGameObject::initIndex()
 	m_nIdleIndex = 0;
 }
 
+void CGameObject::setNameUI(const char name[])
+{
+	nameUI.setFont(g_font);
+	nameUI.setString(name);
+	nameUI.setFillColor(sf::Color(0,0,200));
+	nameUI.setCharacterSize(15);
+	nameUI.setStyle(sf::Text::Bold);
+}
+
 // ** ** //
 
 void CGameObject::draw()
@@ -75,6 +85,9 @@ void CGameObject::draw()
 	float ry = (m_y - ::g_top_y) * (float)TILE_WIDTH;
 	m_sprite.setPosition(rx, ry);
 	window->draw(m_sprite);
+
+	nameUI.setPosition(rx - 10, ry - 20);
+	window->draw(nameUI);
 }
 
 void CGameObject::animDraw()
