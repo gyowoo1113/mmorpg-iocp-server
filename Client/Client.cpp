@@ -272,13 +272,12 @@ void drawMaps()
 
 void drawChatting()
 {
-	if (isShowChatting == false) return;
-
-	window->draw(shape);
+	if (isChatting)
+		window->draw(shape);
 
 	deque<Text>::reverse_iterator itor;
 	int cnt = 0;
-	int chat_start_h = WINDOW_HEIGHT - CHAT_SIZE * 2 - 5;
+	int chat_start_h = WINDOW_HEIGHT - CHAT_SIZE * 2 - 10;
 	for (itor = chat.rbegin(); itor != chat.rend(); ++itor)
 	{
 		float pos = chat_start_h - cnt * CHAT_SIZE;
@@ -404,9 +403,9 @@ Text setTextMessage(string str, bool isSystemMessage)
 
 	if (isSystemMessage)
 	{
-		text.setFillColor(Color(0, 180, 0));
-		text.setOutlineThickness(0.4f);
-		text.setOutlineColor(Color::Blue);
+		text.setFillColor(Color(0, 0 ,180));
+		//text.setOutlineThickness(0.4f);
+		//text.setOutlineColor(Color::Blue);
 	}
 
 	return text;

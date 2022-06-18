@@ -521,7 +521,7 @@ void CSession::movePathToNpc()
 	}
 	clients[_target_id].send_change_status_packet(_target_id);
 
-	string mess = "Monster:" + to_string(_id) + " attack " + clients[_target_id]._name + "," + to_string(_level) + " Damage";
+	string mess = "Monster:" + to_string(_id) + " attack " + clients[_target_id]._name + " and " + to_string(_level) + " Damage";
 	clients[_target_id].sendMonsterAttack(_id, mess);
 
 	pair<int, int> id{ _id,_target_id };
