@@ -261,6 +261,22 @@ void CSession::process_packet(char* packet)
 			}
 			break;
 		}
+
+		case CS_CHAT: {
+			CS_CHAT_PACKET* p = reinterpret_cast<CS_CHAT_PACKET*>(packet);
+			string mess(p->mess);
+			chatMessage(mess,1);
+
+			vl.lock();
+			unordered_set<int> search_vl = view_list;
+			vl.unlock();
+
+			for (int p_id : search_vl)
+			{
+				if (p_id >= MAX_USER) continue;
+				clients[p_id].chatMessage(mess, 1);
+			}
+		}
 	}
 }
 

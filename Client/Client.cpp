@@ -10,6 +10,7 @@ using namespace sf;
 using namespace std;
 #pragma comment (lib, "WS2_32.LIB") 
 
+void sendMessage();
 void CreateWindows();
 void setConnectServer();
 void DrawWindows();
@@ -22,8 +23,7 @@ void InputWindows(Event& e);
 
 void KeyInput(sf::Event& e);
 Text setTextMessage(string str,bool isSystemMessage = false);
-void setSystemMessage(char* text);
-void setMessage();
+void setMessage(char* text, bool isSystem = false);
 
 void process_data(char* net_buf, size_t io_byte);
 void send_packet(void* packet);
@@ -373,7 +373,7 @@ void KeyInput(sf::Event& e)
 
 		case Keyboard::Return:
 			if (userChatting.size() > 0 && isChatting)
-				setMessage();
+				sendMessage();
 			else if (userChatting.size() == 0)
 			{
 				isChatting = !isChatting;
@@ -412,23 +412,25 @@ Text setTextMessage(string str, bool isSystemMessage)
 	return text;
 }
 
-void setMessage()
+void setMessage(char* text,bool isSystem)
 {
-	string chatting = player.getName() + ":" + userChatting;
 	if (chat.size() > CHAT_LINE)
 		chat.pop_front();
 
-	chat.push_back(setTextMessage(chatting));
-
-	userChatting.clear();
+	chat.push_back(setTextMessage(text, isSystem));
 }
 
-void setSystemMessage(char* text)
+void sendMessage()
 {
-	if (chat.size() > CHAT_LINE)
-		chat.pop_front();
+	string chatting = player.getName() + ":" + userChatting;
 
-	chat.push_back(setTextMessage(text,true));
+	CS_CHAT_PACKET p;
+	p.size = sizeof(SC_CHAT_PACKET) - sizeof(p.mess) + chatting.size() + 1;
+	p.type = CS_CHAT;
+	strcpy_s(p.mess, chatting.c_str());
+	send_packet(&p);
+
+	userChatting.clear();
 }
 
 //*** Server *** //
@@ -551,8 +553,8 @@ void ProcessPacket(char* ptr)
 		SC_CHAT_PACKET* my_packet = reinterpret_cast<SC_CHAT_PACKET*>(ptr);
 		int other_id = my_packet->id;
 
-		if (other_id == -1)
-			setSystemMessage(my_packet->mess);
+		bool isSystem = (other_id == -1) ? true : false;
+		setMessage(my_packet->mess,isSystem);
 		break;
 	}
 	case SC_STAT_CHANGE:
