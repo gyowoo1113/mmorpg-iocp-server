@@ -612,10 +612,11 @@ void process_data(char* net_buf, size_t io_byte)
 	static char packet_buffer[BUF_SIZE];
 
 	while (0 != io_byte) {
-		if (0 == in_packet_size) { 
+		if (in_packet_size == 0) {
 			REBUILD_PACKET* packet = reinterpret_cast<REBUILD_PACKET*>(ptr);
-			in_packet_size = packet->size;
+			in_packet_size = static_cast<size_t>(packet->size);
 		}
+
 		size_t remain_packet_size = in_packet_size - saved_packet_size;
 
 		if (io_byte < remain_packet_size) {
