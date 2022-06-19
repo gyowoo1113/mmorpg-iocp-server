@@ -197,7 +197,8 @@ void CSession::processPacket(char* packet)
 					x = rand() % 2000;
 					y = rand() % 2000;
 				} while (tiles[x][y]);
-
+				
+				strcpy_s(_name, p->name);
 				_level = 1;
 				_exp = 0;
 				_hp = 100;
@@ -309,7 +310,8 @@ void CSession::processAttack(char* packet)
 		bool is_dying = clients[mon].decreaseHp(_level*2);
 		clients[mon].setPeaceTarget(_id);
 		
-		std::string mess = "User:" + std::to_string(_id) + " attack " + clients[mon]._name + "and "+ std::to_string(_level * 2) + " Damage";
+		std::string mess = "User:" + std::to_string(_id) + " attack " + clients[mon]._name
+			+ "and "+ std::to_string(_level * 2) + " Damage";
 		chatMessage(mess);
 
 		if (is_dying)
