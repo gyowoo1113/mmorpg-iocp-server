@@ -607,28 +607,28 @@ void send_packet(void* packet)
 void process_data(char* net_buf, size_t io_byte)
 {
 	char* ptr = net_buf;
-	static size_t in_packet_size = 0;
-	static size_t saved_packet_size = 0;
-	static char packet_buffer[BUF_SIZE];
+	static size_t nPacket = 0;
+	static size_t nSavdPacket = 0;
+	static char packetBuffer[BUF_SIZE];
 
 	while (0 != io_byte) {
-		if (in_packet_size == 0) {
+		if (nPacket == 0) {
 			REBUILD_PACKET* packet = reinterpret_cast<REBUILD_PACKET*>(ptr);
-			in_packet_size = static_cast<size_t>(packet->size);
+			nPacket = static_cast<size_t>(packet->size);
 		}
 
-		size_t remain_packet_size = in_packet_size - saved_packet_size;
-		if (io_byte < remain_packet_size) break;
+		size_t nRemainPacket = nPacket - nSavdPacket;
+		if (io_byte < nRemainPacket) break;
 
-		memcpy(packet_buffer + saved_packet_size, ptr, remain_packet_size);
-		ProcessPacket(packet_buffer);
-		ptr += remain_packet_size;
-		io_byte -= remain_packet_size;
-		in_packet_size = saved_packet_size = 0;
+		memcpy(packetBuffer + nSavdPacket, ptr, nRemainPacket);
+		ProcessPacket(packetBuffer);
+		ptr += nRemainPacket;
+		io_byte -= nRemainPacket;
+		nPacket = nSavdPacket = 0;
 	}
 
-	memcpy(packet_buffer + saved_packet_size, ptr, io_byte);
-	saved_packet_size += io_byte;
+	memcpy(packetBuffer + nSavdPacket, ptr, io_byte);
+	nSavdPacket += io_byte;
 }
 
 void receiveData()
