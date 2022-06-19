@@ -2,7 +2,7 @@
 #include "Session.h"
 
 std::list<USER_DATA> g_db_users;
-concurrency::concurrent_unordered_set<int> sector[W_WIDTH / 10][W_HEIGHT / 10];
+concurrency::concurrent_unordered_set<int> sector[W_WIDTH / W_SECTOR][W_HEIGHT / H_SECTOR];
 int tiles[W_WIDTH][W_HEIGHT] = {};
 std::array<CSession, MAX_USER + NUM_NPC> clients;
 

@@ -14,8 +14,8 @@ CSession::CSession()
 	_name[0] = 0;
 	_state = ST_FREE;
 	_prevRemainBuffer = 0;
-	_sector_x = x / 10;
-	_sector_y = y / 10;
+	_sector_x = x / W_SECTOR;
+	_sector_y = y / H_SECTOR;
 	next_move_time = std::chrono::system_clock::now() + std::chrono::seconds(1);
 	_status.calculateMaxExp(*this);
 }
@@ -141,8 +141,8 @@ std::unordered_set<int> CSession::MakeNearList()
 {
 	int nearDirectionX[9] = { -1,-1,-1,0,0,0,1,1,1 };
 	int nearDirectionY[9] = { -1,0,1,-1,0,1,-1,0,1 };
-	int h = W_HEIGHT / 10;
-	int w = W_WIDTH / 10;
+	int h = W_HEIGHT / W_SECTOR;
+	int w = W_WIDTH / H_SECTOR;
 
 	std::unordered_set<int> new_near_list;
 

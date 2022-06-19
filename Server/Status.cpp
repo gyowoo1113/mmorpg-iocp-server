@@ -21,7 +21,7 @@ bool CStatus::healHp(CSession& client)
 
     if (client._hp < client._maxHp)
     {
-        client._hp += 10;
+        client._hp += client._maxHp/10;
         checkHealEvent(client);
         return true;
     }

@@ -6,8 +6,8 @@ std::mutex global_sector_lock;
 
 void SetSector(int id)
 {
-	int x = (clients[id].x) / 10;
-	int y = (clients[id].y) / 10;
+	int x = (clients[id].x) / W_SECTOR;
+	int y = (clients[id].y) / H_SECTOR;
 
 	sector[x][y].insert(id);
 

@@ -32,8 +32,11 @@ struct USER_DATA
 	int hp;
 };
 
+extern constexpr int W_SECTOR = 50;
+extern constexpr int H_SECTOR = 50;
+
 extern std::list<USER_DATA> g_db_users;
-extern concurrency::concurrent_unordered_set<int> sector[W_WIDTH / 10][W_HEIGHT / 10];
+extern concurrency::concurrent_unordered_set<int> sector[W_WIDTH / W_SECTOR][W_HEIGHT / H_SECTOR];
 extern int tiles[W_WIDTH][W_HEIGHT];
 extern std::array<CSession, MAX_USER + NUM_NPC> clients;
 

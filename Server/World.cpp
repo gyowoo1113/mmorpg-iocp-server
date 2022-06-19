@@ -94,6 +94,18 @@ void World::initializeNpc()
 	for (int i = 0; i < NUM_NPC; ++i)
 	{
 		int npc_id = i + MAX_USER;
+		int new_x = rand() % 2000;
+		int new_y = rand() % 2000;
+		do {
+			new_x = rand() % 2000;
+			new_y = rand() % 2000;
+		} while (tiles[new_x][new_y]);
+
+		clients[npc_id].x = new_x;
+		clients[npc_id].y = new_y;
+
+		CheckMoveSector(npc_id);
+
 		clients[npc_id]._state = ST_SLEEP;
 		clients[npc_id].setMonsterTypes();
 		clients[npc_id]._level = rand() % 10 + 1;
