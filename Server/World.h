@@ -15,7 +15,7 @@ public:
 	void initializeTilemap();
 	void initializeNpc();
 
-	void processEvent(TIMER_EVENT& avent);
+	void processEvent(sEventData& avent);
 	void addEvent(std::pair<int, int> id, COMP_TYPE type, int time);
 
 	void acceptClient(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);

@@ -19,18 +19,18 @@ CEventTimer& World::getTimer()
 	return *_timer;
 }
 
-void World::processEvent(TIMER_EVENT& avent)
+void World::processEvent(sEventData& avent)
 {
 	auto ex_over = new OVER_EXP;
-	ex_over->_comp_type = avent.ev;
-	ex_over->target_id = avent.id.second;
-	PostQueuedCompletionStatus(handle_iocp, 1, avent.id.first, &ex_over->_over);
+	ex_over->_comp_type = avent._eventType;
+	ex_over->target_id = avent._id.second;
+	PostQueuedCompletionStatus(handle_iocp, 1, avent._id.first, &ex_over->_over);
 }
 
 void World::addEvent(std::pair<int, int> id, COMP_TYPE type, int time)
 {
 	std::lock_guard<std::mutex> tt{ _lock };
-	TIMER_EVENT avent{ id,type,std::chrono::system_clock::now() + std::chrono::milliseconds(time) };
+	sEventData avent{ id,type,std::chrono::system_clock::now() + std::chrono::milliseconds(time) };
 	getTimer().pushEvent(avent);
 }
 

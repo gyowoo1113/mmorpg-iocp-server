@@ -2,24 +2,24 @@
 #include "pch.h"
 #include <queue>
 
-struct TIMER_EVENT {
-	std::pair<int, int> id;
-	COMP_TYPE ev;
-	std::chrono::system_clock::time_point act_time;
+struct sEventData {
+	std::pair<int, int> _id;
+	COMP_TYPE _eventType;
+	std::chrono::system_clock::time_point _eventStartTime;
 
-	constexpr bool operator < (const TIMER_EVENT& _Left) const {
-		return (act_time > _Left.act_time);
+	constexpr bool operator < (const sEventData& _Left) const {
+		return (_eventStartTime > _Left._eventStartTime);
 	}
 };
 
 class CEventTimer
 {
 public:
-	void pushEvent(TIMER_EVENT ev);
+	void pushEvent(sEventData ev);
 	void update();
 	bool isEventStart();
 private:
-	std::priority_queue<TIMER_EVENT> eventQueue;
+	std::priority_queue<sEventData> eventQueue;
 	std::mutex timer_lock;
 };
 

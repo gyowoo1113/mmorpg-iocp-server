@@ -8,7 +8,7 @@ void CEventTimer::update()
 		std::lock_guard<std::mutex> tt{ timer_lock };
 		if (isEventStart() == false) break;
 
-		TIMER_EVENT ev = eventQueue.top();
+		sEventData ev = eventQueue.top();
 		eventQueue.pop();
 
 		World::instance().processEvent(ev);
@@ -18,11 +18,11 @@ void CEventTimer::update()
 bool CEventTimer::isEventStart()
 {
 	if (eventQueue.empty()) return false;
-	if (eventQueue.top().act_time > std::chrono::system_clock::now()) return false;
+	if (eventQueue.top()._eventStartTime > std::chrono::system_clock::now()) return false;
 	return true;
 }
 
-void CEventTimer::pushEvent(TIMER_EVENT ev)
+void CEventTimer::pushEvent(sEventData ev)
 {
 	eventQueue.emplace(ev);
 }
