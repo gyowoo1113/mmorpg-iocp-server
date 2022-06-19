@@ -51,7 +51,7 @@ void World::disconnect(int c_id)
 		if (pl._state != ST_INGAME) {
 			continue;
 		}
-		pl.send_remove_object(c_id);
+		pl.sendRemoveObject(c_id);
 	}
 }
 
@@ -113,7 +113,7 @@ void World::accept_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 	if (client_id != -1) {
 		clients[client_id].init(c_socket,client_id);
 		CreateIoCompletionPort(reinterpret_cast<HANDLE>(c_socket), handle_iocp, client_id, 0);
-		clients[client_id].do_recv();
+		clients[client_id].doRecv();
 		c_socket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 	}
 	else {
@@ -128,10 +128,10 @@ void World::accept_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 void World::recv_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 {
 	if (0 == num_bytes) disconnect(key);
-	int remain_data = num_bytes + clients[key]._prev_remain;
+	int remain_data = num_bytes + clients[key]._prevRemainBuffer;
 
-	clients[key].rebuild_packet(ex_over->_send_buf, remain_data);
-	clients[key].do_recv();
+	clients[key].rebuildPacket(ex_over->_send_buf, remain_data);
+	clients[key].doRecv();
 }
 
 void World::send_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
@@ -177,10 +177,10 @@ void World::npcRespawnEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 		if (clients[p_id].view_list.count(key) == 0) {
 			clients[p_id].view_list.insert(key);
 			clients[p_id].vl.unlock();
-			clients[p_id].send_add_object(key);
+			clients[p_id].sendAddObject(key);
 		}
 		else {
-			clients[p_id].send_move_packet(key, 0);
+			clients[p_id].sendMovePacket(key, 0);
 			clients[p_id].vl.unlock();
 		}
 		clients[key].checkArgoStart(p_id);

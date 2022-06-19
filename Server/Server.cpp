@@ -82,10 +82,10 @@ void move_npc(int npc_id)
 		if (clients[p_id].view_list.count(npc_id) == 0) {
 			clients[p_id].view_list.insert(npc_id);
 			clients[p_id].vl.unlock();
-			clients[p_id].send_add_object(npc_id);
+			clients[p_id].sendAddObject(npc_id);
 		}
 		else {
-			clients[p_id].send_move_packet(npc_id, 0);
+			clients[p_id].sendMovePacket(npc_id, 0);
 			clients[p_id].vl.unlock();
 		}
 		clients[npc_id].checkArgoStart(p_id);
@@ -97,7 +97,7 @@ void move_npc(int npc_id)
 			if (clients[p_id].view_list.count(npc_id) == 1) {
 				clients[p_id].view_list.erase(npc_id);
 				clients[p_id].vl.unlock();
-				clients[p_id].send_remove_object(npc_id);
+				clients[p_id].sendRemoveObject(npc_id);
 			}
 			else {
 				clients[p_id].vl.unlock();

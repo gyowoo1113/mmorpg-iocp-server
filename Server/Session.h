@@ -13,11 +13,11 @@ class CSession
 public:
 	std::atomic<SESSION_STATE> _state = ST_FREE;
 
-	int _id;
-	SOCKET _socket;
-	short x, y;
+	int		_id;
+	SOCKET	_socket;
+	short	 x, y;
 	char	_name[NAME_SIZE];
-	int		_prev_remain;
+	int		_prevRemainBuffer;
 
 	std::unordered_set<int> view_list;
 	std::mutex vl;
@@ -54,43 +54,30 @@ public:
 
 	void init(SOCKET& socket,int id);
 
-	void do_recv()
-	{
-		DWORD recv_flag = 0;
-		memset(&_recv_over._over, 0, sizeof(_recv_over._over));
-		_recv_over._wsabuf.len = BUF_SIZE - _prev_remain;
-		_recv_over._wsabuf.buf = _recv_over._send_buf + _prev_remain;
-		WSARecv(_socket, &_recv_over._wsabuf, 1, 0, &recv_flag, &_recv_over._over, 0);
-	}
+	void doRecv();
+	void doSend(void* packet);
 
-	void do_send(void* packet)
-	{
-		OVER_EXP* sdata = new OVER_EXP{ reinterpret_cast<char*>(packet) };
-		WSASend(_socket, &sdata->_wsabuf, 1, 0, 0, &sdata->_over, 0);
-	}
-
-	void rebuild_packet(char* send_buffer, int& remain_data);
-
-	void send_move_packet(int c_id, int client_time);
-	void send_add_object(int c_id);
-	void send_remove_object(int c_id);
-	void send_chat_packet(int c_id, const char* mess);
-	void send_change_status_packet(int c_id);
-	void send_attack_packet(int c_id, int skill_type, short x = 0 , short y = 0);
+	void sendMovePacket(int c_id, int client_time);
+	void sendAddObject(int c_id);
+	void sendRemoveObject(int c_id);
+	void sendChatPacket(int c_id, const char* mess);
+	void sendChangeStatusPacket(int c_id);
+	void sendAttackPacket(int c_id, int skill_type, short x = 0 , short y = 0);
 	
 	void sendMonsterAttack(int id, std::string& mess);
 
 
-	void update_move_view_list(int client_time, std::unordered_set<int>& new_nl);
-	void check_erase_view_list(std::unordered_set<int>& new_nl);
-	void check_view_list(int& c_id, int client_time);
-	void remove_view_list(int& view);
+	void updateMoveViewList(int client_time, std::unordered_set<int>& new_nl);
+	void checkEraseViewList(std::unordered_set<int>& new_nl);
+	void checkViewList(int& c_id, int client_time);
+	void removeViewList(int& view);
 	void checkInsertViewList(int insert_id);
 	std::unordered_set<int> MakeNearList();
 
-	void process_packet(char* packet);
+	void rebuildPacket(char* send_buffer, int& remain_data);
+	void processPacket(char* packet);
+	void processAttack(char* packet);
 	void moveObject(char* packet);
-	void process_attack(char* packet);
 
 	void chatMessage(std::string& mess, int id = -1);
 

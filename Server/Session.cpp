@@ -1,4 +1,4 @@
-#include "pch.h"
+﻿#include "pch.h"
 #include "Session.h"
 
 
@@ -13,7 +13,7 @@ CSession::CSession()
 	y = rand() % W_HEIGHT;
 	_name[0] = 0;
 	_state = ST_FREE;
-	_prev_remain = 0;
+	_prevRemainBuffer = 0;
 	_sector_x = x / 10;
 	_sector_y = y / 10;
 	next_move_time = std::chrono::system_clock::now() + std::chrono::seconds(1);
@@ -26,14 +26,14 @@ void CSession::init(SOCKET& socket, int id)
 	y = 0;
 	_id = id;
 	_name[0] = 0;
-	_prev_remain = 0;
+	_prevRemainBuffer = 0;
 	_socket = socket;
 }
 
 // ** view list ** //
-void CSession::update_move_view_list(int client_time, std::unordered_set<int>& new_nl)
+void CSession::updateMoveViewList(int client_time, std::unordered_set<int>& new_nl)
 {
-	send_move_packet(_id, client_time);
+	sendMovePacket(_id, client_time);
 
 	for (auto n : new_nl)
 	{
@@ -52,14 +52,14 @@ void CSession::update_move_view_list(int client_time, std::unordered_set<int>& n
 			view_list.insert(n);
 			vl.unlock();
 			
-			send_add_object(n);
+			sendAddObject(n);
 
-			clients[n].check_view_list(_id, client_time);
+			clients[n].checkViewList(_id, client_time);
 		}
 		else
 		{
 			vl.unlock();
-			clients[n].check_view_list(_id, client_time);
+			clients[n].checkViewList(_id, client_time);
 		}
 
 		if (n < MAX_USER) continue;
@@ -68,7 +68,7 @@ void CSession::update_move_view_list(int client_time, std::unordered_set<int>& n
 	}
 }
 
-void CSession::check_erase_view_list(std::unordered_set<int>& new_nl)
+void CSession::checkEraseViewList(std::unordered_set<int>& new_nl)
 {
 	vl.lock();
 	std::unordered_set<int> new_list = view_list;
@@ -81,14 +81,14 @@ void CSession::check_erase_view_list(std::unordered_set<int>& new_nl)
 			vl.lock();
 			view_list.erase(view);
 			vl.unlock();
-			remove_view_list(view);
+			removeViewList(view);
 
 			clients[view].vl.lock();
 			if (clients[view].view_list.count(_id))
 			{
 				clients[view].view_list.erase(_id);
 				clients[view].vl.unlock();
-				clients[view].remove_view_list(_id);
+				clients[view].removeViewList(_id);
 			}
 			else
 			{
@@ -101,12 +101,12 @@ void CSession::check_erase_view_list(std::unordered_set<int>& new_nl)
 	}
 }
 
-void CSession::check_view_list(int& c_id, int client_time)
+void CSession::checkViewList(int& c_id, int client_time)
 {
 	vl.lock();
 	if (view_list.count(c_id))
 	{
-		send_move_packet(c_id, client_time);
+		sendMovePacket(c_id, client_time);
 		vl.unlock();
 	}
 	else
@@ -114,17 +114,17 @@ void CSession::check_view_list(int& c_id, int client_time)
 		view_list.insert(c_id);
 		vl.unlock();
 
-		send_add_object(c_id);
+		sendAddObject(c_id);
 	}
 }
 
-void CSession::remove_view_list(int& view)
+void CSession::removeViewList(int& view)
 {
 	if (_id == view) return;
 	if (_id >= MAX_USER) return;
 	if (_state != ST_INGAME)return;
 
-	send_remove_object(view);
+	sendRemoveObject(view);
 }
 
 void CSession::checkInsertViewList(int insert_id)
@@ -133,7 +133,7 @@ void CSession::checkInsertViewList(int insert_id)
 		vl.lock();
 		view_list.insert(insert_id);
 		vl.unlock();
-		send_add_object(insert_id);
+		sendAddObject(insert_id);
 	}
 }
 
@@ -169,7 +169,7 @@ std::unordered_set<int> CSession::MakeNearList()
 
 // ** packet process ** //
 
-void CSession::process_packet(char* packet)
+void CSession::processPacket(char* packet)
 {
 	if (_id < 0 || _id > MAX_USER - 1) return;
 
@@ -251,13 +251,13 @@ void CSession::process_packet(char* packet)
 		}
 
 		case CS_ATTACK: {
-			process_attack(packet);
+			processAttack(packet);
 			std::unordered_set<int> new_nl;
 			new_nl = MakeNearList();
 
 			for (auto& n : new_nl)
 			{
-				clients[n].send_attack_packet(_id, 0);
+				clients[n].sendAttackPacket(_id, 0);
 			}
 			break;
 		}
@@ -290,11 +290,11 @@ void CSession::moveObject(char* packet)
 	std::unordered_set<int> new_nl;
 	new_nl = MakeNearList();
 
-	update_move_view_list(p->client_time, new_nl);
-	check_erase_view_list(new_nl);
+	updateMoveViewList(p->client_time, new_nl);
+	checkEraseViewList(new_nl);
 }
 
-void CSession::process_attack(char* packet)
+void CSession::processAttack(char* packet)
 {
 	CS_ATTACK_PACKET* p = reinterpret_cast<CS_ATTACK_PACKET*>(packet);
 	vl.lock();
@@ -315,7 +315,7 @@ void CSession::process_attack(char* packet)
 		if (is_dying)
 		{
 			_status.updateExp(*this, mon);
-			send_change_status_packet(_id);
+			sendChangeStatusPacket(_id);
 			clients[mon].readyToRespawn();
 		}
 	}
@@ -323,10 +323,10 @@ void CSession::process_attack(char* packet)
 
 void CSession::chatMessage(std::string& mess, int id)
 {
-	send_chat_packet(id, mess.c_str());
+	sendChatPacket(id, mess.c_str());
 }
 
-void CSession::rebuild_packet(char* send_buffer, int& remain)
+void CSession::rebuildPacket(char* send_buffer, int& remain)
 {
 	char* temp = send_buffer;
 	
@@ -335,38 +335,56 @@ void CSession::rebuild_packet(char* send_buffer, int& remain)
 		REBUILD_PACKET* packet = reinterpret_cast<REBUILD_PACKET*>(temp);
 		if (packet->size > remain) break;
 
-		process_packet(temp);
+		processPacket(temp);
 		temp += packet->size;
 		remain -= packet->size;
 	}
 
-	_prev_remain = remain;
-	if (_prev_remain > 0) memcpy(send_buffer, temp, _prev_remain);
+	_prevRemainBuffer = remain;
+	if (_prevRemainBuffer > 0) memcpy(send_buffer, temp, _prevRemainBuffer);
 }
+
+// **              ** //
+
+void CSession::doRecv()
+{
+	DWORD recv_flag = 0;
+	memset(&_recv_over._over, 0, sizeof(_recv_over._over));
+	_recv_over._wsabuf.len = BUF_SIZE - _prevRemainBuffer;
+	_recv_over._wsabuf.buf = _recv_over._send_buf + _prevRemainBuffer;
+	WSARecv(_socket, &_recv_over._wsabuf, 1, 0, &recv_flag, &_recv_over._over, 0);
+}
+
+void CSession::doSend(void* packet)
+{
+	OVER_EXP* sdata = new OVER_EXP{ reinterpret_cast<char*>(packet) };
+	WSASend(_socket, &sdata->_wsabuf, 1, 0, 0, &sdata->_over, 0);
+}
+
 
 // ** packet send ** //
 
-void CSession::send_move_packet(int c_id, int client_time)
+void CSession::sendMovePacket(int c_id, int client_time)
 {
 	_sendPacket.send_move_packet(*this, c_id, client_time);
 }
 
-void CSession::send_add_object(int c_id)
+void CSession::sendAddObject(int c_id)
 {
 	_sendPacket.send_add_object(*this, c_id);
 }
 
-void CSession::send_chat_packet(int c_id, const char* mess)
+void CSession::sendChatPacket(int c_id, const char* mess)
 {
 	_sendPacket.send_chat_packet(*this, c_id,mess);
 }
 
-void CSession::send_change_status_packet(int c_id)
+void CSession::sendChangeStatusPacket(int c_id)
 {
 	_sendPacket.send_change_status_packet(*this, c_id);
 }
 
-void CSession::send_attack_packet(int c_id, int skill_type , short x , short y)
+void CSession::sendAttackPacket(int c_id, int skill_type , short x , short y)
 {
 	_sendPacket.send_attack_packet(*this, c_id, skill_type , x , y);
 }
@@ -376,17 +394,17 @@ void CSession::sendMonsterAttack(int id, std::string& mess)
 	std::unordered_set<int> new_nl;
 	new_nl = MakeNearList();
 
-	send_attack_packet(id, 0 , x, y);
+	sendAttackPacket(id, 0 , x, y);
 	chatMessage(mess);
 	for (auto p_id : new_nl)
 	{
 		if (p_id >= MAX_USER) continue;
-		clients[p_id].send_attack_packet(id, 0 , x , y);
+		clients[p_id].sendAttackPacket(id, 0 , x , y);
 		clients[p_id].chatMessage(mess);
 	}
 }
 
-void CSession::send_remove_object(int c_id)
+void CSession::sendRemoveObject(int c_id)
 {
 	_sendPacket.send_remove_object(*this,c_id);
 }
@@ -440,8 +458,8 @@ void CSession::respawnPlayer()
 	std::unordered_set<int> new_nl;
 	new_nl = MakeNearList();
 
-	update_move_view_list(0, new_nl);
-	check_erase_view_list(new_nl);
+	updateMoveViewList(0, new_nl);
+	checkEraseViewList(new_nl);
 }
 
 void CSession::setRespawnStatus()
@@ -463,7 +481,7 @@ void CSession::readyToRespawn()
 		clients[p_id].vl.lock();
 		clients[p_id].view_list.erase(_id);
 		clients[p_id].vl.unlock();
-		clients[p_id].remove_view_list(_id);
+		clients[p_id].removeViewList(_id);
 	}
 
 	vl.lock();
@@ -524,7 +542,7 @@ void CSession::movePathToNpc()
 		clients[_target_id].respawnPlayer();
 	}
 
-	clients[_target_id].send_change_status_packet(_target_id);
+	clients[_target_id].sendChangeStatusPacket(_target_id);
 	std::string mess = "Monster:" + std::to_string(_id) + " attack "
 		+ clients[_target_id]._name + " and " + std::to_string(_level) + " Damage";
 	clients[_target_id].sendMonsterAttack(_id, mess);
