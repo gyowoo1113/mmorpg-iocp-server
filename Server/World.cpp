@@ -96,10 +96,11 @@ void World::initialize_npc()
 		int npc_id = i + MAX_USER;
 		clients[npc_id]._state = ST_SLEEP;
 		clients[npc_id].setMonsterTypes();
+		clients[npc_id]._level = rand() % 10 + 1;
+		clients[npc_id]._maxHp = clients[npc_id]._hp = 30;
 		SetSector(i);
 		sprintf_s(clients[npc_id]._name, "M-%d", npc_id);
 	}
-	cout << " load end .. " << endl;
 }
 
 
