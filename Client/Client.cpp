@@ -618,12 +618,7 @@ void process_data(char* net_buf, size_t io_byte)
 		}
 
 		size_t remain_packet_size = in_packet_size - saved_packet_size;
-
-		if (io_byte < remain_packet_size) {
-			memcpy(packet_buffer + saved_packet_size, ptr, io_byte);
-			saved_packet_size += io_byte;
-			break;
-		}
+		if (io_byte < remain_packet_size) break;
 
 		memcpy(packet_buffer + saved_packet_size, ptr, remain_packet_size);
 		ProcessPacket(packet_buffer);
@@ -631,6 +626,9 @@ void process_data(char* net_buf, size_t io_byte)
 		io_byte -= remain_packet_size;
 		in_packet_size = saved_packet_size = 0;
 	}
+
+	memcpy(packet_buffer + saved_packet_size, ptr, io_byte);
+	saved_packet_size += io_byte;
 }
 
 void receiveData()
