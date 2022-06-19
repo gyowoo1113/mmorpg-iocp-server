@@ -37,7 +37,7 @@ void CStatus::checkHealEvent(CSession& client)
         client._hp = client._maxHp;
     }
     else {
-        pair<int, int> id{ client._id,client._id };
+        std::pair<int, int> id{ client._id,client._id };
         World::instance().addEvent(id, EV_HEAL, 5000);
     }
 }
@@ -56,8 +56,8 @@ void CStatus::updateExp(CSession& client, int mon_id)
     if (client._maxExp <= client._exp)
         setLevelUp(client,client._exp - client._maxExp);
 
-    string user(client._name), mons(clients[mon_id]._name);
-    string mess = "User:" + user + " kill to " + mons + ", gain " + to_string(gainExp) + " Exp";
+    std::string user(client._name), mons(clients[mon_id]._name);
+    std::string mess = "User:" + user + " kill to " + mons + ", gain " + std::to_string(gainExp) + " Exp";
     client.chatMessage(mess);
 }
 

@@ -27,10 +27,10 @@ void World::process_event(TIMER_EVENT& avent)
 	PostQueuedCompletionStatus(handle_iocp, 1, avent.id.first, &ex_over->_over);
 }
 
-void World::addEvent(pair<int, int> id, COMP_TYPE type, int time)
+void World::addEvent(std::pair<int, int> id, COMP_TYPE type, int time)
 {
-	lock_guard<mutex> tt{ _lock };
-	TIMER_EVENT avent{ id,type, system_clock::now() + milliseconds(time) };
+	std::lock_guard<std::mutex> tt{ _lock };
+	TIMER_EVENT avent{ id,type,std::chrono::system_clock::now() + std::chrono::milliseconds(time) };
 	getTimer().pushEvent(avent);
 }
 
@@ -68,7 +68,7 @@ int World::get_new_client_id()
 
 void World::initialize_tilemap()
 {
-	ifstream in("../Resource/objects.txt");
+	std::ifstream in("../Resource/objects.txt");
 	for (int i = 0; i < W_WIDTH; ++i)
 	{
 		for (int j = 0; j < W_HEIGHT; ++j)
@@ -117,7 +117,7 @@ void World::accept_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 		c_socket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 	}
 	else {
-		cout << "Max user exceeded.\n";
+		std::cout << "Max user exceeded.\n";
 	}
 	ZeroMemory(&ex_over->_over, sizeof(ex_over->_over));
 	ex_over->_wsabuf.buf = reinterpret_cast<CHAR*>(c_socket);
@@ -167,7 +167,7 @@ void World::npcRespawnEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 	clients[key]._state = ST_SLEEP;
 	clients[key].setRespawnStatus();
 
-	unordered_set<int> new_nl;
+	std::unordered_set<int> new_nl;
 	new_nl = clients[key].MakeNearList();
 
 	for (auto p_id : new_nl) {

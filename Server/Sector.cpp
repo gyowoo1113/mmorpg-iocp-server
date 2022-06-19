@@ -2,7 +2,7 @@
 #include "Sector.h"
 
 
-mutex global_sector_lock;
+std::mutex global_sector_lock;
 
 void SetSector(int id)
 {

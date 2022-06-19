@@ -3,7 +3,7 @@
 #include <queue>
 
 
-typedef pair<short, short> position;
+typedef std::pair<short, short> position;
 
 struct sNode {
 	position pos;
@@ -40,9 +40,9 @@ public:
 
 protected:
 	sNode* pEnd = nullptr;
-	static set<position> closed;
-	list<sNode*> open;
-	stack<position> pathStack;
+	static std::set<position> closed;
+	std::list<sNode*> open;
+	std::stack<position> pathStack;
 
 	position start_pos{ 0,0 };
 	position end_pos{ 0,0 };

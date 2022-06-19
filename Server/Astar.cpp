@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Astar.h"
 
-set<position> CAstar::closed;
+std::set<position> CAstar::closed;
 
 void CAstar::initMapClosedList()
 {
@@ -11,7 +11,7 @@ void CAstar::initMapClosedList()
 		{
 			if (tiles[i][j])
 			{
-				position pos = make_pair(i, j);
+				position pos = std::make_pair(i, j);
 				closed.insert(pos);
 			}
 		}
@@ -49,8 +49,8 @@ void CAstar::calculateScore(sNode* node, float& weight)
 
 bool CAstar::searchRoad(short startX, short startY, short endX, short endY)
 {
-	start_pos = make_pair(startX, startY);
-	end_pos = make_pair(endX, endY);
+	start_pos = std::make_pair(startX, startY);
+	end_pos = std::make_pair(endX, endY);
 	initSearchLists();
 	pEnd = nullptr;
 
@@ -74,10 +74,10 @@ bool CAstar::searchRoad(short startX, short startY, short endX, short endY)
 			if (x < 0 || y < 0) continue;
 			if (x > W_WIDTH || y > W_HEIGHT) continue;
 
-			auto p = closed.find(make_pair(x, y));
+			auto p = closed.find(std::make_pair(x, y));
 			if (p != closed.end()) continue;
 
-			sNode* new_node = new sNode(make_pair(x, y), pop_node);
+			sNode* new_node = new sNode(std::make_pair(x, y), pop_node);
 			calculateScore(new_node, weight[i]);
 			open.push_back(new_node);
 			compareG(new_node, i);
@@ -103,7 +103,7 @@ void CAstar::compareG(sNode* node, int dir)
 {
 	int _x = node->pos.first + dx[dir];
 	int _y = node->pos.second + dy[dir];
-	position pos = make_pair(_x, _y);
+	position pos = std::make_pair(_x, _y);
 
 	auto iter = find_if(open.begin(), open.end(), [&pos](sNode* a) {
 		if (a->pos == pos) return true;

@@ -16,7 +16,7 @@ CSession::CSession()
 	_prev_remain = 0;
 	_sector_x = x / 10;
 	_sector_y = y / 10;
-	next_move_time = chrono::system_clock::now() + chrono::seconds(1);
+	next_move_time = std::chrono::system_clock::now() + std::chrono::seconds(1);
 	_status.calculateMaxExp(*this);
 }
 
@@ -41,7 +41,7 @@ void CSession::update_move_view_list(int client_time, std::unordered_set<int>& n
 		if (clients[n]._state == ST_SLEEP)
 		{
 			clients[n]._state = ST_INGAME;
-			pair<int, int> id{ n, n };
+			std::pair<int, int> id{ n, n };
 			World::instance().addEvent(id, EV_MOVE, 1000);
 		}
 		if (ST_INGAME != clients[n]._state) continue;
@@ -71,7 +71,7 @@ void CSession::update_move_view_list(int client_time, std::unordered_set<int>& n
 void CSession::check_erase_view_list(std::unordered_set<int>& new_nl)
 {
 	vl.lock();
-	unordered_set<int> new_list = view_list;
+	std::unordered_set<int> new_list = view_list;
 	vl.unlock();
 
 	for (auto view : new_list)
@@ -137,14 +137,14 @@ void CSession::checkInsertViewList(int insert_id)
 	}
 }
 
-unordered_set<int> CSession::MakeNearList()
+std::unordered_set<int> CSession::MakeNearList()
 {
 	int nearDirectionX[9] = { -1,-1,-1,0,0,0,1,1,1 };
 	int nearDirectionY[9] = { -1,0,1,-1,0,1,-1,0,1 };
 	int h = W_HEIGHT / 10;
 	int w = W_WIDTH / 10;
 
-	unordered_set<int> new_near_list;
+	std::unordered_set<int> new_near_list;
 
 	for (int i = 0; i < 9; ++i)
 	{
@@ -220,7 +220,7 @@ void CSession::process_packet(char* packet)
 			SetSector(_id);
 			CheckMoveSector(_id);
 
-			unordered_set<int> new_nl;
+			std::unordered_set<int> new_nl;
 			new_nl = MakeNearList();
 
 			for (auto n : new_nl)
@@ -230,7 +230,7 @@ void CSession::process_packet(char* packet)
 				{
 					clients[n]._state = ST_INGAME;
 
-					pair<int, int>id{ n, n };
+					std::pair<int, int>id{ n, n };
 					World::instance().addEvent(id, EV_MOVE, 1000);
 				}
 				if (ST_INGAME != clients[n]._state) continue;
@@ -252,7 +252,7 @@ void CSession::process_packet(char* packet)
 
 		case CS_ATTACK: {
 			process_attack(packet);
-			unordered_set<int> new_nl;
+			std::unordered_set<int> new_nl;
 			new_nl = MakeNearList();
 
 			for (auto& n : new_nl)
@@ -264,11 +264,11 @@ void CSession::process_packet(char* packet)
 
 		case CS_CHAT: {
 			CS_CHAT_PACKET* p = reinterpret_cast<CS_CHAT_PACKET*>(packet);
-			string mess(p->mess);
+			std::string mess(p->mess);
 			chatMessage(mess,1);
 
 			vl.lock();
-			unordered_set<int> search_vl = view_list;
+			std::unordered_set<int> search_vl = view_list;
 			vl.unlock();
 
 			for (int p_id : search_vl)
@@ -287,7 +287,7 @@ void CSession::moveObject(char* packet)
 	update_move_clients(_id, p->direction);
 	CheckMoveSector(_id);
 
-	unordered_set<int> new_nl;
+	std::unordered_set<int> new_nl;
 	new_nl = MakeNearList();
 
 	update_move_view_list(p->client_time, new_nl);
@@ -298,7 +298,7 @@ void CSession::process_attack(char* packet)
 {
 	CS_ATTACK_PACKET* p = reinterpret_cast<CS_ATTACK_PACKET*>(packet);
 	vl.lock();
-	unordered_set<int> search_vl = view_list;
+	std::unordered_set<int> search_vl = view_list;
 	vl.unlock();
 
 	for (int mon : search_vl)
@@ -309,7 +309,7 @@ void CSession::process_attack(char* packet)
 		bool is_dying = clients[mon].decreaseHp(_level*2);
 		clients[mon].setPeaceTarget(_id);
 		
-		string mess = "User:" + to_string(_id) + " attack " + clients[mon]._name + "and "+ to_string(_level * 2) + " Damage";
+		std::string mess = "User:" + std::to_string(_id) + " attack " + clients[mon]._name + "and "+ std::to_string(_level * 2) + " Damage";
 		chatMessage(mess);
 
 		if (is_dying)
@@ -371,9 +371,9 @@ void CSession::send_attack_packet(int c_id, int skill_type , short x , short y)
 	_sendPacket.send_attack_packet(*this, c_id, skill_type , x , y);
 }
 
-void CSession::sendMonsterAttack(int id, string& mess)
+void CSession::sendMonsterAttack(int id, std::string& mess)
 {
-	unordered_set<int> new_nl;
+	std::unordered_set<int> new_nl;
 	new_nl = MakeNearList();
 
 	send_attack_packet(id, 0 , x, y);
@@ -408,7 +408,7 @@ void CSession::heal()
 	if (isHeal)
 	{
 		_sendPacket.send_change_status_packet(*this, _id);
-		string mess = "player Heal!!";
+		std::string mess = "player Heal!!";
 		chatMessage(mess);
 	}
 }
@@ -418,7 +418,7 @@ void CSession::checkHealing()
 	if (_isHealing) return;
 	_isHealing = true;
 
-	pair<int, int> id{ _id,_id };
+	std::pair<int, int> id{ _id,_id };
 	World::instance().addEvent(id, EV_HEAL, 5000);
 }
 
@@ -429,7 +429,7 @@ void CSession::respawnPlayer()
 {
 	_status.respawn(*this);
 
-	string name(_name);
+	std::string name(_name);
 	auto iter = find_if(g_db_users.begin(), g_db_users.end(), [&name](const USER_DATA user) {
 		return strcmp(name.c_str(), user.name) == 0;
 	});
@@ -437,7 +437,7 @@ void CSession::respawnPlayer()
 	x = iter->x; y = iter->y;
 
 	CheckMoveSector(_id);
-	unordered_set<int> new_nl;
+	std::unordered_set<int> new_nl;
 	new_nl = MakeNearList();
 
 	update_move_view_list(0, new_nl);
@@ -453,7 +453,7 @@ void CSession::readyToRespawn()
 {
 	_state = ST_FREE;
 	
-	unordered_set<int> new_nl;
+	std::unordered_set<int> new_nl;
 	new_nl = MakeNearList();
 
 	for (auto p_id : new_nl) 
@@ -470,7 +470,7 @@ void CSession::readyToRespawn()
 	view_list.clear();
 	vl.unlock();
 
-	pair<int, int> id{ _id,_id };
+	std::pair<int, int> id{ _id,_id };
 	World::instance().addEvent(id, EV_RESPAWN, 300000);
 }
 
@@ -525,10 +525,11 @@ void CSession::movePathToNpc()
 	}
 
 	clients[_target_id].send_change_status_packet(_target_id);
-	string mess = "Monster:" + to_string(_id) + " attack " + clients[_target_id]._name + " and " + to_string(_level) + " Damage";
+	std::string mess = "Monster:" + std::to_string(_id) + " attack "
+		+ clients[_target_id]._name + " and " + std::to_string(_level) + " Damage";
 	clients[_target_id].sendMonsterAttack(_id, mess);
 
-	pair<int, int> id{ _id,_target_id };
+	std::pair<int, int> id{ _id,_target_id };
 	_pathl.unlock();
 
 	World::instance().addEvent(id, EV_ATTACK_ACTIVE, 1000);

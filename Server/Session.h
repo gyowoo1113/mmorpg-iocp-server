@@ -11,7 +11,7 @@ class CSession
 {
 	OVER_EXP _recv_over;
 public:
-	atomic<SESSION_STATE> _state = ST_FREE;
+	std::atomic<SESSION_STATE> _state = ST_FREE;
 
 	int _id;
 	SOCKET _socket;
@@ -19,28 +19,28 @@ public:
 	char	_name[NAME_SIZE];
 	int		_prev_remain;
 
-	unordered_set<int> view_list;
-	mutex vl;
+	std::unordered_set<int> view_list;
+	std::mutex vl;
 
-	atomic<int> _target_id = -1;
-	mutex _pathl;
-	stack<pair<int, int>> pathfind_pos;
+	std::atomic<int> _target_id = -1;
+	std::mutex _pathl;
+	std::stack<std::pair<int, int>> pathfind_pos;
 
 	short _sector_x, _sector_y;
 
-	atomic<int> _hp = 100;
-	atomic<int> _level = 1;
-	atomic<int> _exp = 0;
-	atomic<int> _maxExp = 0;
+	std::atomic<int> _hp = 100;
+	std::atomic<int> _level = 1;
+	std::atomic<int> _exp = 0;
+	std::atomic<int> _maxExp = 0;
 	int _maxHp = 100;
 
-	chrono::system_clock::time_point next_move_time;
+	std::chrono::system_clock::time_point next_move_time;
 
 private:
 
 	short monsterType = 0;
 	short monsterMoveType = 0;
-	atomic<bool> _isAttack = true;
+	std::atomic<bool> _isAttack = true;
 	bool _isHealing = false;
 
 	CAstar _astar;
@@ -78,7 +78,7 @@ public:
 	void send_change_status_packet(int c_id);
 	void send_attack_packet(int c_id, int skill_type, short x = 0 , short y = 0);
 	
-	void sendMonsterAttack(int id, string& mess);
+	void sendMonsterAttack(int id, std::string& mess);
 
 
 	void update_move_view_list(int client_time, std::unordered_set<int>& new_nl);
@@ -86,7 +86,7 @@ public:
 	void check_view_list(int& c_id, int client_time);
 	void remove_view_list(int& view);
 	void checkInsertViewList(int insert_id);
-	unordered_set<int> MakeNearList();
+	std::unordered_set<int> MakeNearList();
 
 	void process_packet(char* packet);
 	void moveObject(char* packet);
