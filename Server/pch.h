@@ -38,9 +38,9 @@ extern int tiles[W_WIDTH][W_HEIGHT];
 extern std::array<CSession, MAX_USER + NUM_NPC> clients;
 
 int distance(int a, int b);
-void update_move_clients(int c_id, char& direction);
+void updateMoveClients(int c_id, char& direction);
 bool isMonsterCollisionAttack(int& monster_id, int& p_id);
-void move_npc(int npc_id);
+void moveNpc(int npc_id);
 
 #include "Sector.h"
 #include "Database.h"

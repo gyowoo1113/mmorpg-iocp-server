@@ -2,7 +2,7 @@
 #include "SendPacket.h"
 #include "Session.h"
 
-void CSendPacket::send_login_fail(CSession& client)
+void CSendPacket::sendLoginFail(CSession& client)
 {
 	SC_LOGIN_FAIL_PACKET p;
 	p.size = sizeof(SC_LOGIN_FAIL_PACKET);
@@ -10,7 +10,7 @@ void CSendPacket::send_login_fail(CSession& client)
 	client.doSend(&p);
 }
 
-void CSendPacket::send_login_info_packet(CSession& client)
+void CSendPacket::sendLoginInfoPacket(CSession& client)
 {
 	SC_LOGIN_OK_PACKET p;
 	p.id = client._id;
@@ -24,7 +24,7 @@ void CSendPacket::send_login_info_packet(CSession& client)
 	client.doSend(&p);
 }
 
-void CSendPacket::send_move_packet(CSession& client, int c_id, int client_time)
+void CSendPacket::sendMovePacket(CSession& client, int c_id, int client_time)
 {
 	SC_MOVE_OBJECT_PACKET p;
 	p.id = c_id;
@@ -36,7 +36,7 @@ void CSendPacket::send_move_packet(CSession& client, int c_id, int client_time)
 	client.doSend(&p);
 }
 
-void CSendPacket::send_add_object(CSession& client, int c_id)
+void CSendPacket::sendAddObject(CSession& client, int c_id)
 {
 	SC_ADD_OBJECT_PACKET p;
 	p.id = c_id;
@@ -49,7 +49,7 @@ void CSendPacket::send_add_object(CSession& client, int c_id)
 	client.doSend(&p);
 }
 
-void CSendPacket::send_remove_object(CSession& client, int c_id)
+void CSendPacket::sendRemoveObject(CSession& client, int c_id)
 {
 	SC_REMOVE_OBJECT_PACKET p;
 	p.id = c_id;
@@ -58,7 +58,7 @@ void CSendPacket::send_remove_object(CSession& client, int c_id)
 	client.doSend(&p);
 }
 
-void CSendPacket::send_chat_packet(CSession& client, int c_id, const char* mess)
+void CSendPacket::sendChatPacket(CSession& client, int c_id, const char* mess)
 {
 	SC_CHAT_PACKET p;
 	p.id = c_id;
@@ -68,7 +68,7 @@ void CSendPacket::send_chat_packet(CSession& client, int c_id, const char* mess)
 	client.doSend(&p);
 }
 
-void CSendPacket::send_change_status_packet(CSession& client, int c_id)
+void CSendPacket::sendChangeStatusPacket(CSession& client, int c_id)
 {
 	SC_STAT_CHANGE_PACKET p;
 	p.size = sizeof(SC_STAT_CHANGE_PACKET);
@@ -80,7 +80,7 @@ void CSendPacket::send_change_status_packet(CSession& client, int c_id)
 	client.doSend(&p);
 }
 
-void CSendPacket::send_attack_packet(CSession& client,int c_id, int skill_type , short x , short y)
+void CSendPacket::sendAttackPacket(CSession& client,int c_id, int skill_type , short x , short y)
 {
 	SC_ATTACK_PACKET p;
 	p.size = sizeof(SC_ATTACK_PACKET);

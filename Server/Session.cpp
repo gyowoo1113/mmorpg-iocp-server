@@ -214,7 +214,7 @@ void CSession::processPacket(char* packet)
 				_hp = iter->hp;
 			}
 
-			_sendPacket.send_login_info_packet(*this);
+			_sendPacket.sendLoginInfoPacket(*this);
 			_state = ST_INGAME;
 
 			SetSector(_id);
@@ -284,7 +284,7 @@ void CSession::moveObject(char* packet)
 {
 	CS_MOVE_PACKET* p = reinterpret_cast<CS_MOVE_PACKET*>(packet);
 
-	update_move_clients(_id, p->direction);
+	updateMoveClients(_id, p->direction);
 	CheckMoveSector(_id);
 
 	std::unordered_set<int> new_nl;
@@ -366,27 +366,27 @@ void CSession::doSend(void* packet)
 
 void CSession::sendMovePacket(int c_id, int client_time)
 {
-	_sendPacket.send_move_packet(*this, c_id, client_time);
+	_sendPacket.sendMovePacket(*this, c_id, client_time);
 }
 
 void CSession::sendAddObject(int c_id)
 {
-	_sendPacket.send_add_object(*this, c_id);
+	_sendPacket.sendAddObject(*this, c_id);
 }
 
 void CSession::sendChatPacket(int c_id, const char* mess)
 {
-	_sendPacket.send_chat_packet(*this, c_id,mess);
+	_sendPacket.sendChatPacket(*this, c_id,mess);
 }
 
 void CSession::sendChangeStatusPacket(int c_id)
 {
-	_sendPacket.send_change_status_packet(*this, c_id);
+	_sendPacket.sendChangeStatusPacket(*this, c_id);
 }
 
 void CSession::sendAttackPacket(int c_id, int skill_type , short x , short y)
 {
-	_sendPacket.send_attack_packet(*this, c_id, skill_type , x , y);
+	_sendPacket.sendAttackPacket(*this, c_id, skill_type , x , y);
 }
 
 void CSession::sendMonsterAttack(int id, std::string& mess)
@@ -406,7 +406,7 @@ void CSession::sendMonsterAttack(int id, std::string& mess)
 
 void CSession::sendRemoveObject(int c_id)
 {
-	_sendPacket.send_remove_object(*this,c_id);
+	_sendPacket.sendRemoveObject(*this,c_id);
 }
 
 // ** status ** // 
@@ -425,7 +425,7 @@ void CSession::heal()
 
 	if (isHeal)
 	{
-		_sendPacket.send_change_status_packet(*this, _id);
+		_sendPacket.sendChangeStatusPacket(*this, _id);
 		std::string mess = "player Heal!!";
 		chatMessage(mess);
 	}
@@ -505,7 +505,7 @@ void CSession::moveMonster()
 	if (_target_id == -1 && monsterMoveType == 1) 
 	{
 		char dir = static_cast<char>(rand() % 4);
-		update_move_clients(_id, dir);
+		updateMoveClients(_id, dir);
 	}
 	else if (_target_id != -1)
 	{

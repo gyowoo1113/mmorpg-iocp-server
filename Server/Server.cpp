@@ -12,7 +12,7 @@ const short SERVER_PORT = 4000;
 const int BUFSIZE = 256;
 
 
-void update_move_clients(int c_id, char& direction)
+void updateMoveClients(int c_id, char& direction)
 {
 	short x = clients[c_id].x;
 	short y = clients[c_id].y;
@@ -54,8 +54,7 @@ void update_move_clients(int c_id, char& direction)
 	clients[c_id].y = y;
 }
 
-
-void move_npc(int npc_id)
+void moveNpc(int npc_id)
 {
 	if (clients[npc_id]._state == ST_SLEEP
 		|| clients[npc_id]._state == ST_FREE) return;
@@ -139,7 +138,7 @@ void do_worker()
 		}
 
 		member_funcion_pointer fp[static_cast<int>(COMP_TYPE::length)]
-			= { &World::accept_client, &World::recv_client,&World::send_client,
+			= { &World::acceptClient, &World::recvClient,&World::sendClient,
 		&World::moveNpcEvent,&World::healEvent,&World::monsterAttackEvent,
 		&World::AttackActiveEvent , &World::npcRespawnEvent};
 
@@ -159,8 +158,8 @@ void eventTimer()
 
 int main()
 {
-	World::instance().initialize_tilemap();
-	World::instance().initialize_npc();
+	World::instance().initializeTilemap();
+	World::instance().initializeNpc();
 	load_database();
 
 	cout << "npc, databse , tilemap data load end\n";

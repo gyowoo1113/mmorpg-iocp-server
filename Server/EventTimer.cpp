@@ -11,7 +11,7 @@ void CEventTimer::update()
 		TIMER_EVENT ev = eventQueue.top();
 		eventQueue.pop();
 
-		World::instance().process_event(ev);
+		World::instance().processEvent(ev);
 	}
 }
 

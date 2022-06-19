@@ -19,7 +19,7 @@ CEventTimer& World::getTimer()
 	return *_timer;
 }
 
-void World::process_event(TIMER_EVENT& avent)
+void World::processEvent(TIMER_EVENT& avent)
 {
 	auto ex_over = new OVER_EXP;
 	ex_over->_comp_type = avent.ev;
@@ -55,7 +55,7 @@ void World::disconnect(int c_id)
 	}
 }
 
-int World::get_new_client_id()
+int World::getNewClientId()
 {
 	for (int i = 0; i < MAX_USER; ++i) {
 		if (clients[i]._state == ST_FREE) {
@@ -66,7 +66,7 @@ int World::get_new_client_id()
 	return -1;
 }
 
-void World::initialize_tilemap()
+void World::initializeTilemap()
 {
 	std::ifstream in("../Resource/objects.txt");
 	for (int i = 0; i < W_WIDTH; ++i)
@@ -84,7 +84,7 @@ void World::initialize_tilemap()
 	astar.initMapClosedList();
 }
 
-void World::initialize_npc()
+void World::initializeNpc()
 {
 	for (int i = 0; i < NUM_NPC + MAX_USER; ++i)
 	{
@@ -106,10 +106,10 @@ void World::initialize_npc()
 
 // ----- accept, recv, send ------- //
 
-void World::accept_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
+void World::acceptClient(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 {
 	SOCKET c_socket = reinterpret_cast<SOCKET>(ex_over->_wsabuf.buf);
-	int client_id = get_new_client_id();
+	int client_id = getNewClientId();
 	if (client_id != -1) {
 		clients[client_id].init(c_socket,client_id);
 		CreateIoCompletionPort(reinterpret_cast<HANDLE>(c_socket), handle_iocp, client_id, 0);
@@ -125,7 +125,7 @@ void World::accept_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 	AcceptEx(server_socket, c_socket, ex_over->_send_buf, 0, addr_size + 16, addr_size + 16, 0, &ex_over->_over);
 }
 
-void World::recv_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
+void World::recvClient(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 {
 	if (0 == num_bytes) disconnect(key);
 	int remain_data = num_bytes + clients[key]._prevRemainBuffer;
@@ -134,7 +134,7 @@ void World::recv_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 	clients[key].doRecv();
 }
 
-void World::send_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
+void World::sendClient(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 {
 	if (0 == num_bytes) disconnect(key);
 	delete ex_over;
@@ -144,7 +144,7 @@ void World::send_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 
 void World::moveNpcEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 {
-	move_npc(key);
+	moveNpc(key);
 }
 
 void World::healEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)

@@ -9,18 +9,18 @@ public:
 	HANDLE& getHandle() { return handle_iocp; }
 	CEventTimer& getTimer();
 
-	int get_new_client_id();
+	int getNewClientId();
 	void disconnect(int c_id);
 
-	void initialize_tilemap();
-	void initialize_npc();
+	void initializeTilemap();
+	void initializeNpc();
 
-	void process_event(TIMER_EVENT& avent);
+	void processEvent(TIMER_EVENT& avent);
 	void addEvent(std::pair<int, int> id, COMP_TYPE type, int time);
 
-	void accept_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
-	void recv_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
-	void send_client(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
+	void acceptClient(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
+	void recvClient(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
+	void sendClient(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
 
 	void moveNpcEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
 	void healEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
