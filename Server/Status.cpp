@@ -14,12 +14,12 @@ bool CStatus::decreaseHp(CSession& client, int hp)
 
 bool CStatus::healHp(CSession& client)
 {
-    if (client._hp > 100) { 
-        client._hp = 100; 
+    if (client._hp > client._maxHp) {
+        client._hp = client._maxHp;
         return true;
     }
 
-    if (client._hp < 100)
+    if (client._hp < client._maxHp)
     {
         client._hp += 10;
         checkHealEvent(client);
@@ -31,10 +31,10 @@ bool CStatus::healHp(CSession& client)
 
 void CStatus::checkHealEvent(CSession& client)
 {
-    if (client._hp >= 100)
+    if (client._hp >= client._maxHp)
     {
         client._isHealing = false;
-        client._hp = 100;
+        client._hp = client._maxHp;
     }
     else {
         pair<int, int> id{ client._id,client._id };
@@ -76,7 +76,7 @@ void CStatus::setLevelUp(CSession& client, int remainExp)
 
 void CStatus::respawn(CSession& client)
 {
-    client._hp = 100;
+    client._hp = client._maxHp;
 
     if (client._id >= MAX_USER) return;
 

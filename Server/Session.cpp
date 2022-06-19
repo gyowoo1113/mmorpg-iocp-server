@@ -306,10 +306,10 @@ void CSession::process_attack(char* packet)
 		if (isMonsterCollisionAttack(mon, _id) == false)
 			continue;
 
-		bool is_dying = clients[mon].decreaseHp(50);
+		bool is_dying = clients[mon].decreaseHp(_level*2);
 		clients[mon].setPeaceTarget(_id);
 		
-		string mess = "User:" + to_string(_id) + " attack " + clients[mon]._name + ", 50 Damage";
+		string mess = "User:" + to_string(_id) + " attack " + clients[mon]._name + "and "+ to_string(_level * 2) + " Damage";
 		chatMessage(mess);
 
 		if (is_dying)

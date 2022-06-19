@@ -32,6 +32,7 @@ public:
 	atomic<int> _level = 1;
 	atomic<int> _exp = 0;
 	atomic<int> _maxExp = 0;
+	int _maxHp = 100;
 
 	chrono::system_clock::time_point next_move_time;
 
