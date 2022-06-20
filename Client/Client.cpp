@@ -87,13 +87,17 @@ void makeObjects()
 sf::Texture* maptiles;
 sf::Texture* playertiles;
 sf::Texture* objecttiles;
+sf::Texture* numbertiles;
 
 vector<Texture*> effectTiles;
 vector<Texture*> monstertiles;
 vector<CGameObject> maptile;
 vector<CGameObject> objecttile;
+vector<CGameObject> skilltile;
 sf::RectangleShape shape;
 sf::RectangleShape shape2;
+
+vector<sf::RectangleShape> skill_shapes;
 
 float fscale = TILE_WIDTH / 16.0f;
 
@@ -102,10 +106,12 @@ void client_initialize()
 	maptiles = new sf::Texture;
 	playertiles = new Texture;
 	objecttiles = new Texture;
+	numbertiles = new Texture;
 	// 총 14개 타일종류
 	maptiles->loadFromFile("../Resource/background.png");
 	playertiles->loadFromFile("../Resource/Idle.png");
-	objecttiles->loadFromFile("../Resource/objects.png");	
+	objecttiles->loadFromFile("../Resource/objects.png");
+	numbertiles->loadFromFile("../Resource/num.png");
 
 	string res_effect_name[4] = { "slash","Fire","Circle","Shield"};
 
@@ -139,6 +145,13 @@ void client_initialize()
 		objecttile.emplace_back(mtile);
 	}
 
+	for (int i = 0; i < 3; ++i)
+	{
+		CGameObject stile = CGameObject{ *numbertiles, 16 * i, 0, 16, 16 };
+		stile.setSpriteScale(fscale, fscale);
+		skilltile.emplace_back(stile);
+	}
+
 	player = CPlayer(*playertiles,*effectTiles[0], 0, 0, 16, 16, playerName, 3, 80, 20);
 	player.setFrameCount(4);
 	player.setSpriteScale(fscale, fscale);
@@ -150,6 +163,14 @@ void client_initialize()
 	shape2.setSize(Vector2f(WINDOW_WIDTH, EXP_HEIGHT));
 	shape2.setPosition(Vector2f(0, WINDOW_HEIGHT - EXP_HEIGHT));
 	shape2.setFillColor(Color(0, 200, 0));
+
+	for (int i = 0; i < 3; ++i) {
+		sf::RectangleShape temp_shape;
+		temp_shape.setSize(Vector2f(32, 32));
+		temp_shape.setPosition(Vector2f(32*i, 32));
+		temp_shape.setFillColor(Color(0, 0, 0, 120));
+		skill_shapes.push_back(temp_shape);
+	}
 }
 
 
@@ -212,6 +233,15 @@ void drawUI()
 	shape2.setSize(Vector2f(player.getExpRatio() * WINDOW_WIDTH, EXP_HEIGHT));
 	window->draw(shape2);
 	window->draw(playerText);
+
+	for (int i=0; i<3; ++i)
+	{
+		skilltile[i].spriteMove(16 * fscale * i, 16 * fscale*1);
+		skilltile[i].spriteDraw();
+
+		if(player.isCoolDown(i) == false)
+			window->draw(skill_shapes[i]);
+	}
 }
 
 void drawPlayers()
