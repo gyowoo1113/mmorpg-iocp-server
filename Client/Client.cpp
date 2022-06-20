@@ -375,7 +375,7 @@ void KeyInput(sf::Event& e)
 			window->close();
 			break;
 
-		case sf::Keyboard::R: {
+		case sf::Keyboard::Num1: {
 			if (isChatting) return;
 			if (!player.isCoolDown(0)) return;
 
@@ -389,7 +389,7 @@ void KeyInput(sf::Event& e)
 
 			break;
 		}
-		case sf::Keyboard::E: {
+		case sf::Keyboard::Num2: {
 			if (isChatting) return;
 			if (!player.isCoolDown(1)) return;
 			player.setAttack(1);
@@ -402,7 +402,7 @@ void KeyInput(sf::Event& e)
 
 			break;
 		}
-		case sf::Keyboard::W: {
+		case sf::Keyboard::Num3: {
 			if (isChatting) return;
 			if (!player.isCoolDown(2)) return;
 
@@ -438,7 +438,7 @@ void KeyInput(sf::Event& e)
 			}
 			break;
 
-		case Keyboard::Num3:
+		case Keyboard::Num4:
 			isShowChatting = !isShowChatting;
 			break;
 

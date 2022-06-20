@@ -359,12 +359,12 @@ void CSession::setSkillCoolDown(CS_ATTACK_PACKET* p)
 	{
 		case 0: {
 			std::pair<int, int> id{ _id,p->skill_type };
-			World::instance().addEvent(id, EV_SKILL_COOL, 1000);
+			World::instance().addEvent(id, EV_SKILL_COOL, 400);
 			break;
 		}
 		case 1: {
 			std::pair<int, int> id{ _id,p->skill_type };
-			World::instance().addEvent(id, EV_SKILL_COOL, 3000);
+			World::instance().addEvent(id, EV_SKILL_COOL, 1500);
 			break;
 		}
 		case 3:
@@ -649,4 +649,4 @@ void CSession::checkArgoStart(int c_id)
 		setArgoTarget(c_id);
 }
 
-// 
+//
