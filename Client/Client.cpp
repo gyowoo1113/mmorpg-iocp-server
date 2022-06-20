@@ -496,7 +496,11 @@ void sendMessage()
 
 void setConnectServer()
 {
-	sf::Socket::Status status = socket.connect("127.0.0.1", PORT_NUM);
+	cout <<"IP : ";
+	string ip;
+	cin >> ip;
+
+	sf::Socket::Status status = socket.connect(ip.c_str(), PORT_NUM);
 	socket.setBlocking(false);
 	
 	cout << "ID: ";

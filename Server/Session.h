@@ -110,4 +110,3 @@ public:
 	friend class CStatus;
 	friend class CSendPacket;
 };
-
