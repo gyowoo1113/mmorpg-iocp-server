@@ -42,6 +42,7 @@ extern std::array<CSession, MAX_USER + NUM_NPC> clients;
 
 int distance(int a, int b);
 void updateMoveClients(int c_id, char& direction);
+bool isMonsterCollisionNormalAttack(int& monster_id, int& p_id);
 bool isMonsterCollisionAttack(int& monster_id, int& p_id);
 void moveNpc(int npc_id);
 

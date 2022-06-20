@@ -306,10 +306,18 @@ void CSession::processAttack(char* packet)
 
 	setSkillCoolDown(p);
 	
+	if (p->skill_type == 2) return;
+	
 	for (int mon : search_vl)
 	{
-		if (isMonsterCollisionAttack(mon, _id) == false)
-			continue;
+		if (p->skill_type == 0) {
+			if (isMonsterCollisionNormalAttack(mon, _id) == false)
+				continue;
+		}
+		else if (p->skill_type == 1) {
+			if (isMonsterCollisionAttack(mon, _id) == false)
+				continue;
+		}
 
 		bool is_dying = clients[mon].decreaseHp(_level*2);
 		clients[mon].setPeaceTarget(_id);

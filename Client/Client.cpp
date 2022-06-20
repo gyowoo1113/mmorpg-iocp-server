@@ -345,7 +345,7 @@ void KeyInput(sf::Event& e)
 			window->close();
 			break;
 
-		case sf::Keyboard::R:
+		case sf::Keyboard::R: {
 			if (isChatting) return;
 			if (!player.isCoolDown(0)) return;
 
@@ -354,23 +354,38 @@ void KeyInput(sf::Event& e)
 			CS_ATTACK_PACKET p;
 			p.size = sizeof(p);
 			p.type = CS_ATTACK;
+			p.skill_type = 0;
 			send_packet(&p);
 
 			break;
-
-		case sf::Keyboard::E:
+		}
+		case sf::Keyboard::E: {
 			if (isChatting) return;
 			if (!player.isCoolDown(1)) return;
 			player.setAttack(1);
-			break;
 
-		case sf::Keyboard::W:
+			CS_ATTACK_PACKET p;
+			p.size = sizeof(p);
+			p.type = CS_ATTACK;
+			p.skill_type = 1;
+			send_packet(&p);
+
+			break;
+		}
+		case sf::Keyboard::W: {
 			if (isChatting) return;
 			if (!player.isCoolDown(2)) return;
 
 			player.setAttack(2);
-			break;
 
+			CS_ATTACK_PACKET p;
+			p.size = sizeof(p);
+			p.type = CS_ATTACK;
+			p.skill_type = 2;
+			send_packet(&p);
+
+			break;
+		}
 		case sf::Keyboard::Space:
 			if (!isChatting) return;
 
@@ -593,10 +608,14 @@ void ProcessPacket(char* ptr)
 	{
 		SC_ATTACK_PACKET* packet = reinterpret_cast<SC_ATTACK_PACKET*>(ptr);
 		int c_id = packet->id;
-		int type = packet->skill_type;
 		if (c_id < MAX_USER) {
+			if (packet->active_type == 1)
+				player.activeCoolDown(packet->skill_type);
+
 			if (players.count(c_id) == 0) break;
-			players[c_id].setAttack(packet->skill_type);
+
+			if (packet->active_type == 0)
+				players[c_id].setAttack(packet->skill_type);
 		}
 		else {
 			if (npcs.count(c_id) == 0) break;
