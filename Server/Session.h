@@ -40,7 +40,9 @@ private:
 
 	short monsterType = 0;
 	short monsterMoveType = 0;
-	std::atomic<bool> _isAttack = true;
+	bool _isAttack = true;
+
+	std::atomic<bool> _isShield = false;
 	bool _isHealing = false;
 
 	CAstar _astar;
@@ -89,6 +91,9 @@ public:
 	void respawnPlayer();
 	void setRespawnStatus();
 	void readyToRespawn();
+	void releaseShield();
+
+	bool getShield();
 	
 	void setMonsterTypes();
 	short getMonsterType() { return monsterType; }

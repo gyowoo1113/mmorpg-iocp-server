@@ -206,5 +206,9 @@ void World::activeSkiilCoolDownEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_
 
 void World::releaseSkillEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 {
+	if (key == ex_over->target_id)
+	{
+		clients[key].releaseShield();
+	}
 	clients[key].sendAttackPacket(ex_over->target_id, 2,2);
 }

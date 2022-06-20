@@ -318,6 +318,7 @@ void CSession::processAttack(char* packet)
 	setSkillCoolDown(p);
 	
 	if (p->skill_type == 2) {
+		_isShield = true;
 		std::pair<int, int> id{ _id,p->skill_type };
 		World::instance().addEvent(id, EV_SKILL_COOL, 3000);
 		return;
@@ -544,6 +545,16 @@ void CSession::readyToRespawn()
 	World::instance().addEvent(id, EV_RESPAWN, 300000);
 }
 
+void CSession::releaseShield()
+{
+	_isShield = false;
+}
+
+bool CSession::getShield()
+{
+	return _isShield;
+}
+
 // ** Monster ** // 
 
 void CSession::setMonsterTypes()
@@ -569,6 +580,12 @@ void CSession::moveMonster()
 
 void CSession::movePathToNpc()
 {
+	_pathl.lock();
+	int target = _target_id;
+	_pathl.unlock();
+
+	if (clients[target]._isShield) return;
+
 	_pathl.lock();
 	bool isFind = _astar.searchRoad(clients[_target_id].x, clients[_target_id].y, x, y);
 	_pathl.unlock();
