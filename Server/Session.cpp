@@ -304,6 +304,8 @@ void CSession::processAttack(char* packet)
 	std::unordered_set<int> search_vl = view_list;
 	vl.unlock();
 
+	setSkillCoolDown(p);
+	
 	for (int mon : search_vl)
 	{
 		if (isMonsterCollisionAttack(mon, _id) == false)
@@ -321,6 +323,29 @@ void CSession::processAttack(char* packet)
 			_status.updateExp(*this, mon);
 			sendChangeStatusPacket(_id);
 			clients[mon].readyToRespawn();
+		}
+	}
+}
+
+void CSession::setSkillCoolDown(CS_ATTACK_PACKET* p)
+{
+	switch (p->skill_type)
+	{
+		case 0: {
+			std::pair<int, int> id{ _id,p->skill_type };
+			World::instance().addEvent(id, EV_SKILL_COOL, 1000);
+			break;
+		}
+		case 1: {
+			std::pair<int, int> id{ _id,p->skill_type };
+			World::instance().addEvent(id, EV_SKILL_COOL, 3000);
+			break;
+		}
+		case 3:
+		{
+			std::pair<int, int> id{ _id,p->skill_type };
+			World::instance().addEvent(id, EV_SKILL_COOL, 5000);
+			break;
 		}
 	}
 }

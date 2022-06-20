@@ -198,3 +198,8 @@ void World::npcRespawnEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 		clients[key].checkArgoStart(p_id);
 	}
 }
+
+void World::activeSkiilCoolDownEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
+{
+	clients[key].sendAttackPacket(key, ex_over->target_id, 1);
+}
