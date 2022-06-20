@@ -347,6 +347,7 @@ void KeyInput(sf::Event& e)
 
 		case sf::Keyboard::R:
 			if (isChatting) return;
+			if (!player.isCoolDown(0)) return;
 
 			player.setAttack(0);
 
@@ -359,11 +360,14 @@ void KeyInput(sf::Event& e)
 
 		case sf::Keyboard::E:
 			if (isChatting) return;
+			if (!player.isCoolDown(1)) return;
 			player.setAttack(1);
 			break;
 
 		case sf::Keyboard::W:
 			if (isChatting) return;
+			if (!player.isCoolDown(2)) return;
+
 			player.setAttack(2);
 			break;
 

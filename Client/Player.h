@@ -18,6 +18,9 @@ public:
 	void normalAttackDraw();
 	void calculateMaxExp();
 
+	bool isCoolDown(int index);
+	void activeCoolDown(int index);
+
 	virtual void draw() override;
 	virtual void animDraw() override;
 	virtual void drawAttack(int index) override;
@@ -27,8 +30,9 @@ private:
 	int m_nExp;
 	int m_nMaxHp = 100;
 	int m_nMaxExp;
-	bool m_bAttack[3] = { false, false, false };
+	bool _isDrawAttack[3] = { false, false, false };
 	bool setLoop[3] = { false,false,true };
+	bool _isCoolDown[3] = { true,true,true };
 	CEffect m_effectObject[3];
 	vector<vector<int>> dx;
 	vector<vector<int>> dy;

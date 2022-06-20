@@ -50,7 +50,8 @@ void CPlayer::setStatus(int hp, int level, int exp)
 
 void CPlayer::setAttack(int index)
 {
-	m_bAttack[index] = true;
+	_isDrawAttack[index] = true;
+	_isCoolDown[index] = false;
 }
 
 float CPlayer::getExpRatio()
@@ -75,6 +76,17 @@ void CPlayer::calculateMaxExp()
 	m_nMaxExp = pow(2, m_nLevel - 1) * 100;
 }
 
+
+bool CPlayer::isCoolDown(int index)
+{
+	return _isCoolDown[index];
+}
+
+void CPlayer::activeCoolDown(int index)
+{
+	_isCoolDown[index] = true;
+}
+
 void CPlayer::draw()
 {
 	if (m_bActive == false) return;
@@ -96,7 +108,7 @@ void CPlayer::animDraw()
 
 void CPlayer::drawAttack(int index)
 {
-	if (m_bAttack[index] == false) return;
+	if (_isDrawAttack[index] == false) return;
 
 	int dxy;
 	if (index == 0 ) normalAttackDraw();
@@ -110,7 +122,7 @@ void CPlayer::drawAttack(int index)
 
 	if (m_effectObject[index].isEndFrame())
 	{
-		if (!setLoop[index]) m_bAttack[index] = false;
+		if (!setLoop[index]) _isDrawAttack[index] = false;
 		m_effectObject[index].initIndex();
 	}
 }
