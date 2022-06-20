@@ -13,6 +13,7 @@ public:
 	void setParameter(sf::Text& text);
 	void setStatus(int hp, int level, int exp);
 	void setAttack(int index);
+	void releaseAttack(int index);
 	string getName() { return m_sName; }
 	float getExpRatio();
 	void normalAttackDraw();

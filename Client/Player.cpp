@@ -54,6 +54,11 @@ void CPlayer::setAttack(int index)
 	_isCoolDown[index] = false;
 }
 
+void CPlayer::releaseAttack(int index)
+{
+	_isDrawAttack[index] = false;
+}
+
 float CPlayer::getExpRatio()
 {
 	return (float)m_nExp / (float)m_nMaxExp;

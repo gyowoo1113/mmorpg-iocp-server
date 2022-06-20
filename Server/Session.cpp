@@ -261,7 +261,18 @@ void CSession::processPacket(char* packet)
 			for (auto& n : new_nl)
 			{
 				clients[n].sendAttackPacket(_id,p->skill_type);
+
+				if (p->skill_type == 2) {
+					std::pair<int, int> id{ n,_id };
+					World::instance().addEvent(id, EV_SKILL_RELEASE, 1500);
+				}
 			}
+
+			if (p->skill_type == 2) {
+				std::pair<int, int> id{ _id,_id };
+				World::instance().addEvent(id, EV_SKILL_RELEASE, 1500);
+			}
+
 			break;
 		}
 
@@ -306,8 +317,12 @@ void CSession::processAttack(char* packet)
 
 	setSkillCoolDown(p);
 	
-	if (p->skill_type == 2) return;
-	
+	if (p->skill_type == 2) {
+		std::pair<int, int> id{ _id,p->skill_type };
+		World::instance().addEvent(id, EV_SKILL_COOL, 3000);
+		return;
+	}
+
 	for (int mon : search_vl)
 	{
 		if (p->skill_type == 0) {
@@ -614,3 +629,5 @@ void CSession::checkArgoStart(int c_id)
 	if (distance(c_id, _id) <= MONSTER_RANGE)
 		setArgoTarget(c_id);
 }
+
+// 

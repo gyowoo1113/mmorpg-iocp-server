@@ -28,7 +28,8 @@ public:
 	void AttackActiveEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
 	void npcRespawnEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
 	void activeSkiilCoolDownEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
-	
+	void releaseSkillEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
+
 private:
 	static World _instance;
 	CEventTimer* _timer;

@@ -638,14 +638,21 @@ void ProcessPacket(char* ptr)
 	{
 		SC_ATTACK_PACKET* packet = reinterpret_cast<SC_ATTACK_PACKET*>(ptr);
 		int c_id = packet->id;
-		if (c_id < MAX_USER) {
+		
+		if (c_id == g_myid) {
+
 			if (packet->active_type == 1)
 				player.activeCoolDown(packet->skill_type);
-
+			if (packet->active_type == 2)
+				player.releaseAttack(packet->skill_type);
+		}
+		else if (c_id < MAX_USER) {
 			if (players.count(c_id) == 0) break;
 
 			if (packet->active_type == 0)
 				players[c_id].setAttack(packet->skill_type);
+			else if (packet->active_type == 2)
+				players[c_id].releaseAttack(packet->skill_type);
 		}
 		else {
 			if (npcs.count(c_id) == 0) break;
