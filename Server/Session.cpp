@@ -335,11 +335,13 @@ void CSession::processAttack(char* packet)
 				continue;
 		}
 
-		bool is_dying = clients[mon].decreaseHp(_level*2);
+		int damage = _level * 2 * (p->skill_type + 1);
+
+		bool is_dying = clients[mon].decreaseHp(damage);
 		clients[mon].setPeaceTarget(_id);
 		
 		std::string mess = "User:" + std::to_string(_id) + " attack " + clients[mon]._name
-			+ "and "+ std::to_string(_level * 2) + " Damage";
+			+ "and "+ std::to_string(damage) + " Damage";
 		chatMessage(mess);
 
 		if (is_dying)

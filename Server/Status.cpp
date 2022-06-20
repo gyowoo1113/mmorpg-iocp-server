@@ -63,6 +63,7 @@ void CStatus::updateExp(CSession& client, int mon_id)
 
 void CStatus::calculateMaxExp(CSession& client)
 {
+    if (client._level > 20) client._level = 20;
     client._maxExp = pow(2, client._level - 1) * 100;
 }
 
