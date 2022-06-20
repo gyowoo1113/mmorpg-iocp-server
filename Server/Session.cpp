@@ -253,12 +253,14 @@ void CSession::processPacket(char* packet)
 
 		case CS_ATTACK: {
 			processAttack(packet);
+
+			CS_ATTACK_PACKET* p = reinterpret_cast<CS_ATTACK_PACKET*>(packet);
 			std::unordered_set<int> new_nl;
 			new_nl = MakeNearList();
 
 			for (auto& n : new_nl)
 			{
-				clients[n].sendAttackPacket(_id, 0);
+				clients[n].sendAttackPacket(_id,p->skill_type);
 			}
 			break;
 		}
@@ -386,9 +388,9 @@ void CSession::sendChangeStatusPacket(int c_id)
 	_sendPacket.sendChangeStatusPacket(*this, c_id);
 }
 
-void CSession::sendAttackPacket(int c_id, int skill_type , short x , short y)
+void CSession::sendAttackPacket(int c_id, int skill_type, short active_type, short x , short y)
 {
-	_sendPacket.sendAttackPacket(*this, c_id, skill_type , x , y);
+	_sendPacket.sendAttackPacket(*this, c_id, skill_type , active_type, x , y);
 }
 
 void CSession::sendMonsterAttack(int id, std::string& mess)
@@ -396,12 +398,12 @@ void CSession::sendMonsterAttack(int id, std::string& mess)
 	std::unordered_set<int> new_nl;
 	new_nl = MakeNearList();
 
-	sendAttackPacket(id, 0 , x, y);
+	sendAttackPacket(id, 0 ,0, x, y);
 	chatMessage(mess);
 	for (auto p_id : new_nl)
 	{
 		if (p_id >= MAX_USER) continue;
-		clients[p_id].sendAttackPacket(id, 0 , x , y);
+		clients[p_id].sendAttackPacket(id, 0 , 0, x , y);
 		clients[p_id].chatMessage(mess);
 	}
 }

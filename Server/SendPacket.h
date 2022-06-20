@@ -11,6 +11,6 @@ public:
 	void sendRemoveObject(CSession& client, int c_id);
 	void sendChatPacket(CSession& client, int c_id, const char* mess);
 	void sendChangeStatusPacket(CSession& client, int c_id);
-	void sendAttackPacket(CSession& client,int c_id , int skill_type , short x, short y);
+	void sendAttackPacket(CSession& client,int c_id , int skill_type , short active_type, short x, short y);
 };
 

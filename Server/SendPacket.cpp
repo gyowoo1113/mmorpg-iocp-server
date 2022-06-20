@@ -80,13 +80,14 @@ void CSendPacket::sendChangeStatusPacket(CSession& client, int c_id)
 	client.doSend(&p);
 }
 
-void CSendPacket::sendAttackPacket(CSession& client,int c_id, int skill_type , short x , short y)
+void CSendPacket::sendAttackPacket(CSession& client,int c_id, int skill_type , short active_type, short x , short y)
 {
 	SC_ATTACK_PACKET p;
 	p.size = sizeof(SC_ATTACK_PACKET);
 	p.id = c_id; 
 	p.type = SC_ATTACK;
 	p.skill_type = skill_type;
+	p.active_type = active_type;
 	p.x = x;
 	p.y = y;
 

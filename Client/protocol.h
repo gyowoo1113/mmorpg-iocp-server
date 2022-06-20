@@ -46,6 +46,7 @@ struct CS_MOVE_PACKET {
 struct CS_ATTACK_PACKET {
 	unsigned char size;
 	char	type;
+	short skill_type;
 };
 
 struct CS_CHAT_PACKET {
@@ -126,9 +127,10 @@ struct SC_STAT_CHANGE_PACKET {
 struct SC_ATTACK_PACKET {
 	unsigned char size;
 	char	type;
-	int		id;			 // -1 : 쿨타임 초기화, 0 : 일반공격	1: 버프스킬
+	int		id;			 
 	short	x, y;
 	short	skill_type;
+	short	active_type; // 0 : attack , 1 : 쿨 초기화, 2: 버프 해제
 };
 
 #pragma pack (pop)

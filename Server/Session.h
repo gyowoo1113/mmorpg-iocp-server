@@ -62,7 +62,7 @@ public:
 	void sendRemoveObject(int c_id);
 	void sendChatPacket(int c_id, const char* mess);
 	void sendChangeStatusPacket(int c_id);
-	void sendAttackPacket(int c_id, int skill_type, short x = 0 , short y = 0);
+	void sendAttackPacket(int c_id, int skill_type, short active_type = 0, short x = 0 , short y = 0);
 	
 	void sendMonsterAttack(int id, std::string& mess);
 
@@ -77,6 +77,7 @@ public:
 	void rebuildPacket(char* send_buffer, int& remain_data);
 	void processPacket(char* packet);
 	void processAttack(char* packet);
+	void setSkillCoolDown(CS_ATTACK_PACKET* p);
 	void moveObject(char* packet);
 
 	void chatMessage(std::string& mess, int id = -1);
