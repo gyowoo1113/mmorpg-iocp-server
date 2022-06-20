@@ -12,20 +12,24 @@ public:
 
 	void setParameter(sf::Text& text);
 	void setStatus(int hp, int level, int exp);
-	void setAttack();
+	void setAttack(int index);
 	string getName() { return m_sName; }
 	float getExpRatio();
-
+	void normalAttackDraw();
 	void calculateMaxExp();
 
 	virtual void draw() override;
 	virtual void animDraw() override;
-	virtual void drawAttack() override;
+	virtual void drawAttack(int index) override;
+	virtual void drawAttacks() override;
 
 private:
 	int m_nExp;
 	int m_nMaxHp = 100;
 	int m_nMaxExp;
-	bool m_bAttack = false;
-	CEffect m_effectObject;
+	bool m_bAttack[3] = { false, false, false };
+	bool setLoop[3] = { false,false,true };
+	CEffect m_effectObject[3];
+	vector<vector<int>> dx;
+	vector<vector<int>> dy;
 };

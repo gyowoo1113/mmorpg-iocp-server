@@ -97,3 +97,11 @@ void CGameObject::animDraw()
 void CGameObject::drawAttack()
 {
 }
+
+void CGameObject::drawAttacks()
+{
+}
+
+void CGameObject::drawAttack(int index)
+{
+}

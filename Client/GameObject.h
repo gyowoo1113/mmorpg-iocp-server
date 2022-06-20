@@ -7,6 +7,8 @@ public:
 	virtual void draw() = 0;
 	virtual void animDraw() = 0;
 	virtual void drawAttack() = 0;
+	virtual void drawAttack(int index) = 0;
+	virtual void drawAttacks() = 0;
 };
 
 class CGameObject : public CObject
@@ -46,5 +48,7 @@ public:
 	virtual void draw() override;
 	virtual void animDraw() override;
 	virtual void drawAttack() override;
+	virtual void drawAttacks() override;
+	virtual void drawAttack(int index) override;
 };
 

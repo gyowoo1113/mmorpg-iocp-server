@@ -107,9 +107,9 @@ void client_initialize()
 	playertiles->loadFromFile("../Resource/Idle.png");
 	objecttiles->loadFromFile("../Resource/objects.png");	
 
-	string res_effect_name[2] = { "slash","Fire"};
+	string res_effect_name[4] = { "slash","Fire","Circle","Shield"};
 
-	for (int i = 0; i < 2; ++i) {
+	for (int i = 0; i < 4; ++i) {
 		Texture* eff  = new Texture;
 		string m_name = "../Resource/" + res_effect_name[i] + ".png";
 		eff->loadFromFile(m_name);
@@ -230,10 +230,10 @@ void drawPlayers()
 
 	for (auto& pl : players) pl.second.draw();
 	for (auto& pl : npcs) pl.second.animDraw();
-	for (auto& pl : players) pl.second.drawAttack();
+	for (auto& pl : players) pl.second.drawAttacks();
 	for (auto& pl : npcs) pl.second.drawAttack();
 
-	player.drawAttack();
+	player.drawAttacks();
 }
 
 void drawMaps()
@@ -348,13 +348,23 @@ void KeyInput(sf::Event& e)
 		case sf::Keyboard::R:
 			if (isChatting) return;
 
-			player.setAttack();
+			player.setAttack(0);
 
 			CS_ATTACK_PACKET p;
 			p.size = sizeof(p);
 			p.type = CS_ATTACK;
 			send_packet(&p);
 
+			break;
+
+		case sf::Keyboard::E:
+			if (isChatting) return;
+			player.setAttack(1);
+			break;
+
+		case sf::Keyboard::W:
+			if (isChatting) return;
+			player.setAttack(2);
 			break;
 
 		case sf::Keyboard::Space:
@@ -582,7 +592,7 @@ void ProcessPacket(char* ptr)
 		int type = packet->skill_type;
 		if (c_id < MAX_USER) {
 			if (players.count(c_id) == 0) break;
-			players[c_id].setAttack();
+			players[c_id].setAttack(packet->skill_type);
 		}
 		else {
 			if (npcs.count(c_id) == 0) break;

@@ -6,9 +6,17 @@ CPlayer::CPlayer(sf::Texture& t, sf::Texture& et, int x, int y, int x2, int y2, 
 {
 	calculateMaxExp();
 
-	m_effectObject = CEffect(et, 0, 0, 16, 16, 4);
-	m_effectObject.setSpriteScale(2.0f, 2.0f);
-	m_effectObject.setActive(true);
+	m_effectObject[0] = CEffect(et, 0, 0, 16, 16, 4);
+	m_effectObject[0].setSpriteScale(2.0f, 2.0f);
+	m_effectObject[0].setActive(true);
+
+	m_effectObject[1] = CEffect(*effectTiles[2], 0, 0, 16, 16, 4);
+	m_effectObject[1].setSpriteScale(6.0f, 6.0f);
+	m_effectObject[1].setActive(true);
+
+	m_effectObject[2] = CEffect(*effectTiles[3], 0, 0, 16, 16, 4);
+	m_effectObject[2].setSpriteScale(2.0f, 2.0f);
+	m_effectObject[2].setActive(true);
 }
 
 CPlayer::CPlayer()
@@ -40,14 +48,26 @@ void CPlayer::setStatus(int hp, int level, int exp)
 	}
 }
 
-void CPlayer::setAttack()
+void CPlayer::setAttack(int index)
 {
-	m_bAttack = true;
+	m_bAttack[index] = true;
 }
 
 float CPlayer::getExpRatio()
 {
 	return (float)m_nExp / (float)m_nMaxExp;
+}
+
+void CPlayer::normalAttackDraw()
+{
+	int dx[4] = { -1,1,0,0 };
+	int dy[4] = { 0,0,-1,1 };
+
+	for (int i = 0; i < 4; ++i)
+	{
+		m_effectObject[0].move(m_x + dx[i], m_y + dy[i]);
+		m_effectObject[0].draw();
+	}
 }
 
 void CPlayer::calculateMaxExp()
@@ -74,24 +94,29 @@ void CPlayer::animDraw()
 	CGameObject::draw();
 }
 
-void CPlayer::drawAttack()
+void CPlayer::drawAttack(int index)
 {
-	if (m_bAttack == false) return;
+	if (m_bAttack[index] == false) return;
 
-	int dx[4] = { -1,1,0,0 };
-	int dy[4] = { 0,0,-1,1 };
-
-	for (int i = 0; i < 4; ++i)
-	{
-		m_effectObject.move(m_x + dx[i], m_y + dy[i]);
-		m_effectObject.draw();
+	int dxy;
+	if (index == 0 ) normalAttackDraw();
+	else {
+		dxy = (index == 1) ? -1 : 0;
+		m_effectObject[index].move(m_x + dxy, m_y + dxy);
+		m_effectObject[index].draw();
 	}
+	
+	m_effectObject[index].updateIndex();
 
-	m_effectObject.updateIndex();
-
-	if (m_effectObject.isEndFrame())
+	if (m_effectObject[index].isEndFrame())
 	{
-		m_bAttack = false;
-		m_effectObject.initIndex();
+		if (!setLoop[index]) m_bAttack[index] = false;
+		m_effectObject[index].initIndex();
 	}
+}
+
+void CPlayer::drawAttacks()
+{
+	for (int i = 0; i < 3; ++i)
+		drawAttack(i);
 }
