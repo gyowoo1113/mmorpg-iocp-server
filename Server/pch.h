@@ -23,6 +23,9 @@
 
 extern constexpr int RANGE = 7;
 extern constexpr int MONSTER_RANGE = 5;
+constexpr int W_SECTOR = 50;
+constexpr int H_SECTOR = 50;
+
 class CSession;
 struct USER_DATA
 {
@@ -31,9 +34,6 @@ struct USER_DATA
 	int level, exp;
 	int hp;
 };
-
-extern constexpr int W_SECTOR = 50;
-extern constexpr int H_SECTOR = 50;
 
 extern std::list<USER_DATA> g_db_users;
 extern concurrency::concurrent_unordered_set<int> sector[W_WIDTH / W_SECTOR][W_HEIGHT / H_SECTOR];
