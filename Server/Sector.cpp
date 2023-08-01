@@ -4,7 +4,7 @@
 
 std::mutex global_sector_lock;
 
-void SetSector(int id)
+void setSector(int id)
 {
 	int x = (clients[id].x) / W_SECTOR;
 	int y = (clients[id].y) / H_SECTOR;
@@ -15,7 +15,7 @@ void SetSector(int id)
 	clients[id]._sector_y = y;
 }
 
-void CheckMoveSector(int id)
+void checkMoveSector(int id)
 {
 	int cl_x = clients[id].x;
 	int cl_y = clients[id].y;
@@ -23,10 +23,10 @@ void CheckMoveSector(int id)
 	int sec_y = clients[id]._sector_y;
 
 	if (cl_x != sec_x || cl_y != sec_y)
-		ChangeSector(id);
+		changeSector(id);
 }
 
-void ChangeSector(int id, bool update)
+void changeSector(int id, bool update)
 {
 	int sec_x = clients[id]._sector_x;
 	int sec_y = clients[id]._sector_y;
@@ -34,5 +34,5 @@ void ChangeSector(int id, bool update)
 	global_sector_lock.lock();
 	sector[sec_x][sec_y].unsafe_erase(id);
 	global_sector_lock.unlock();
-	if (update) SetSector(id);
+	if (update) setSector(id);
 }

@@ -137,7 +137,7 @@ void CSession::checkInsertViewList(int insert_id)
 	}
 }
 
-std::unordered_set<int> CSession::MakeNearList()
+std::unordered_set<int> CSession::makeNearList()
 {
 	int nearDirectionX[9] = { -1,-1,-1,0,0,0,1,1,1 };
 	int nearDirectionY[9] = { -1,0,1,-1,0,1,-1,0,1 };
@@ -218,11 +218,11 @@ void CSession::processPacket(char* packet)
 			_sendPacket.sendLoginInfoPacket(*this);
 			_state = ST_INGAME;
 
-			SetSector(_id);
-			CheckMoveSector(_id);
+			setSector(_id);
+			checkMoveSector(_id);
 
 			std::unordered_set<int> new_nl;
-			new_nl = MakeNearList();
+			new_nl = makeNearList();
 
 			for (auto n : new_nl)
 			{
@@ -256,7 +256,7 @@ void CSession::processPacket(char* packet)
 
 			CS_ATTACK_PACKET* p = reinterpret_cast<CS_ATTACK_PACKET*>(packet);
 			std::unordered_set<int> new_nl;
-			new_nl = MakeNearList();
+			new_nl = makeNearList();
 
 			for (auto& n : new_nl)
 			{
@@ -299,10 +299,10 @@ void CSession::moveObject(char* packet)
 	CS_MOVE_PACKET* p = reinterpret_cast<CS_MOVE_PACKET*>(packet);
 
 	updateMoveClients(_id, p->direction);
-	CheckMoveSector(_id);
+	checkMoveSector(_id);
 
 	std::unordered_set<int> new_nl;
-	new_nl = MakeNearList();
+	new_nl = makeNearList();
 
 	updateMoveViewList(p->client_time, new_nl);
 	checkEraseViewList(new_nl);
@@ -447,7 +447,7 @@ void CSession::sendAttackPacket(int c_id, int skill_type, short active_type, sho
 void CSession::sendMonsterAttack(int id, std::string& mess)
 {
 	std::unordered_set<int> new_nl;
-	new_nl = MakeNearList();
+	new_nl = makeNearList();
 
 	sendAttackPacket(id, 0 ,0, x, y);
 	chatMessage(mess);
@@ -509,9 +509,9 @@ void CSession::respawnPlayer()
 
 	x = iter->x; y = iter->y;
 
-	CheckMoveSector(_id);
+	checkMoveSector(_id);
 	std::unordered_set<int> new_nl;
-	new_nl = MakeNearList();
+	new_nl = makeNearList();
 
 	updateMoveViewList(0, new_nl);
 	checkEraseViewList(new_nl);
@@ -527,7 +527,7 @@ void CSession::readyToRespawn()
 	_state = ST_FREE;
 	
 	std::unordered_set<int> new_nl;
-	new_nl = MakeNearList();
+	new_nl = makeNearList();
 
 	for (auto p_id : new_nl) 
 	{
@@ -577,7 +577,7 @@ void CSession::moveMonster()
 		movePathToNpc();
 	}
 
-	CheckMoveSector(_id);
+	checkMoveSector(_id);
 }
 
 void CSession::movePathToNpc()

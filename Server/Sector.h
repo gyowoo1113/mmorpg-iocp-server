@@ -1,6 +1,6 @@
 #pragma once
 
 
-void SetSector(int id);
-void CheckMoveSector(int id);
-void ChangeSector(int id, bool update = true);
+void setSector(int id);
+void checkMoveSector(int id);
+void changeSector(int id, bool update = true);

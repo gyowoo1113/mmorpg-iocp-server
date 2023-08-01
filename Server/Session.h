@@ -74,7 +74,7 @@ public:
 	void checkViewList(int& c_id, int client_time);
 	void removeViewList(int& view);
 	void checkInsertViewList(int insert_id);
-	std::unordered_set<int> MakeNearList();
+	std::unordered_set<int> makeNearList();
 
 	void rebuildPacket(char* send_buffer, int& remain_data);
 	void processPacket(char* packet);

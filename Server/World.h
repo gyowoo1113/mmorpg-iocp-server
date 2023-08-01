@@ -25,7 +25,7 @@ public:
 	void moveNpcEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
 	void healEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
 	void monsterAttackEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
-	void AttackActiveEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
+	void attackActiveEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
 	void npcRespawnEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
 	void activeSkiilCoolDownEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);
 	void releaseSkillEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key);

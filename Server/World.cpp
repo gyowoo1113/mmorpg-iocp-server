@@ -43,7 +43,7 @@ void World::disconnect(int c_id)
 	closesocket(clients[c_id]._socket);
 	clients[c_id]._state = ST_FREE;
 
-	ChangeSector(c_id, false);
+	changeSector(c_id, false);
 	update_database(c_id);
 
 	for (auto& pl : clients) {
@@ -104,13 +104,13 @@ void World::initializeNpc()
 		clients[npc_id].x = new_x;
 		clients[npc_id].y = new_y;
 
-		CheckMoveSector(npc_id);
+		checkMoveSector(npc_id);
 
 		clients[npc_id]._state = ST_SLEEP;
 		clients[npc_id].setMonsterTypes();
 		clients[npc_id]._level = rand() % 10 + 1;
 		clients[npc_id]._maxHp = clients[npc_id]._hp = 30;
-		SetSector(i);
+		setSector(i);
 		sprintf_s(clients[npc_id]._name, "M-%d", npc_id);
 	}
 }
@@ -169,7 +169,7 @@ void World::monsterAttackEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& k
 
 }
 
-void World::AttackActiveEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
+void World::attackActiveEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 {
 	clients[key].setAttack(true);
 }
@@ -180,7 +180,7 @@ void World::npcRespawnEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 	clients[key].setRespawnStatus();
 
 	std::unordered_set<int> new_nl;
-	new_nl = clients[key].MakeNearList();
+	new_nl = clients[key].makeNearList();
 
 	for (auto p_id : new_nl) {
 		if (p_id >= MAX_USER) continue;

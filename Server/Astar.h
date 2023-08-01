@@ -12,15 +12,8 @@ struct sNode {
 	float f;
 	sNode* pParent = nullptr;
 
-	sNode(position p, sNode* par) : pos{ p }, pParent{ par }
-	{
-
-	}
-
-	sNode(position p) : pos{ p } 
-	{
-
-	}
+	sNode(position p, sNode* par) : pos{ p }, pParent{ par }{}
+	sNode(position p) : pos{ p } {}
 };
 
 class CAstar

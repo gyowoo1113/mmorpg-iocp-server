@@ -117,7 +117,7 @@ void moveNpc(int npc_id)
 
 typedef void (World::* member_funcion_pointer)(OVER_EXP*, DWORD&, ULONG_PTR&);
 
-void do_worker()
+void doWorker()
 {
 	while (true) {
 		HANDLE& handle_iocp = World::instance().getHandle();
@@ -140,7 +140,7 @@ void do_worker()
 		member_funcion_pointer fp[static_cast<int>(COMP_TYPE::length)]
 			= { &World::acceptClient,		&World::recvClient,			&World::sendClient,
 			&World::moveNpcEvent,			&World::healEvent,			&World::monsterAttackEvent,
-			&World::AttackActiveEvent ,		&World::npcRespawnEvent , 
+			&World::attackActiveEvent ,		&World::npcRespawnEvent , 
 			&World::activeSkiilCoolDownEvent,
 			&World::releaseSkillEvent};
 
@@ -162,7 +162,7 @@ int main()
 {
 	World::instance().initializeTilemap();
 	World::instance().initializeNpc();
-	load_database();
+	loadDatabase();
 
 	cout << "npc, databse , tilemap data load end\n";
 
@@ -195,7 +195,7 @@ int main()
 
 	vector <thread> worker_threads;
 	for (int i = 0; i < 5; ++i)
-		worker_threads.emplace_back(do_worker);
+		worker_threads.emplace_back(doWorker);
 	thread timer_thread{ eventTimer };
 
 	timer_thread.join();

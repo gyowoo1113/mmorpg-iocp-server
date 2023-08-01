@@ -3,7 +3,7 @@
 
 #define NAME_LEN 20
 
-void load_database()
+void loadDatabase()
 {
 	setlocale(LC_ALL, "korean");
 
@@ -49,7 +49,7 @@ void load_database()
 						for (int i = 0; ; i++) {
 							retcode = SQLFetch(hstmt);
 							if (retcode == SQL_ERROR || retcode == SQL_SUCCESS_WITH_INFO)
-								ShowError(hstmt, SQL_HANDLE_STMT, retcode);
+								showError(hstmt, SQL_HANDLE_STMT, retcode);
 							if (retcode == SQL_SUCCESS || retcode == SQL_SUCCESS_WITH_INFO)
 							{
 								char* str;
@@ -76,7 +76,7 @@ void load_database()
 					}
 					else
 					{
-						ShowError(hstmt, SQL_HANDLE_STMT, retcode);
+						showError(hstmt, SQL_HANDLE_STMT, retcode);
 					}
 
 					// Process data  
@@ -95,7 +95,7 @@ void load_database()
 	}
 }
 
-void update_database(int id)
+void updateDatabase(int id)
 {
 	setlocale(LC_ALL, "korean");
 
@@ -144,7 +144,7 @@ void update_database(int id)
 					}
 					else
 					{
-						ShowError(hstmt, SQL_HANDLE_STMT, retcode);
+						showError(hstmt, SQL_HANDLE_STMT, retcode);
 					}
 
 					// Process data  
@@ -163,7 +163,7 @@ void update_database(int id)
 	}
 }
 
-void ShowError(SQLHANDLE hHandle, SQLSMALLINT hType, RETCODE RetCode)
+void showError(SQLHANDLE hHandle, SQLSMALLINT hType, RETCODE RetCode)
 {
 	SQLSMALLINT iRec = 0;
 	SQLINTEGER iError;
@@ -235,7 +235,7 @@ void insertToDatabase(char* name, short x, short y, int level, int exp, int hp)
 					}
 					else
 					{
-						ShowError(hstmt, SQL_HANDLE_STMT, retcode);
+						showError(hstmt, SQL_HANDLE_STMT, retcode);
 					}
 
 					// Process data  
