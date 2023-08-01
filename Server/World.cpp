@@ -13,7 +13,8 @@ World& World::instance()
 
 CEventTimer& World::getTimer()
 {
-	if (_timer == nullptr){
+	if (_timer == nullptr)
+	{
 		_timer = new CEventTimer();
 	}
 	return *_timer;
@@ -44,11 +45,13 @@ void World::disconnect(int c_id)
 	clients[c_id]._state = ST_FREE;
 
 	changeSector(c_id, false);
-	update_database(c_id);
+	updateDatabase(c_id);
 
-	for (auto& pl : clients) {
+	for (auto& pl : clients) 
+	{
 		if (pl._id == c_id) continue;
-		if (pl._state != ST_INGAME) {
+		if (pl._state != ST_INGAME)
+		{
 			continue;
 		}
 		pl.sendRemoveObject(c_id);
@@ -57,8 +60,10 @@ void World::disconnect(int c_id)
 
 int World::getNewClientId()
 {
-	for (int i = 0; i < MAX_USER; ++i) {
-		if (clients[i]._state == ST_FREE) {
+	for (int i = 0; i < MAX_USER; ++i)
+	{
+		if (clients[i]._state == ST_FREE)
+		{
 			clients[i]._state = ST_ACCEPTED;
 			return i;
 		}
@@ -122,15 +127,18 @@ void World::acceptClient(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 {
 	SOCKET c_socket = reinterpret_cast<SOCKET>(ex_over->_wsabuf.buf);
 	int client_id = getNewClientId();
-	if (client_id != -1) {
+	if (client_id != -1) 
+	{
 		clients[client_id].init(c_socket,client_id);
 		CreateIoCompletionPort(reinterpret_cast<HANDLE>(c_socket), handle_iocp, client_id, 0);
 		clients[client_id].doRecv();
 		c_socket = WSASocket(AF_INET, SOCK_STREAM, 0, NULL, 0, WSA_FLAG_OVERLAPPED);
 	}
-	else {
+	else
+	{
 		std::cout << "Max user exceeded.\n";
 	}
+
 	ZeroMemory(&ex_over->_over, sizeof(ex_over->_over));
 	ex_over->_wsabuf.buf = reinterpret_cast<CHAR*>(c_socket);
 	int addr_size = sizeof(SOCKADDR_IN);
@@ -139,7 +147,10 @@ void World::acceptClient(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 
 void World::recvClient(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 {
-	if (0 == num_bytes) disconnect(key);
+	if (0 == num_bytes)
+	{
+		disconnect(key);
+	}
 	int remain_data = num_bytes + clients[key]._prevRemainBuffer;
 
 	clients[key].rebuildPacket(ex_over->_send_buf, remain_data);
@@ -148,7 +159,10 @@ void World::recvClient(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 
 void World::sendClient(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 {
-	if (0 == num_bytes) disconnect(key);
+	if (0 == num_bytes)
+	{
+		disconnect(key);
+	}
 	delete ex_over;
 }
 
@@ -182,16 +196,19 @@ void World::npcRespawnEvent(OVER_EXP* ex_over, DWORD& num_bytes, ULONG_PTR& key)
 	std::unordered_set<int> new_nl;
 	new_nl = clients[key].makeNearList();
 
-	for (auto p_id : new_nl) {
+	for (auto p_id : new_nl)
+	{
 		if (p_id >= MAX_USER) continue;
 
 		clients[p_id].vl.lock();
-		if (clients[p_id].view_list.count(key) == 0) {
+		if (clients[p_id].view_list.count(key) == 0)
+		{
 			clients[p_id].view_list.insert(key);
 			clients[p_id].vl.unlock();
 			clients[p_id].sendAddObject(key);
 		}
-		else {
+		else 
+		{
 			clients[p_id].sendMovePacket(key, 0);
 			clients[p_id].vl.unlock();
 		}

@@ -2,7 +2,8 @@
 #include "pch.h"
 #include <queue>
 
-struct sEventData {
+struct sEventData 
+{
 	std::pair<int, int> _id;
 	COMP_TYPE _eventType;
 	std::chrono::system_clock::time_point _eventStartTime;

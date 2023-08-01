@@ -18,16 +18,21 @@ void CAstar::initMapClosedList()
 	}
 }
 
-bool compF(const sNode* lhs, const sNode* rhs) {
+bool compF(const sNode* lhs, const sNode* rhs) 
+{
 	return lhs->f < rhs->f;
 };
 
 void CAstar::calculateG(sNode* node, float& weight)
 {
 	if (node->pParent != nullptr)
+	{
 		node->g = node->pParent->g + weight;
-	else
+	}
+	else 
+	{
 		node->g = 0;
+	}
 }
 
 void CAstar::calculateH(sNode* node)
@@ -69,7 +74,8 @@ bool CAstar::searchRoad(short startX, short startY, short endX, short endY)
 
 		if (now_pos == end_pos) break;
 
-		for (int i = 0; i < 8; i++) {
+		for (int i = 0; i < 8; i++) 
+		{
 			int x = now_pos.first + dx[i], y = now_pos.second + dy[i];
 			if (x < 0 || y < 0) continue;
 			if (x > W_WIDTH || y > W_HEIGHT) continue;

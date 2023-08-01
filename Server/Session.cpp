@@ -38,12 +38,14 @@ void CSession::updateMoveViewList(int client_time, std::unordered_set<int>& new_
 	for (auto n : new_nl)
 	{
 		if (clients[n]._id == _id) continue;
+
 		if (clients[n]._state == ST_SLEEP)
 		{
 			clients[n]._state = ST_INGAME;
 			std::pair<int, int> id{ n, n };
 			World::instance().addEvent(id, EV_MOVE, 1000);
 		}
+		
 		if (ST_INGAME != clients[n]._state) continue;
 
 		vl.lock();
@@ -122,7 +124,7 @@ void CSession::removeViewList(int& view)
 {
 	if (_id == view) return;
 	if (_id >= MAX_USER) return;
-	if (_state != ST_INGAME)return;
+	if (_state != ST_INGAME) return;
 
 	sendRemoveObject(view);
 }
@@ -245,13 +247,15 @@ void CSession::processPacket(char* packet)
 			break;
 		}
 
-		case CS_MOVE: {
+		case CS_MOVE:
+		{
 			moveObject(packet);
 
 			break;
 		}
 
-		case CS_ATTACK: {
+		case CS_ATTACK:
+		{
 			processAttack(packet);
 
 			CS_ATTACK_PACKET* p = reinterpret_cast<CS_ATTACK_PACKET*>(packet);
@@ -262,13 +266,15 @@ void CSession::processPacket(char* packet)
 			{
 				clients[n].sendAttackPacket(_id,p->skill_type);
 
-				if (p->skill_type == 2) {
+				if (p->skill_type == 2) 
+				{
 					std::pair<int, int> id{ n,_id };
 					World::instance().addEvent(id, EV_SKILL_RELEASE, 1500);
 				}
 			}
 
-			if (p->skill_type == 2) {
+			if (p->skill_type == 2) 
+			{
 				std::pair<int, int> id{ _id,_id };
 				World::instance().addEvent(id, EV_SKILL_RELEASE, 1500);
 			}
@@ -276,7 +282,8 @@ void CSession::processPacket(char* packet)
 			break;
 		}
 
-		case CS_CHAT: {
+		case CS_CHAT:
+		{
 			CS_CHAT_PACKET* p = reinterpret_cast<CS_CHAT_PACKET*>(packet);
 			std::string mess(p->mess);
 			chatMessage(mess,1);
@@ -317,7 +324,8 @@ void CSession::processAttack(char* packet)
 
 	setSkillCoolDown(p);
 	
-	if (p->skill_type == 2) {
+	if (p->skill_type == 2)
+	{
 		_isShield = true;
 		std::pair<int, int> id{ _id,p->skill_type };
 		World::instance().addEvent(id, EV_SKILL_COOL, 3000);
@@ -326,13 +334,13 @@ void CSession::processAttack(char* packet)
 
 	for (int mon : search_vl)
 	{
-		if (p->skill_type == 0) {
-			if (isMonsterCollisionNormalAttack(mon, _id) == false)
-				continue;
+		if (p->skill_type == 0)
+		{
+			if (isMonsterCollisionNormalAttack(mon, _id) == false) continue;
 		}
-		else if (p->skill_type == 1) {
-			if (isMonsterCollisionAttack(mon, _id) == false)
-				continue;
+		else if (p->skill_type == 1) 
+		{
+			if (isMonsterCollisionAttack(mon, _id) == false) continue;
 		}
 
 		int damage = _level * 2 * (p->skill_type + 1);
@@ -357,12 +365,14 @@ void CSession::setSkillCoolDown(CS_ATTACK_PACKET* p)
 {
 	switch (p->skill_type)
 	{
-		case 0: {
+		case 0:
+		{
 			std::pair<int, int> id{ _id,p->skill_type };
 			World::instance().addEvent(id, EV_SKILL_COOL, 400);
 			break;
 		}
-		case 1: {
+		case 1: 
+		{
 			std::pair<int, int> id{ _id,p->skill_type };
 			World::instance().addEvent(id, EV_SKILL_COOL, 1500);
 			break;
@@ -592,7 +602,8 @@ void CSession::movePathToNpc()
 	bool isFind = _astar.searchRoad(clients[_target_id].x, clients[_target_id].y, x, y);
 	_pathl.unlock();
 
-	if (isFind == false) {
+	if (isFind == false)
+	{
 		_target_id = -1;
 		return;
 	}
@@ -609,7 +620,8 @@ void CSession::movePathToNpc()
 	_pathl.lock();
 	_isAttack = false;
 	bool isDying = clients[_target_id].decreaseHp(_level);
-	if (isDying) {
+	if (isDying)
+	{
 		clients[_target_id].respawnPlayer();
 	}
 

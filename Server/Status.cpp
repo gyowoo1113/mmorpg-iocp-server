@@ -6,7 +6,9 @@ bool CStatus::decreaseHp(CSession& client, int hp)
 {
     client._hp -= hp;
     if (client._hp <= 0)
+    {
         return true;
+    }
 
     client.checkHealing();
     return false;
@@ -14,7 +16,8 @@ bool CStatus::decreaseHp(CSession& client, int hp)
 
 bool CStatus::healHp(CSession& client)
 {
-    if (client._hp > client._maxHp) {
+    if (client._hp > client._maxHp) 
+    {
         client._hp = client._maxHp;
         return true;
     }
@@ -36,7 +39,8 @@ void CStatus::checkHealEvent(CSession& client)
         client._isHealing = false;
         client._hp = client._maxHp;
     }
-    else {
+    else 
+    {
         std::pair<int, int> id{ client._id,client._id };
         World::instance().addEvent(id, EV_HEAL, 5000);
     }
@@ -54,7 +58,9 @@ void CStatus::updateExp(CSession& client, int mon_id)
 
     client._exp += gainExp;
     if (client._maxExp <= client._exp)
-        setLevelUp(client,client._exp - client._maxExp);
+    {
+        setLevelUp(client, client._exp - client._maxExp);
+    }
 
     std::string user(client._name), mons(clients[mon_id]._name);
     std::string mess = "User:" + user + " kill to " + mons + ", gain " + std::to_string(gainExp) + " Exp";

@@ -5,7 +5,8 @@
 
 typedef std::pair<short, short> position;
 
-struct sNode {
+struct sNode 
+{
 	position pos;
 	float g;
 	int h;

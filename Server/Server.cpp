@@ -11,18 +11,19 @@ using namespace sf;
 const short SERVER_PORT = 4000;
 const int BUFSIZE = 256;
 
-
 void updateMoveClients(int c_id, char& direction)
 {
 	short x = clients[c_id].x;
 	short y = clients[c_id].y;
-	switch (direction) {
+	switch (direction)
+	{
 	case 0:
 		if (y < W_HEIGHT - 1)
 		{
 			if (tiles[x][y + 1] == 0)
-				y++;
-
+			{
+				y += 1;
+			}
 		}
 		break;
 
@@ -30,15 +31,19 @@ void updateMoveClients(int c_id, char& direction)
 		if (y > 0)
 		{
 			if (tiles[x][y - 1] == 0)
-				y--;
+			{
+				y -= 1;
+			}
 		}
 		break;
 
 	case 2:
 		if (x > 0)
 		{
-			if (tiles[x - 1][y] == 0)
-				x--;
+			if (tiles[x - 1][y] == 0) 
+			{
+				x -= 1;
+			}
 		}
 		break;
 
@@ -46,7 +51,9 @@ void updateMoveClients(int c_id, char& direction)
 		if (x < W_WIDTH - 1)
 		{
 			if (tiles[x + 1][y] == 0)
-				x++;
+			{
+				x += 1;
+			}
 		}
 		break;
 	}
@@ -56,8 +63,7 @@ void updateMoveClients(int c_id, char& direction)
 
 void moveNpc(int npc_id)
 {
-	if (clients[npc_id]._state == ST_SLEEP
-		|| clients[npc_id]._state == ST_FREE) return;
+	if (clients[npc_id]._state == ST_SLEEP || clients[npc_id]._state == ST_FREE) return;
 
 	unordered_set<int> old_vl;
 	for (int i = 0; i < MAX_USER; ++i)
@@ -76,29 +82,36 @@ void moveNpc(int npc_id)
 		if (distance(npc_id, i) <= RANGE) new_vl.insert(i);
 	}
 
-	for (auto p_id : new_vl) {
+	for (auto p_id : new_vl)
+	{
 		clients[p_id].vl.lock();
-		if (clients[p_id].view_list.count(npc_id) == 0) {
+		if (clients[p_id].view_list.count(npc_id) == 0)
+		{
 			clients[p_id].view_list.insert(npc_id);
 			clients[p_id].vl.unlock();
 			clients[p_id].sendAddObject(npc_id);
 		}
-		else {
+		else 
+		{
 			clients[p_id].sendMovePacket(npc_id, 0);
 			clients[p_id].vl.unlock();
 		}
 		clients[npc_id].checkArgoStart(p_id);
 	}
 
-	for (auto p_id : old_vl) {
-		if (0 == new_vl.count(p_id)) {
+	for (auto p_id : old_vl)
+	{
+		if (0 == new_vl.count(p_id))
+		{
 			clients[p_id].vl.lock();
-			if (clients[p_id].view_list.count(npc_id) == 1) {
+			if (clients[p_id].view_list.count(npc_id) == 1)
+			{
 				clients[p_id].view_list.erase(npc_id);
 				clients[p_id].vl.unlock();
 				clients[p_id].sendRemoveObject(npc_id);
-			}
-			else {
+			} 
+			else
+			{
 				clients[p_id].vl.unlock();
 			}
 		}
@@ -119,7 +132,8 @@ typedef void (World::* member_funcion_pointer)(OVER_EXP*, DWORD&, ULONG_PTR&);
 
 void doWorker()
 {
-	while (true) {
+	while (true)
+	{
 		HANDLE& handle_iocp = World::instance().getHandle();
 
 		DWORD num_bytes;
@@ -127,9 +141,14 @@ void doWorker()
 		WSAOVERLAPPED* over = nullptr;
 		BOOL ret = GetQueuedCompletionStatus(handle_iocp, &num_bytes, &key, &over, INFINITE);
 		OVER_EXP* ex_over = reinterpret_cast<OVER_EXP*>(over);
-		if (FALSE == ret) {
-			if (ex_over->_comp_type == OP_ACCEPT) cout << "Accept Error";
-			else {
+		if (FALSE == ret) 
+		{
+			if (ex_over->_comp_type == OP_ACCEPT)
+			{
+				cout << "Accept Error";
+			}
+			else
+			{
 				cout << "GQCS Error on client[" << key << "]\n";
 				World::instance().disconnect(static_cast<int>(key));
 				if (ex_over->_comp_type == OP_SEND) delete ex_over;
